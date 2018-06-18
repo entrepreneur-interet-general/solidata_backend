@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-users_list.py  
+endpoint_users.py  
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
@@ -31,7 +31,9 @@ ns = Namespace('users', description='Users list ')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-from .models import *
+from .models import * # model_user, model_new_user
+model_new_user  = NewUser(ns).model
+model_user      = User(ns).model
 
 
 ### ROUTES
@@ -98,32 +100,6 @@ class UsersList(Resource):
 				return "this email already exists"
 
 
-### TO DO 
 
-@ns.route("/<id>")
-@ns.response(404, 'user not found')
-@ns.param('id', 'The user identifier')
-class User(Resource) :
-		
-	'''Show a single user item and lets you delete them'''
-	@ns.doc('get_user')
-	@ns.marshal_with(model_new_user)
-	def get(self, id):
-		'''Fetch a given user'''
-		return "fetching user {} ".format(id) # DAO.get(id)
-
-	@ns.doc('delete_user')
-	@ns.response(204, 'Todo deleted')
-	def delete(self, id):
-		'''Delete a user given its identifier'''
-		# DAO.delete(id)
-		return '', 204
-
-	@ns.expect(model_new_user)
-	@ns.marshal_with(model_new_user)
-	def put(self, id):
-		'''Update an user given its identifier'''
-
-		return "updating user " # DAO.update(id, api.payload)
 
 

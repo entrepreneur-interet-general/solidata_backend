@@ -14,6 +14,7 @@ from flask import current_app as app
 from solidata_api.application import mongo
 
 
+### declaring collections as app variables
 
 mongo_users 						= mongo.db[ app.config["MONGO_COLL_USERS"] ]
 mongo_licences 					= mongo.db[ app.config["MONGO_COLL_LICENCES"] ]

@@ -28,8 +28,8 @@ api = Api( 	blueprint,
 
 
 ### import api namespaces / add namespaces to api wrapper
-from .endpoints import 		ns as ns_users_list
+from .endpoint_users import 		ns as ns_users_list
 api.add_namespace(ns_users_list)
 
-# from .users_register import ns as ns_user_register
-# api.add_namespace(ns_user_register)
+from .endpoint_user_edit import ns as ns_user_edit
+api.add_namespace(ns_user_edit)

@@ -138,7 +138,7 @@ user_datasets = {
 	"projects"							: proj_list,
 	"datamodels"						: dm_list,
 	"datasets_inputs"				: dsi_list,
-	"datasets_inputs"				: dso_list,
+	"datasets_outputs"			: dso_list,
 	"correspondance_dicts"	: dc_list,
 	"recipes"								: rec_list,
 }
