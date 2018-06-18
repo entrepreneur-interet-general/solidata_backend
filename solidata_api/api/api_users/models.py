@@ -8,7 +8,7 @@ api_users/models.py
 from flask_restplus import fields
 
 ### import data serializers
-from solidata_api.serializers.schema_users import *  
+from solidata_api._serializers.schema_users import *  
 
 ### iomport API namespace
 from .endpoints import ns

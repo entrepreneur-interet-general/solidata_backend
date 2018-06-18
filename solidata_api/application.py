@@ -65,7 +65,7 @@ def create_app(app_name='SOLIDATA_API'):
 	# access mongodb collections
 	with app.app_context() :
 
-		from solidata_api.core.queries_db import db, \
+		from solidata_api._core.queries_db import db, \
 			mongo_users,mongo_licences,mongo_projects,mongo_datamodels, \
 			mongo_datamodels_fields,mongo_connectors, \
 			mongo_datasets_inputs,mongo_datasets_outputs, \

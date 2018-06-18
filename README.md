@@ -4,7 +4,8 @@
 -------
 ## PRESENTATION
 
-A public service to allow you to open data as simple as posible
+part 2/3 of the TADATA! sofware suite 
+A public service for managing and sharing data : allow you to open data as simply as posible
 
 
 ------

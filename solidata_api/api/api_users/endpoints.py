@@ -18,18 +18,17 @@ from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 ### import mongo utils
-# from . import mongo 
 from solidata_api.application import mongo
-from solidata_api.core.queries_db import * # mongo_users, etc...
+from solidata_api._core.queries_db import * # mongo_users, etc...
 
 # ### import data serializers
-from solidata_api.serializers.schema_users import *  
+from solidata_api._serializers.schema_users import *  
 
 ### create namespace
 ns = Namespace('users', description='Users list ')
 
 ### import parsers
-from solidata_api.parsers.parser_pagination import pagination_arguments
+from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 from .models import *
