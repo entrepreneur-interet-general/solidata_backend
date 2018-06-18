@@ -6,6 +6,7 @@ application.py
 """
 
 from log_config import log, pprint, pformat
+log.debug ("... starting app ...")
 
 from flask import Flask, g, current_app
 
@@ -62,14 +63,17 @@ def create_app(app_name='SOLIDATA_API'):
 
 	mongo.init_app(app)
 
-	# access mongodb collections
 	with app.app_context() :
 
+		# access mongodb collections
 		from solidata_api._core.queries_db import db, \
 			mongo_users,mongo_licences,mongo_projects,mongo_datamodels, \
 			mongo_datamodels_fields,mongo_connectors, \
 			mongo_datasets_inputs,mongo_datasets_outputs, \
 			mongo_recipes,mongo_corr_dicts
+
+		# import token required
+		from solidata_api._auth import authorizations, token_required
 
 
 	## DEBUG
@@ -91,7 +95,7 @@ def create_app(app_name='SOLIDATA_API'):
 	### DEBUG
 	# @app.before_request
 	# def debug_stuff():
-  # 	# pass
+	# 	# pass
 	# 	log.debug ("\n%s", pformat(current_app.__dict__))
 
 

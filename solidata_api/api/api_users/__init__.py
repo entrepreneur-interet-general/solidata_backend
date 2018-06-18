@@ -14,6 +14,8 @@ from flask_restplus import Api
 
 ### import db collections dict
 from solidata_api.application import mongo
+from solidata_api._auth.authorizations import authorizations as auth_check
+from solidata_api._auth.auth_decorator import token_required
 
 
 ### create blueprint and api wrapper
@@ -23,7 +25,9 @@ api = Api( 	blueprint,
 						version="0.1",
 						description="create, list, delete, edit... users",
 						doc='/documentation',
-						default='users'
+						default='users',
+            authorizations=auth_check,
+            security='apikey' # globally ask for pikey auth
 )
 
 

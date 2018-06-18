@@ -21,6 +21,9 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 from solidata_api.application import mongo
 from solidata_api._core.queries_db import * # mongo_users, etc...
 
+### import auth utils
+from solidata_api._auth import token_required
+
 # ### import data serializers
 from solidata_api._serializers.schema_users import *  
 
@@ -36,11 +39,15 @@ model_new_user  = NewUser(ns).model
 model_user      = User(ns).model
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
 @ns.route('/')
 class UsersList(Resource):
 
 	@ns.doc('users_list')
+	@token_required
 	@ns.expect(pagination_arguments)
 	@ns.marshal_list_with( model_user, skip_none=True)#, envelop="users_list" ) 
 	def get(self):
@@ -80,7 +87,7 @@ class UsersList(Resource):
 			log.debug("email : %s", payload_email )
 
 			### chek if user already exists in db
-			existing_user = mongo.db["users"].find_one({"infos.email" : payload_email})
+			existing_user = mongo_users.find_one({"infos.email" : payload_email})
 			log.debug(existing_user)
 
 			if existing_user is None :
