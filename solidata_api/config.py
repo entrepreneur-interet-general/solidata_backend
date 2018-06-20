@@ -3,6 +3,8 @@ config.py
 - settings for the flask application object
 """
 
+from datetime import timedelta
+
 class BaseConfig(object):  
 
 	DEBUG = True
@@ -10,7 +12,7 @@ class BaseConfig(object):
 	# used for encryption and session management
 
 	""" RESTPLUS CONFIG """
-	# SWAGGER_UI_DOC_EXPANSION 		= 'list'
+	SWAGGER_UI_DOC_EXPANSION 		= 'list'
 	SWAGGER_UI_JSONEDITOR 			= True
 	SWAGGER_UI_OPERATION_ID 		= True
 	SWAGGER_UI_REQUEST_DURATION = True
@@ -19,7 +21,17 @@ class BaseConfig(object):
 	SECRET_KEY			= "app_very_secret_key"
 
 	""" SHARED JWT SECRET KEY : this key must be shared with openscraper and solidata """
-	JWT_SECRET_KEY		= "a_key_shared_with_front_and_openscraper_and_solidata"
+	JWT_SECRET_KEY						= "a_key_shared_with_front_and_openscraper_and_solidata"
+	JWT_HEADER_NAME						= "Authorization" #"X-API-KEY"
+	JWT_TOKEN_LOCATION				= ["headers", "query_string"]
+	JWT_QUERY_STRING_NAME 		= "token"
+	JWT_ACCESS_TOKEN_EXPIRES 	=  timedelta(minutes=15)
+	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)  
+  # beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
+  # otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 
+  # not very comptatible with Flask-RestPlus authorization schemas described in _auth.authorizations.py
+	JWT_HEADER_TYPE						= "" 
+
 
 	""" HOST """
 	DOMAIN_ROOT				= "localhost" 
@@ -35,7 +47,7 @@ class BaseConfig(object):
 	MONGO_COLL_USERS						  = "users"
 	MONGO_COLL_LICENCES					  = "licences"
 	MONGO_COLL_PROJECTS					  = "projects"
-	MONGO_COLL_DATAMODELS			  	 = "datamodels"
+	MONGO_COLL_DATAMODELS			  	= "datamodels"
 	MONGO_COLL_DATAMODELS_FIELDS	= "datamodels_fields"
 	MONGO_COLL_CONNECTORS				  = "connectors"
 	MONGO_COLL_DATASETS_INPUTS	  = "datasets_inputs"

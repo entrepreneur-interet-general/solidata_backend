@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 
 """
-api_users/__init__.py
+api_auth/__init__.py
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
 
 from log_config import log, pformat
-log.debug(">>> api_users ... creating api blueprint for USERS")
+log.debug(">>> api_auth ... creating api blueprint for USERS")
 
 from flask import Blueprint, current_app as app
 from flask_restplus import Api
@@ -19,15 +19,15 @@ from solidata_api._auth.authorizations import authorizations as auth_check
 
 
 ### create blueprint and api wrapper
-blueprint = Blueprint( 'api_users', __name__ )
+blueprint = Blueprint( 'api_auth', __name__ )
 api = Api( 	blueprint,
-						title="Solidata API : USERS",
+						title="Solidata API : AUTH SERVER",
 						version="0.1",
-						description="create, list, delete, edit... users",
+						description="auth server / manages tokens",
 						doc='/documentation',
-						default='register',
+						default='login',
 						authorizations=auth_check,
-						# security='apikey' # globally ask for pikey auth
+						# security='apikey' # globally ask for apikey auth
 )
 
 
@@ -49,14 +49,9 @@ def default_error_handler(e):
 
 
 ### import api namespaces / add namespaces to api wrapper
-from .endpoint_users import 		ns as ns_users_list
-api.add_namespace(ns_users_list)
 
-# from .endpoint_user_login import ns as ns_user_login
-# api.add_namespace(ns_user_login)
+from .endpoint_user_login import ns as ns_user_login
+api.add_namespace(ns_user_login)
 
-from .endpoint_user_register import ns as ns_user_register
-api.add_namespace(ns_user_register)
-
-from .endpoint_user_edit import ns as ns_user_edit
-api.add_namespace(ns_user_edit)
+from .endpoint_user_refresh_token import ns as ns_user_refresh
+api.add_namespace(ns_user_refresh)

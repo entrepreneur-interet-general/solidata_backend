@@ -6,5 +6,5 @@ _auth.__init__.py.py
 - creates a token_required decorator
 """
 
-from .auth_decorator import token_required
+from .auth_decorators import token_required
 from .authorizations import authorizations

@@ -10,64 +10,87 @@ from log_config import log, pformat
 from flask_restplus import fields, marshal
 import json
 
-user_auth_levels = [
-	"admin", "staff", "collective", "registred", "guest"
-]
+from ._choices_user import * 
+
 
 name 						= fields.String(
 										description="name of the user",
 										attribute="name",
+										example="Elinor",
 										default='Anonymous User',
 										required=False,
 									)
 surname 				= fields.String(
 										description="surname of the user",
 										attribute="surname",
+										example="Ostrom",
 										required=False,
 									)
 email 					= fields.String(
 										description="email of the user",
 										attribute="email",
+										example="commons@come.on",
 										required=False,
 									)
 
-
-password				= fields.String(
+### auth 
+pwd				      = fields.String(
 										description="password of the user",
 										attribute="pwd",
+										example="a-very-strong-password",
 										required=True,
 									)
-auth_level			= fields.String(
-										description="authorization level of the user",
-										attribute="auth_level",
+role			      = fields.String(
+										description="role / authorization level of the user",
+										attribute="role",
+										example="guest",
+										enum=user_roles,
 										default="guest",
 									)
-token						= fields.String(
-										description="public token of user",
-										attribute="token",
-										default="no_token",
+acc_tok					= fields.String(
+										description="access token of user",
+										attribute="acc_tok",
+										example="a-json-web-access-token",
+										default="no_access_token",
+									)
+refr_tok				= fields.String(
+										description="refresh token of user",
+										attribute="refr_tok",
+										example="a-json-web-refresh-token",
+										default="no_refresh_token",
 									)
 
-
+### preferences
 language				= fields.String(
 										description="language preference", 
+										example="en",
 										attribute="lang",	
 										default="en",
 									)
 
-
+### profesional infos
 structures			= fields.List(
 										fields.String(
 										description="structure / organisation the user"),
+										example="my structure",
+										default=[]
+									)
+structure_profile	= fields.List(
+										fields.String(
+										description="structure / organisation profile"),
+										enum=user_profiles,
+										example="public_state",
 										default=[]
 									)
 profiles				= fields.List(
 										fields.String(
 										description="profile of the user"),
+										enum=user_profiles,
+										example="organizer",
 										default=[]
 									)
 
-
+### datasets infos
 proj_list				= fields.List(
 										fields.String(
 										description="ids of the projects created by the user"),
@@ -106,6 +129,16 @@ rec_list				= fields.List(
 									)
 
 
+### FOR GENERIC MODELS
+user_identity = {
+	"email" 			: email,
+}
+
+user_login = {
+	"email" 			: email,
+	"pwd"		      : pwd,
+}
+
 user_basics = {
 	"name" 				: name,
 	"surname" 		: surname,
@@ -116,25 +149,42 @@ user_register = {
 	"name" 				: name,
 	"surname" 		: surname,
 	"email" 			: email,
-	"password"		: password,
-}
-
-user_preferences = {
-	"language" : language
-}
-
-user_professional = {
-	"structures" 		: structures,
-	"profiles" 			: profiles
+	"pwd"		      : pwd,
 }
 
 user_auth = {
-	"password"		: password,
-	"auth_level"	: auth_level,
-	"token"				: token,
+	"pwd"		      : pwd,
+	"role"	      : role,
+	"acc_tok"			: acc_tok,
+	"refr_tok"		: refr_tok,
 }
 
-user_datasets = {
+user_auth_out = {
+	# "pwd"		      : pwd,
+	"role"	      : role,
+	"acc_tok"			: acc_tok,
+}
+
+### FOR MODELS TO INSERT IN DB
+user_datasets_in = {
+	"proj_"	: proj_list,
+	"dm_"		: dm_list,
+	"dsi"		: dsi_list,
+	"dso_"	: dso_list,
+	"dc_"	  : dc_list,
+	"rec_"	: rec_list,
+}
+user_preferences_in = {
+	"lang"  : language
+}
+
+user_professional = {
+	"struct_"   		: structures,
+	"profiles" 			: profiles
+}
+
+### FOR MODELS TO EXPORT OUT OF DB
+user_datasets_out = {
 	"projects"							: proj_list,
 	"datamodels"						: dm_list,
 	"datasets_inputs"				: dsi_list,
@@ -143,49 +193,11 @@ user_datasets = {
 	"recipes"								: rec_list,
 }
 
+user_preferences_out = {
+	"language" : language
+}
 
-
-
-
-# user_infos = {
-	
-# 	"name" 				: name,
-# 	"surname" 		: surname,
-# 	"email" 			: email,
-
-# 	"language"		: language,
-
-# 	"auth_level"	: auth_level,
-# 	"token"				: token,
-	
-# 	"projects"							: proj_list,
-# 	"datamodels"						: dm_list,
-# 	"datasets_inputs"				: dsi_list,
-# 	"datasets_inputs"				: dso_list,
-# 	"correspondance_dicts"	: dc_list,
-# 	"recipes"								: rec_list,
-
-# }
-
-# ### ---------------------------------
-# fake_user = {
-# 	# "_id" : ObjectId("5b2173a00415489360a99f0d"),
-# 	"name" : "Julien",
-# 	"surname" : "Paris",
-# 	"email" : "julien@cget.gouv.fr",
-# 	"auth_level" : "admin",
-# 	"proj_list" : [ 
-# 			"001", 
-# 			"00Z"
-# 	]
-# }
-
-# user_nested 								= {}
-# user_nested['infos'] 				= fields.Nested(user_basics)
-# user_nested['preferences'] 	= fields.Nested(user_basics)
-# user_nested['auth'] 				= fields.Nested(user_auth)
-# user_nested['datasets']			= fields.Nested(user_datasets)
-
-# user_nest 					= {}
-# user_nest['infos'] 	= user_basics
-# log.debug("test on fake_user : \n %s", pformat(marshal(fake_user, user_nest)) )
+user_professional = {
+	"structures" 		: structures,
+	"profiles" 			: profiles
+}

@@ -10,28 +10,37 @@ log.debug ("... starting app ...")
 
 from flask import Flask, g, current_app
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### FLASK-EXTENDED-JWT IMPORTS
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+# cf : https://github.com/vimalloc/flask-jwt-extended/issues/14
+from flask_jwt_extended import JWTManager
+
+# declare JWT empty connector
+jwt_manager = JWTManager()
+log.debug(" jwt_manager() : \n%s ", pformat(jwt_manager))
+
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### LOGIN MANAGER 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-from  	flask_login import 	LoginManager, login_user, logout_user, login_required, \
-				current_user
+# from  	flask_login import 	LoginManager, login_user, logout_user, login_required, \
+# 				current_user
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FLASK-ADMIN IMPORTS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-from	flask_admin 							import Admin, AdminIndexView
-from 	flask_admin.model 				import typefmt
-from 	flask_admin.model.widgets import XEditableWidget
+# from	flask_admin 							import Admin, AdminIndexView
+# from 	flask_admin.model 				import typefmt
+# from 	flask_admin.model.widgets import XEditableWidget
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FLASK-PYMONGO IMPORTS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 from flask_pymongo import PyMongo
-# from solidata_api.core.queries_db import MongoCollection
 
 # declare mongo empty connector
 mongo = PyMongo()
@@ -61,6 +70,10 @@ def create_app(app_name='SOLIDATA_API'):
 	log.debug("... app.config :\n %s", pformat(app.config))
 	print()
 
+	### init JWT manager
+	jwt_manager.init_app(app)
+
+	### init mongodb client
 	mongo.init_app(app)
 
 	with app.app_context() :
@@ -73,7 +86,7 @@ def create_app(app_name='SOLIDATA_API'):
 			mongo_recipes,mongo_corr_dicts
 
 		# import token required
-		from solidata_api._auth import authorizations, token_required
+		from solidata_api._auth import authorizations #, token_required
 
 
 	## DEBUG
@@ -87,8 +100,8 @@ def create_app(app_name='SOLIDATA_API'):
 	from solidata_api.api.api_users 		import blueprint as api_users
 	app.register_blueprint( api_users, url_prefix="/api/users" )
 
-	# from solidata_api.api.api_projects 	import blueprint as api_projects
-	# app.register_blueprint( api_projects, url_prefix='/api/projects')
+	from solidata_api.api.api_auth 	import blueprint as api_auth
+	app.register_blueprint( api_auth, url_prefix='/api/auth')
 
 
 
