@@ -65,6 +65,9 @@ class User_out :
 				'preferences': fields.Nested(
 					ns_.model('User_preferences',  user_preferences_out  )
 				),
+				'datasets': fields.Nested(
+					ns_.model('User_datasets',  user_datasets_out  )
+				),
 		})
 
 	@property

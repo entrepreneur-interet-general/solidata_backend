@@ -30,14 +30,14 @@ email 					= fields.String(
 										description="email of the user",
 										attribute="email",
 										example="commons@come.on",
-										required=False,
+										required=True,
 									)
 
 ### auth 
 pwd				      = fields.String(
 										description="password of the user",
 										attribute="pwd",
-										example="a-very-strong-password",
+										example="a-very-common-password",
 										required=True,
 									)
 role			      = fields.String(
@@ -162,7 +162,7 @@ user_auth = {
 user_auth_out = {
 	# "pwd"		      : pwd,
 	"role"	      : role,
-	"acc_tok"			: acc_tok,
+	# "acc_tok"			: acc_tok,
 }
 
 ### FOR MODELS TO INSERT IN DB

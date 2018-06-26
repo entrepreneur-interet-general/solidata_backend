@@ -6,7 +6,7 @@ endpoint_user_login.py
 	REST requests and responses
 """
 
-from log_config import log
+from log_config import log, pformat
 log.debug(">>> api_users ... creating api endpoints for USER_LOGIN")
 
 from  datetime import datetime, timedelta
@@ -14,7 +14,7 @@ from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-# from flask import current_app, request
+# from flask import request, current_app
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
@@ -44,6 +44,7 @@ ns = Namespace('login', description='User login ')
 ### import models 
 from .models import * # model_user, model_new_user
 model_login_user  	= LoginUser(ns).model
+model_user					= User_out(ns).model
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -60,6 +61,9 @@ class Login(Resource):
 	def post(self):
 		"""
 		login user with POST request
+		checks if email exists in db 
+		check if salted pwd is equals to user's
+		return jwt : access token and refresh token
 		"""
 
 		### DEBUGGING
@@ -98,15 +102,16 @@ class Login(Resource):
 				# 		'exp'	: datetime.utcnow() + timedelta(minutes=30)},
 				# 		current_app.config['JWT_SECRET_KEY'])
 
-				# access_token = create_access_token(identity=payload_email)
+				user_light 								= marshal( user , model_user)
+
 				# Use create_access_token() and create_refresh_token() to create our
 				# access and refresh tokens
 				tokens = {
-						'access_token'	: create_access_token(identity=payload_email),
-						'refresh_token'	: create_refresh_token(identity=payload_email)
+						'access_token'	: create_access_token(identity=user_light, fresh=True),
+						'refresh_token'	: create_refresh_token(identity=user_light)
 				}
 
-				### update user auth and log
+				### update user log in db
 				### TO DO 
 
 				return {	

@@ -34,7 +34,7 @@ def add_claims_to_access_token(user):
 		create_access_token method, and lets us define what custom claims
 		should be added to the access token.
 		"""
-		log.debug("user : \n %s", user)
+		log.debug("user : \n%s", user)
 
 		claims_to_store_into_jwt =  {
 			'infos'				: user["infos"],
@@ -42,6 +42,9 @@ def add_claims_to_access_token(user):
 			'datasets'		: user["datasets"],
 			'preferences'	: user["preferences"],
 		}
+
+		log.debug("claims_to_store_into_jwt : \n%s", pformat(claims_to_store_into_jwt))
+
 		return claims_to_store_into_jwt
 
 
@@ -53,7 +56,7 @@ def user_identity_lookup(user):
 		create_access_token method, and lets us define what the identity
 		of the access token should be.
 		"""
-		log.debug("user : \n %s", user)
+		log.debug("user : \n %s", pformat(user))
 		
 		### load email as identity in jwÒt
 		try : 
@@ -63,7 +66,11 @@ def user_identity_lookup(user):
 			identity = None
 			
 		log.debug("identity : \n %s", identity)
+
 		return identity
+
+
+
 
 
 ### custom

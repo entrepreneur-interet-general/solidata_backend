@@ -6,7 +6,7 @@ endpoint_login.py
 	REST requests and responses
 """
 
-from log_config import log
+from log_config import log, pformat
 log.debug(">>> api_users ... creating api endpoints for USER_REGISTER")
 
 from	bson import json_util
@@ -65,10 +65,11 @@ model_user							= User_in(ns).model
 class Register(Resource):
 	@ns.doc('create_user')
 	@ns.expect(model_register_user, validate=True)
-	@ns.marshal_with(model_register_user_out, envelope="new_user", code=201)
+	# @ns.marshal_with(model_register_user_out, envelope="new_user", code=201)
 	def post(self):
 		"""
 		create / register a new user
+		just needs an email, a name, a surname and and a password
 		"""
 		print()
 		log.debug( self.__class__.__name__ )
@@ -82,7 +83,7 @@ class Register(Resource):
 
 		### chek if user already exists in db
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})
-		log.debug(existing_user)
+		log.debug("existing_user : ", existing_user)
 
 		if existing_user is None or payload_pwd not in ['test', 'password'] :
 
@@ -91,29 +92,40 @@ class Register(Resource):
 			log.debug("hashpass : %s", hashpass)
 
 			# create user dict
-			new_user_infos 	= {"infos" : ns.payload, "auth" : ns.payload }
-			new_user 				= marshal( new_user_infos , model_user)
+			new_user_infos 					= {"infos" : ns.payload, "auth" : ns.payload }
+			new_user 								= marshal( new_user_infos , model_user)
 			new_user["auth"]["pwd"] = hashpass
-			log.info("new user is created : \n%s", pformat(new_user))
+			log.info("new user is being created : \n%s", pformat(new_user))
 
-			# create JWT
+			# create JWT : access and refresh token
+			print()
+			log.debug("... create_access_token")
 			access_token 	= create_access_token(identity=new_user)
-			refresh_token = create_refresh_token(identity=payload_email)
+			print()
+			log.debug("... refresh_token")
+			refresh_token = create_refresh_token(identity=new_user)
+			tokens = {
+					'access_token'	: access_token,
+					'refresh_token'	: refresh_token
+			}
 
-			log.info("access_token : \n%s", pformat(access_token))
-			log.info("refresh_token : \n%s", pformat(refresh_token))
+			log.info("tokens : \n%s", pformat(tokens))
 
 			new_user["auth"]["acc_tok"] 	= access_token
 			new_user["auth"]["refr_tok"] 	= refresh_token
 
 
 			# save new user in db
-			# mongo_user.insert( new_user )
+			mongo_users.insert( new_user )
 
 			log.info("new user is created : \n%s", pformat(new_user))
 
 			# return marshal(new_user, model_register_user_out), 200
-			return new_user, 200
+			return { 
+								"message"		: "new user has been created",
+								# "new_user" 	: new_user,
+								"tokens"		: tokens
+							}, 200
 
 		else :
 			
