@@ -73,17 +73,24 @@ class Refresh(Resource) :
 		log.debug( self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
+		### retrieve current_user identity
 		current_user = get_jwt_identity()
 		log.debug("current_user : \n %s", current_user)
 
 		### retrieve user from db to get all infos
-		user = mongo_users.find_one( {"infos.email" : current_user }, {"_id": 0 })
+		user = mongo_users.find_one( {"infos.email" : current_user } )
 		log.debug("user : \n %s", pformat(user)) 
-
 		user_light 	= marshal( user , model_user)
 
-		new_access_token = {
-				'access_token': create_access_token(identity=user_light, fresh=False)
+		### create new access token
+		new_access_token = create_access_token(identity=user_light, fresh=False)
+		
+		### save new access token in user db
+		user["auth"]["acc_tok"] = new_access_token
+		mongo_users.save(user)
+
+		token = {
+				'access_token': new_access_token
 		}
 		
-		return new_access_token, 200
+		return token, 200

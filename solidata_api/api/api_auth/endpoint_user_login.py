@@ -81,13 +81,13 @@ class Login(Resource):
 		log.debug("pwd 		: %s", payload_pwd )
 
 		### retrieve user from db
-		user = mongo_users.find_one( {"infos.email" : payload_email }, {"_id": 0 })
+		user = mongo_users.find_one( {"infos.email" : payload_email } ) #, {"_id": 0 })
 		log.debug("user : \n %s", pformat(user)) 
 
 		if user is None : 
 
 			error_message = "no such user in db"
-			return {"message" : "incorrect login / {}".format(error_message) }, 401
+			return {"msg" : "incorrect login / {}".format(error_message) }, 401
 
 		if user :  
 			
@@ -102,24 +102,33 @@ class Login(Resource):
 				# 		'exp'	: datetime.utcnow() + timedelta(minutes=30)},
 				# 		current_app.config['JWT_SECRET_KEY'])
 
-				user_light 								= marshal( user , model_user)
+				user_light 				= marshal( user , model_user)
+				user_light["_id"] = str(user["_id"])
+				log.debug("user_light : \n %s", user_light )
 
-				# Use create_access_token() and create_refresh_token() to create our
-				# access and refresh tokens
+				# Use create_access_token() to create user's new access token for n minutes
+				new_access_token 	= create_access_token(identity=user_light, fresh=True)
+				new_refresh_token = user["auth"]["refr_tok"]  # create_refresh_token(identity=user_light)
+
 				tokens = {
-						'access_token'	: create_access_token(identity=user_light, fresh=True),
-						'refresh_token'	: create_refresh_token(identity=user_light)
+						'access_token'	: new_access_token,
+						'refresh_token'	: new_refresh_token
 				}
 
+				### save new access token in user db
+				user["auth"]["acc_tok"] 	= new_access_token
+				user["auth"]["refr_tok"] 	= new_refresh_token
+				mongo_users.save(user)
+				
 				### update user log in db
 				### TO DO 
 
 				return {	
-									"message" : "user {} is logged".format(payload_email) , 
+									"msg" 		: "user -{}- is logged".format(payload_email) , 
 									"tokens"	:  tokens
 							}, 200
 
 			else : 
 
 				error_message = "wrong password"
-				return {"message" : "incorrect login / {}".format(error_message) }, 401
+				return {"msg" : "incorrect login / {}".format(error_message) }, 401

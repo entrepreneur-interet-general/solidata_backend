@@ -24,6 +24,7 @@ from flask_jwt_extended import (
 		jwt_required, jwt_optional, create_access_token, create_refresh_token,
 		get_jwt_identity, get_jwt_claims
 )
+from solidata_api._auth import admin_required
 
 ### import mongo utils
 from solidata_api.application import mongo
@@ -57,7 +58,8 @@ class UsersList(Resource):
 
 	@ns.doc('users_list')
 	# @token_required
-	@jwt_required
+	# @jwt_required
+	@admin_required
 	@ns.expect(pagination_arguments)
 	@ns.marshal_list_with( model_user, skip_none=True)#, envelop="users_list" ) 
 	def get(self):
@@ -81,7 +83,7 @@ class UsersList(Resource):
 		### retrieve from db
 		cursor = mongo_users.find({}, {"_id": 0 })
 		users = list(cursor)
-		log.debug( users )
+		log.debug( "users : \n %s", pformat(users) )
 
 		return users, 200
 

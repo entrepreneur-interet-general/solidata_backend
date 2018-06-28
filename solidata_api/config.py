@@ -25,7 +25,7 @@ class BaseConfig(object):
 	JWT_HEADER_NAME						= "Authorization" #"X-API-KEY"
 	JWT_TOKEN_LOCATION				= ["headers", "query_string"]
 	JWT_QUERY_STRING_NAME 		= "token"
-	JWT_ACCESS_TOKEN_EXPIRES 	=  timedelta(minutes=15)
+	JWT_ACCESS_TOKEN_EXPIRES 	=  timedelta(minutes=15) # minutes=15
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)  
   # beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
   # otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 

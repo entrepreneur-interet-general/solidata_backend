@@ -83,7 +83,7 @@ class Register(Resource):
 
 		### chek if user already exists in db
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})
-		log.debug("existing_user : ", existing_user)
+		log.debug("existing_user : %s ", pformat(existing_user))
 
 		if existing_user is None or payload_pwd not in ['test', 'password'] :
 
@@ -120,13 +120,14 @@ class Register(Resource):
 
 			log.info("new user is created : \n%s", pformat(new_user))
 
-			# return marshal(new_user, model_register_user_out), 200
+			new_user_out = marshal(new_user, model_register_user_out)
+
 			return { 
-								"message"		: "new user has been created",
-								# "new_user" 	: new_user,
-								"tokens"		: tokens
+								"msg"			: "new user has been created",
+								"data"		: new_user_out,
+								"tokens"	: tokens
 							}, 200
 
 		else :
 			
-			return {"message" : "this email is already taken "}, 401
+			return {"msg" : "this email is already taken "}, 401

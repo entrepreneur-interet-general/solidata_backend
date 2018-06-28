@@ -8,7 +8,7 @@ auth_decorator.py
 from log_config import log, pprint, pformat
 log.debug ("... loading token_required ...")
 
-from functools import wraps
+from functools import wraps, partial, update_wrapper
 from flask import request, current_app as app
 
 # extended JWT 
@@ -37,6 +37,7 @@ def add_claims_to_access_token(user):
 		log.debug("user : \n%s", user)
 
 		claims_to_store_into_jwt =  {
+			'_id'				  : user["_id"],
 			'infos'				: user["infos"],
 			'auth'				: user["auth"],
 			'datasets'		: user["datasets"],
@@ -73,22 +74,96 @@ def user_identity_lookup(user):
 
 
 
-### custom
+### custom decorators 
 
-def admin_required(fn):
+def admin_required(func):
 	"""
 	check if user has addmin level
 	"""
-	@wraps(fn)
+	@wraps(func)
 	def wrapper(*args, **kwargs):
+		
 		verify_jwt_in_request()
 		claims = get_jwt_claims()
-		if claims['roles'] != 'admin':
-			return jsonify(msg='Admins only!'), 403
+		log.debug("claims : \n %s", claims )
+		
+		if claims["auth"]["role"] != 'admin':
+			return { "msg" : "Admins only !!! " }, 403
 		else:
-			return fn(*args, **kwargs)
+			return func(*args, **kwargs)
+	
 	return wrapper
 
+
+
+### cf : https://stackoverflow.com/questions/13931633/how-can-a-flask-decorator-have-arguments/13932942#13932942
+def current_user_required(func):
+	"""
+	check if user has addmin level
+	"""
+	
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+
+		user_oid = kwargs["user_oid"] 
+		log.debug( "user_oid : %s" , user_oid )
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if user_oid != claims["_id"]  : 
+
+			if claims["auth"]["role"] == 'admin' :
+				return func(*args, **kwargs)
+
+			else : 
+				return { "msg" : "Admins or user {} only  !!! ".format(user_oid) }, 403
+
+		else:
+			return func(*args, **kwargs)
+	
+	return wrapper
+
+
+'''
+class current_user_required(object) :
+	
+	def __init__(self, user_id) :
+		"""
+		If there are decorator arguments, the function
+		to be decorated is not passed to the constructor!
+		"""
+		log.debug("Inside __init__()")
+		self.user_id = user_id
+
+	def __call__(self, fn):
+		"""
+		check if user has addmin level 
+		or is really the current user 
+
+		If there are decorator arguments, __call__() is only called
+		once, as part of the decoration process! You can only give
+		it a single argument, which is the function object.
+		"""
+		log.debug("Inside __call__()")
+
+		def wrapped_f(*args, **kwargs):
+			
+			log.debug("Inside wrapper()")
+			log.debug( "self.user_id : %s" , self.user_id)
+
+			verify_jwt_in_request()
+			claims = get_jwt_claims()
+			log.debug("claims : \n %s ", pformat(claims) )
+
+			if claims["auth"]["role"] != 'admin' or str(self.user_id) != claims["_id"] :
+				return { "msg" : "Admins or real user only !!! " }, 403
+			else:
+				return fn(*args, **kwargs)
+
+		return wrapped_f
+'''
 
 
 
