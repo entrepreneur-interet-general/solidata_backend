@@ -29,6 +29,12 @@ if __name__ == '__main__':
 
 	"""
 
+	print()
+	print("=== "*40)
+	print("=== "*40)
+	print("=== "*40)
+	print()
+  
 	log.debug("\n--- STARTING SOLIDATA API ---\n")
 
 	from solidata_api.application import create_app
@@ -41,5 +47,9 @@ if __name__ == '__main__':
 
 
 	# simple flask runner
-	print("== "*30)
+	print()
+	print("=== "*40)
+	print("=== "*40)
+	print("=== "*40)
+	print()
 	app.run( debug=app_debug, host=app_host, port=app_port, threaded=True )

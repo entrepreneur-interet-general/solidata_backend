@@ -41,10 +41,13 @@ ns = Namespace('user_edit', description='User edition')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-from .models import * # model_user, model_new_user
-model_new_user  = NewUser(ns).model
-model_user_out  = User_out(ns).model
-model_user_in   = User_in(ns).model
+# from .models import * # model_user, model_new_user
+from solidata_api._models.models_user import *  
+model_new_user		= NewUser(ns).model
+model_user_out		= User_infos(ns).model_complete
+model_user_in			= User_infos(ns).model_in
+model_user_update	= User_infos(ns).model_update
+model_user_token	= User_infos(ns).model_for_token
 
 
 
@@ -54,7 +57,7 @@ model_user_in   = User_in(ns).model
 
 
 @ns.doc(security='apikey')
-@ns.route("/<string:user_oid>")
+@ns.route("/<string:user_oid>/")
 @ns.response(404, 'user not found')
 @ns.param('user_oid', 'The user unique identifier')
 class User(Resource) :
@@ -68,12 +71,15 @@ class User(Resource) :
 
 	@current_user_required
 	@ns.doc('get_user_infos')
-	# @jwt_required
 	# @ns.marshal_with(model_user_out)
 	def get(self, user_oid):
 		"""
-		Fetch a given user
+		Fetch a given user given its _id in DB
 		"""
+
+		### DEBUGGING
+		print()
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		### check if user requiring info is current user or admin
 		log.debug("user_oid : %s", user_oid)
@@ -92,30 +98,90 @@ class User(Resource) :
 							"msg"		  : "infos for user with oid {}".format(user_oid),
 							"data"		: user_out
 					}, 200
-		# return "fetching user {} ".format(user_oid) # DAO.get(id)
 
 
-	@ns.doc('delete_user_infos')
-	@jwt_required
-	@ns.response(204, 'Todo deleted')
+	@ns.doc('delete_user')
+	@current_user_required
+	# @ns.response(204, 'Todo deleted')
 	def delete(self, user_oid):
 		"""
-		Delete a user given its identifier
+		Delete an user given its _id
 		"""
 
+		### DEBUGGING
+		print()
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
+		### check if user requiring info is current user or admin
+		log.debug("user_oid : %s", user_oid)
+
+		### delete user from db
+		mongo_users.delete_one({"_id" : ObjectId(user_oid)})
 
 
-		# DAO.delete(id)
-		return '', 204
+		### TO DO - delete user info from all projects and other datasets 
+		### TO DO - OR choice to keep at least email / or / delete all data
 
+
+		return {
+							"msg"		  : "user deleted : oid {} ".format(user_oid),
+					}, 204
+
+
+@ns.doc(security='apikey')
+@ns.route("/<string:user_oid>/<field_to_update>")
+# @ns.route("/<string:user_oid>/<field_to_update>/<string:data_oid>")
+@ns.response(404, 'user not found')
+@ns.param('user_oid', 'The user unique identifier')
+class User_update(Resource) :
+  	
+	### TO DO 
 	@ns.doc('update_user_infos')
-	@jwt_required
-	@ns.expect(model_user_out)
-	# @token_required
-	# @ns.marshal_with(model_user_in)
-	def put(self, user_oid):
+	@current_user_required
+	# @ns.expect(model_user_update)
+	def put(self, user_oid, field_to_update=None) : #, data_oid=None):
 		"""
-		Update an user given its identifier
+		TO DO - Update an user given its _id / for client use
+		only takes the following client infos : 
+		> user_basics : 
+			- name
+			- surmame 
+			- email
+		> user_preferences_in : 
+			- lang
+		> user_professional : 
+			- struct_
+			- profiles
 		"""
 
-		return "updating user " # DAO.update(id, api.payload)
+		### DEBUGGING
+		print()
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+		log.debug("user_oid : %s", user_oid)
+
+		### retrieve user's data from payload
+		user_updated_data = ns.payload
+		log.debug("user_updated_data : \n %s" , pformat(user_updated_data) ) 
+
+		### retrieve personnal infos from user in db
+		user = mongo_users.find_one({"_id" : ObjectId(user_oid)})
+		log.debug("user : \n %s", pformat(user))
+
+		### marshall user in order to make tokens
+		user_light 					= marshal( user, model_user_token )
+		user_light["_id"] 	= str(user["_id"])
+
+		### remake access and refresh token
+		access_token 	= create_access_token(  identity = user_light )
+		# refresh_token = user["auth"]["refr_tok"] # create_refresh_token( identity = user_light )
+		tokens = {
+				'access_token'	: access_token,
+				# 'refresh_token'	: refresh_token
+		}
+
+		### update user info from data in pyaload
+
+
+
+
+		return "updating user {} ".format(user_oid) # DAO.update(id, api.payload)

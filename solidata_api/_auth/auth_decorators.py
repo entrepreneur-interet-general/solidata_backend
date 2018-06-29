@@ -40,7 +40,7 @@ def add_claims_to_access_token(user):
 			'_id'				  : user["_id"],
 			'infos'				: user["infos"],
 			'auth'				: user["auth"],
-			'datasets'		: user["datasets"],
+			# 'datasets'		: user["datasets"],
 			'preferences'	: user["preferences"],
 		}
 
@@ -83,9 +83,12 @@ def admin_required(func):
 	@wraps(func)
 	def wrapper(*args, **kwargs):
 		
+		print()
+		print("-+- "*40)
+
 		verify_jwt_in_request()
 		claims = get_jwt_claims()
-		log.debug("claims : \n %s", claims )
+		log.debug("claims : \n %s", pformat(claims) )
 		
 		if claims["auth"]["role"] != 'admin':
 			return { "msg" : "Admins only !!! " }, 403
@@ -104,6 +107,9 @@ def current_user_required(func):
 	
 	@wraps(func)
 	def wrapper(*args, **kwargs):
+
+		print()
+		print("-+- "*40)
 
 		user_oid = kwargs["user_oid"] 
 		log.debug( "user_oid : %s" , user_oid )

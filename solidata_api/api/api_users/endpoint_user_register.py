@@ -39,11 +39,15 @@ ns = Namespace('register', description='User register ')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-from .models import * # model_user, model_new_user
+# from .models import * # model_user, model_new_user
+from solidata_api._models.models_user import *  
 model_register_user			= NewUser(ns).model
-model_register_user_out	= User_out(ns).model_for_token
-model_user							= User_in(ns).model
+model_register_user_out	= User_infos(ns).model_for_token
+model_user							= User_infos(ns).model_in
+model_user_complete			= User_infos(ns).model_complete
 
+
+bad_passwords = [ 'test', 'password', '12345' ]
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
@@ -52,6 +56,7 @@ model_user							= User_in(ns).model
 # cf : response codes : https://restfulapi.net/http-status-codes/ 
 
 """
+example form from client : 
 {
 	"name": "Julien",
 	"surname": "Paris",
@@ -63,6 +68,7 @@ model_user							= User_in(ns).model
 
 @ns.route('/')
 class Register(Resource):
+	
 	@ns.doc('create_user')
 	@ns.expect(model_register_user, validate=True)
 	# @ns.marshal_with(model_register_user_out, envelope="new_user", code=201)
@@ -72,7 +78,7 @@ class Register(Resource):
 		just needs an email, a name, a surname and and a password
 		"""
 		print()
-		log.debug( self.__class__.__name__ )
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		### retrieve infos from form 
@@ -85,42 +91,52 @@ class Register(Resource):
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})
 		log.debug("existing_user : %s ", pformat(existing_user))
 
-		if existing_user is None or payload_pwd not in ['test', 'password'] :
+		if existing_user is None and payload_pwd not in bad_passwords :
 
 			# create hashpassword
 			hashpass = generate_password_hash(payload_pwd, method='sha256')
 			log.debug("hashpass : %s", hashpass)
 
-			# create user dict
+			# create user dict from form's data
 			new_user_infos 					= {"infos" : ns.payload, "auth" : ns.payload }
-			new_user 								= marshal( new_user_infos , model_user)
+			new_user 								= marshal( new_user_infos , model_user_complete)
 			new_user["auth"]["pwd"] = hashpass
+		
+			# temporary save new user in db 
+			mongo_users.insert( new_user )
 			log.info("new user is being created : \n%s", pformat(new_user))
 
-			# create JWT : access and refresh token
-			print()
+			# get back user from db to add its 
+			user_created = mongo_users.find_one({"infos.email" : payload_email})
+			new_user["_id"] = str(user_created["_id"])
+
+			# create access and refresh tokens
 			log.debug("... create_access_token")
 			access_token 	= create_access_token(identity=new_user)
-			print()
+			
 			log.debug("... refresh_token")
 			refresh_token = create_refresh_token(identity=new_user)
+			
 			tokens = {
 					'access_token'	: access_token,
 					'refresh_token'	: refresh_token
 			}
-
 			log.info("tokens : \n%s", pformat(tokens))
 
-			new_user["auth"]["acc_tok"] 	= access_token
-			new_user["auth"]["refr_tok"] 	= refresh_token
+			# update new user in db
+			# new_user["auth"]["acc_tok"] 	= access_token
+			# new_user["auth"]["refr_tok"] 	= refresh_token
+			# new_user["auth"]["acc_tok"]		= user_created["auth"]["acc_tok"] 	= access_token
+			new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] 	= refresh_token
+			mongo_users.save(user_created)
 
-
-			# save new user in db
-			mongo_users.insert( new_user )
-
-			log.info("new user is created : \n%s", pformat(new_user))
+			log.info("new user is updated with its tokens : \n%s", pformat(new_user))
 
 			new_user_out = marshal(new_user, model_register_user_out)
+
+
+			### TO DO send a confirmation email
+
 
 			return { 
 								"msg"			: "new user has been created",

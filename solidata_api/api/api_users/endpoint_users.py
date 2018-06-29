@@ -43,9 +43,10 @@ ns = Namespace('users', description='Users list ')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-from .models import * # model_user, model_new_user
+# from .models import * # model_user, model_new_user
+from solidata_api._models.models_user import *  
 model_new_user  = NewUser(ns).model
-model_user      = User_out(ns).model
+model_user			= User_infos(ns).model_complete
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -69,7 +70,9 @@ class UsersList(Resource):
 		"""
 		### DEBUGGING
 		print()
-		log.debug( self.__class__.__name__ )
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		### DEBUG check
 		user_identity = get_jwt_identity()

@@ -18,7 +18,8 @@ from flask_jwt_extended import JWTManager
 
 # declare JWT empty connector
 jwt_manager = JWTManager()
-log.debug(" jwt_manager() : \n%s ", pformat(jwt_manager))
+log.debug("... jwt_manager() ...")
+# log.debug(" jwt_manager() : \n%s ", pformat(jwt_manager))
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -49,7 +50,7 @@ mongo = PyMongo()
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FLASK-MAIL IMPORTS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-# from flask_mail import Mail
+from flask_mail import Mail
 # mail = Mail()
 
 

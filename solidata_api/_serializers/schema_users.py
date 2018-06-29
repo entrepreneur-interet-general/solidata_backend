@@ -14,118 +14,128 @@ from ._choices_user import *
 
 
 name 						= fields.String(
-										description="name of the user",
-										attribute="name",
-										example="Elinor",
-										default='Anonymous User',
-										required=False,
+										description	= "name of the user",
+										attribute		= "name",
+										example			= "Elinor",
+										default			= 'Anonymous User',
+										required		= False,
 									)
 surname 				= fields.String(
-										description="surname of the user",
-										attribute="surname",
-										example="Ostrom",
-										required=False,
+										description = "surname of the user",
+										attribute		= "surname",
+										example			= "Ostrom",
+										required 		= False,
 									)
 email 					= fields.String(
-										description="email of the user",
-										attribute="email",
-										example="commons@come.on",
-										required=True,
+										description = "email of the user",
+										attribute		= "email",
+										example			= "commons@come.on",
+										required		= True,
 									)
 
 ### auth 
 pwd				      = fields.String(
-										description="password of the user",
-										attribute="pwd",
-										example="a-very-common-password",
-										required=True,
+										description = "password of the user",
+										attribute		= "pwd",
+										example			= "a-very-common-password",
+										required		= True,
 									)
-role			      = fields.String(
-										description="role / authorization level of the user",
-										attribute="role",
-										example="guest",
-										enum=user_roles,
-										default="guest",
+confirmed_usr		= fields.Boolean(
+										description	= "user has confirmed its account from his email",
+										attribute		= "conf_usr",
+										example			= False,
+										required		= False,
+										default			= False,
+									)
+role						= fields.String(
+										description = "role / authorization level of the user",
+										attribute		= "role",
+										example			= "guest",
+										enum				= user_roles,
+										default			= "guest",
 									)
 acc_tok					= fields.String(
-										description="access token of user",
-										attribute="acc_tok",
-										example="a-json-web-access-token",
-										default="no_access_token",
+										description = "access token of user",
+										attribute		= "acc_tok",
+										example			= "a-json-web-access-token",
+										default			= "no_access_token",
 									)
 refr_tok				= fields.String(
-										description="refresh token of user",
-										attribute="refr_tok",
-										example="a-json-web-refresh-token",
-										default="no_refresh_token",
+										description	= "refresh token of user",
+										attribute		= "refr_tok",
+										example			= "a-json-web-refresh-token",
+										default			= "no_refresh_token",
 									)
 
 ### preferences
 language				= fields.String(
-										description="language preference", 
-										example="en",
-										attribute="lang",	
-										default="en",
+										description = "language preference", 
+										example 		= "en",
+										attribute		= "lang",	
+										default			= "en",
 									)
 
 ### profesional infos
 structures			= fields.List(
 										fields.String(
-										description="structure / organisation the user"),
-										example="my structure",
-										default=[]
+										description	= "structures / organisations the user"),
+										example			= ["my structure A", "my structure B"],
+										attribute		= "struct",	
+										default			= []
 									)
-structure_profile	= fields.List(
+struct_profiles	= fields.List(
 										fields.String(
-										description="structure / organisation profile"),
-										enum=user_profiles,
-										example="public_state",
-										default=[]
+										description	= "structures / organisations profile"),
+										enum				= user_structure,
+										example			= ["public_state"],
+										attribute		= "struct_profiles",	
+										default			= []
 									)
 profiles				= fields.List(
 										fields.String(
-										description="profile of the user"),
-										enum=user_profiles,
-										example="organizer",
-										default=[]
+										description	= "profiles of the user"),
+										enum				= user_profiles,
+										example			= ["organizer"],
+										attribute		= "profiles",	
+										default			= []
 									)
 
 ### datasets infos
 proj_list				= fields.List(
 										fields.String(
-										description="ids of the projects created by the user"),
-										attribute="proj_list", 
-										default=[] 
+										description = "ids of the projects created by the user"),
+										attribute		= "proj_list", 
+										default			= [] 
 									)
 dm_list					= fields.List(
 										fields.String(
-										description="ids of the datamodels created by the user"),
-										attribute="dm_list",
-										default=[] 
+										description	= "ids of the datamodels created by the user"),
+										attribute		= "dm_list",
+										default			= [] 
 									)
 dsi_list				= fields.List(
 										fields.String(
-										description="ids of the datasets_in imported by the user"),
-										attribute="dsi_list",
-										default=[] 
+										description	= "ids of the datasets_in imported by the user"),
+										attribute		= "dsi_list",
+										default			= [] 
 									)
 dso_list				= fields.List(
 										fields.String(
-										description="ids of the datasets_out exported by the user"), 
-										attribute="dso_list",
-										default=[] 
+										description	= "ids of the datasets_out exported by the user"), 
+										attribute		= "dso_list",
+										default			= [] 
 									)
 dc_list					= fields.List(
 										fields.String(
-										description="ids of the correspondance_dicts created by the user"), 
-										attribute="dc_list",
-										default=[] 
+										description	= "ids of the correspondance_dicts created by the user"), 
+										attribute		= "dc_list",
+										default			= [] 
 									)
 rec_list				= fields.List(
 										fields.String(
-										description="ids of the recipes created by the user"),
-										attribute="rec_list",
-										default=[] 
+										description	= "ids of the recipes created by the user"),
+										attribute		= "rec_list",
+										default			= [] 
 									)
 
 
@@ -154,8 +164,9 @@ user_register = {
 
 user_auth = {
 	"pwd"		      : pwd,
+	"conf_usr"		: confirmed_usr,
 	"role"	      : role,
-	"acc_tok"			: acc_tok,
+	# "acc_tok"			: acc_tok,
 	"refr_tok"		: refr_tok,
 }
 
@@ -175,12 +186,11 @@ user_datasets_in = {
 	"rec_"	: rec_list,
 }
 user_preferences_in = {
-	"lang"  : language
+	"lang"  : language,
 }
 
-user_professional = {
-	"struct_"   		: structures,
-	"profiles" 			: profiles
+user_profiles = {
+	"profiles" 			: profiles,
 }
 
 ### FOR MODELS TO EXPORT OUT OF DB
@@ -198,6 +208,6 @@ user_preferences_out = {
 }
 
 user_professional = {
-	"structures" 		: structures,
-	"profiles" 			: profiles
+	"structures" 					: structures,
+	"structures_profiles" : struct_profiles,
 }

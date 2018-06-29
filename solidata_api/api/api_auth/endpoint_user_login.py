@@ -29,9 +29,6 @@ from flask_jwt_extended import (
 # from solidata_api.application import mongo
 from solidata_api._core.queries_db import mongo_users
 
-### import auth utils
-# from solidata_api._auth import token_required
-
 # ### import data serializers
 # from solidata_api._serializers.schema_users import *  
 
@@ -42,9 +39,10 @@ ns = Namespace('login', description='User login ')
 # from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-from .models import * # model_user, model_new_user
+# from .models import * # model_user, model_new_user
+from solidata_api._models.models_user import *  
 model_login_user  	= LoginUser(ns).model
-model_user					= User_out(ns).model
+model_user_access		= User_infos(ns).model_access #model_complete
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -60,15 +58,16 @@ class Login(Resource):
 	@ns.expect(model_login_user)
 	def post(self):
 		"""
-		login user with POST request
+		login user 
 		checks if email exists in db 
 		check if salted pwd is equals to user's
 		return jwt : access token and refresh token
 		"""
 
 		### DEBUGGING
-		print()		
-		log.debug( self.__class__.__name__ )
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		token = None 
@@ -89,7 +88,7 @@ class Login(Resource):
 			error_message = "no such user in db"
 			return {"msg" : "incorrect login / {}".format(error_message) }, 401
 
-		if user :  
+		if user : # and user["auth"]["conf_usr"] == True :
 			
 			### check password
 			pwd = user["auth"]["pwd"]
@@ -102,23 +101,27 @@ class Login(Resource):
 				# 		'exp'	: datetime.utcnow() + timedelta(minutes=30)},
 				# 		current_app.config['JWT_SECRET_KEY'])
 
-				user_light 				= marshal( user , model_user)
+				### marshal user's info 
+				user_light 				= marshal( user , model_user_access)
 				user_light["_id"] = str(user["_id"])
-				log.debug("user_light : \n %s", user_light )
+				log.debug("user_light : \n %s", pformat(user_light) )
 
 				# Use create_access_token() to create user's new access token for n minutes
 				new_access_token 	= create_access_token(identity=user_light, fresh=True)
-				new_refresh_token = user["auth"]["refr_tok"]  # create_refresh_token(identity=user_light)
-
+				refresh_token 		= user["auth"]["refr_tok"]  # create_refresh_token(identity=user_light)
 				tokens = {
 						'access_token'	: new_access_token,
-						'refresh_token'	: new_refresh_token
+						'refresh_token'	: refresh_token
 				}
+				print()
+				log.debug("user_light['_id'] : %s", user_light["_id"] )
+				log.debug("new_access_token  : %s", new_access_token )
+				print()
 
 				### save new access token in user db
-				user["auth"]["acc_tok"] 	= new_access_token
-				user["auth"]["refr_tok"] 	= new_refresh_token
-				mongo_users.save(user)
+				# user["auth"]["acc_tok"] 	= new_access_token
+				# user["auth"]["refr_tok"] 	= refresh_token
+				# mongo_users.save(user)
 				
 				### update user log in db
 				### TO DO 
@@ -131,4 +134,6 @@ class Login(Resource):
 			else : 
 
 				error_message = "wrong password"
-				return {"msg" : "incorrect login / {}".format(error_message) }, 401
+				return { 
+									"msg" : "incorrect login / {}".format(error_message) 
+							}, 401

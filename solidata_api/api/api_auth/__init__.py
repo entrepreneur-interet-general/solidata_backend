@@ -55,3 +55,6 @@ api.add_namespace(ns_user_login)
 
 from .endpoint_user_refresh_token import ns as ns_user_refresh
 api.add_namespace(ns_user_refresh)
+
+from .endpoint_user_password import ns as ns_user_password
+api.add_namespace(ns_user_password)
