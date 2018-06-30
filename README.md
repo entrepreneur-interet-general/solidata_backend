@@ -6,9 +6,19 @@
 
 part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
 
-A public service for managing and sharing data 
+A public service for managing, consolidating, and sharing data 
 
-The goal : allowing you to open data from your own csv files or external APIs as simply as posible
+
+-------
+
+## GOALS
+
+- allow you to consume data from your own csv/xls files or external APIs ;
+- consolidate your data : apply your own datamodel, simplify columns, apply metadatas, ... ; 
+- share the consolidated datas on API endpoints with the level of openness you decide (opendata, commons, collective, private) ;
+- manage all your data and your recipes by projects ;
+- be able to manage projects by teams and share data/recipes/
+
 
 -------
 
@@ -32,3 +42,12 @@ The goal : allowing you to open data from your own csv files or external APIs as
 - password forgotten by sending a link (protected) in an email with redirection to new password form ; 
 - reset password from client interface or by sending an email with redirection to new password form... ; 
 - documentation of all API endpoints with Swagger ;
+
+
+------
+
+## INSPIRATIONS / BENCHMARK
+
+- [Dataiku](https://www.dataiku.com/), [Parabola](https://parabola.io/), but they are proprietary solutions (and too complex for our pruposes)... Not to mention they are very expensive...
+- [Match ID](https://matchid-project.github.io/), but the backend doesn't resolve the "sharing" part with the level, and no BDD to back up recipes
+
