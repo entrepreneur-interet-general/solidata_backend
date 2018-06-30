@@ -37,11 +37,13 @@ def add_claims_to_access_token(user):
 		log.debug("user : \n%s", user)
 
 		claims_to_store_into_jwt =  {
-			'_id'				  : user["_id"],
-			'infos'				: user["infos"],
-			'auth'				: user["auth"],
-			# 'datasets'		: user["datasets"],
-			'preferences'	: user["preferences"],
+			'_id'							: user["_id"],
+			'infos'						: user["infos"],
+			'auth'						: user["auth"],
+			# 'datasets'			: user["datasets"],
+			'preferences'			: user["preferences"],
+			# 'profile'		    : user["profile"],
+			# 'professional'	: user["professional"],
 		}
 
 		log.debug("claims_to_store_into_jwt : \n%s", pformat(claims_to_store_into_jwt))

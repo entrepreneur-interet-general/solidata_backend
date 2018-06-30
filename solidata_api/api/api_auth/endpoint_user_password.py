@@ -18,6 +18,9 @@ from flask import request, current_app as app
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
+### import mailing utils
+from flask_mail import Message
+
 ### import JWT utils
 import jwt
 from flask_jwt_extended import (
@@ -96,15 +99,20 @@ class Password_forgot(Resource):
 			# Use create_refresh_token() to create user's new access token for n days
 			expires 					= timedelta(days=2)
 			new_refresh_token = create_refresh_token(identity=user_light, expires_delta=expires)
-			
+		
 
+			### TO DO 
 
 			### create link to send
 			link_string = app.config["DOMAIN_NAME"] + "/api/auth/password/reset_password?" + app.config["JWT_QUERY_STRING_NAME"] + "=" + new_refresh_token
 			log.debug("link_string : \n %s", link_string) 
 
-			### TO DO 
 			### send eamil containing link + message
+			email_msg 	= Message( "Reset password emal", sender=app.config["ADMINS"][0], recipients=payload_email )
+
+
+
+			
 			
 			return { 
 								"msg" : "email sent to {} with a link to refresh your password" 
@@ -121,7 +129,7 @@ class Password_reset(Resource):
 	# @current_user_required
 	@ns.doc('password_reset')
 	# @ns.expect(model_email_user)
-	@jwt_required ### verify token from request args
+	@jwt_required ### verify token from request args or header
 	def get(self):
 		"""
 		TO DO - open a link to allow the user to reset its password

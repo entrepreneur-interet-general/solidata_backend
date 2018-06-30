@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
 
 """
-query/__init__.py.py  
+_core/queries_db/__init__.py  
 - provides the MONGO QUERIES for 
 	REST requests
 """
 
 from log_config import log, pformat
+print()
+log.debug(">>> _core.queries_db.__init__.py ..." )
 log.debug(">>> queries_db ... loading mongodb collections as global variables")
 
 from flask import current_app as app

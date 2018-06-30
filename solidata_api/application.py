@@ -51,7 +51,7 @@ mongo = PyMongo()
 ### FLASK-MAIL IMPORTS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 from flask_mail import Mail
-# mail = Mail()
+mail = Mail()
 
 
 
@@ -64,18 +64,27 @@ def create_app(app_name='SOLIDATA_API'):
 
 	log.debug ("... creating app ...")
 
+	### create Flask app
 	app = Flask(app_name)
 
+	### load config 
+	print()
 	app.config.from_object('solidata_api.config.BaseConfig')
-
 	log.debug("... app.config :\n %s", pformat(app.config))
 	print()
 
 	### init JWT manager
+	log.debug("... init jwt_manager ...")
 	jwt_manager.init_app(app)
 
 	### init mongodb client
+	log.debug("... init mongo ...")
 	mongo.init_app(app)
+
+	### init mail client
+	log.debug("... init mail ...")
+	mail.init_app(app)
+
 
 	with app.app_context() :
 
@@ -90,14 +99,16 @@ def create_app(app_name='SOLIDATA_API'):
 		from solidata_api._auth import authorizations #, token_required
 
 
-	## DEBUG
+	## DEBUGGING
+	print()
 	find_one_user = mongo_users.find({'infos.name': "Julien"})
 	# find_one_user = db["mongo_users"].find({'infos.name': "Julien"})
 	log.debug("DEBUG : find_one_user : \n%s", pformat(list(find_one_user)))
-	print()
 
 
 	### registering all blueprints
+	print()
+	log.debug("... registering blueprints ...")
 	from solidata_api.api.api_users 		import blueprint as api_users
 	app.register_blueprint( api_users, url_prefix="/api/users" )
 

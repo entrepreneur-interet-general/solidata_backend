@@ -3,6 +3,7 @@ config.py
 - settings for the flask application object
 """
 
+import os
 from datetime import timedelta
 
 class BaseConfig(object):  
@@ -27,9 +28,9 @@ class BaseConfig(object):
 	JWT_QUERY_STRING_NAME 		= "token"
 	JWT_ACCESS_TOKEN_EXPIRES 	= timedelta(minutes=15) # minutes=15
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=5*365)  
-  # beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
-  # otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 
-  # not very comptatible with Flask-RestPlus authorization schemas described in _auth.authorizations.py
+	# beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
+	# otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 
+	# not very comptatible with Flask-RestPlus authorization schemas described in _auth.authorizations.py
 	JWT_HEADER_TYPE						= "" 
 
 
@@ -54,3 +55,14 @@ class BaseConfig(object):
 	MONGO_COLL_DATASETS_OUTPUTS	  = "datasets_outputs"
 	MONGO_COLL_RECIPES					  = "recipes"
 	MONGO_COLL_CORR_DICTS				  = "corr_dicts"
+
+""" EMAILING """
+# email server
+MAIL_SERVER			= 'smtp.googlemail.com'
+MAIL_PORT 			= 465
+MAIL_USE_TLS 		= False
+MAIL_USE_SSL 		= True
+MAIL_USERNAME 	= os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD 	= os.environ.get('MAIL_PASSWORD')
+# administrator list
+ADMINS = ['your-gmail-username@gmail.com']
