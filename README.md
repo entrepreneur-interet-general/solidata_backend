@@ -23,7 +23,7 @@ The goal : allowing you to open data from your own csv files or external APIs as
 - _Framework_ : **[Flask](http://flask.pocoo.org/)**... minimalistic Python framework
 - _API_       : **[Flask-RestPlus](http://flask-restplus.readthedocs.io/en/stable/)**... Swagger documentation integrated
 - _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**
-- _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)
+- _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**
 
 #### Features
 - login / register user ; 
