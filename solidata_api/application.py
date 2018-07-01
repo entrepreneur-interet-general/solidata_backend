@@ -60,7 +60,7 @@ mail = Mail()
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # application factory, see: http://flask.pocoo.org/docs/patterns/appfactories/
 
-def create_app(app_name='SOLIDATA_API'):  
+def create_app( app_name='SOLIDATA_API', run_mode="dev" ):  
 
 	log.debug ("... creating app ...")
 
@@ -68,8 +68,14 @@ def create_app(app_name='SOLIDATA_API'):
 	app = Flask(app_name)
 
 	### load config 
+	if run_mode == "prod" : 	
+		app.config.from_object('solidata_api.config_prod.Prod')
+	elif run_mode == "dev_email" : 
+		app.config.from_object('solidata_api.config_prod.DevEmail')
+	else : 
+		app.config.from_object('solidata_api.config.BaseConfig')
+
 	print()
-	app.config.from_object('solidata_api.config.BaseConfig')
 	log.debug("... app.config :\n %s", pformat(app.config))
 	print()
 

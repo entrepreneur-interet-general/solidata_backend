@@ -14,9 +14,12 @@ from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-# from flask import request, current_app
+from flask import current_app as app #, request
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
+
+### DEBUGGING CONFIRMAITON EMAIL 
+# from solidata_api._auth import generate_confirmation_token
 
 ### import JWT utils
 import jwt
@@ -108,23 +111,34 @@ class Login(Resource):
 
 				# Use create_access_token() to create user's new access token for n minutes
 				new_access_token 	= create_access_token(identity=user_light, fresh=True)
-				refresh_token 		= user["auth"]["refr_tok"]  # create_refresh_token(identity=user_light)
+				
+				# only update refresh token if user is confirmed
+				if user["auth"]["conf_usr"] == False : 
+					refresh_token 		= user["auth"]["refr_tok"]  
+				else : 
+					refresh_token			= create_refresh_token(identity=user_light)
+
 				tokens = {
 						'access_token'	: new_access_token,
-						'refresh_token'	: refresh_token
+						'refresh_token' : refresh_token,
 				}
 				print()
 				log.debug("user_light['_id'] : %s", user_light["_id"] )
 				log.debug("new_access_token  : %s", new_access_token )
+				log.debug("refresh_token 		 : %s", refresh_token )
+				log.debug("new_refresh_token : %s", new_refresh_token )
 				print()
 
-				### save new access token in user db
-				# user["auth"]["acc_tok"] 	= new_access_token
-				# user["auth"]["refr_tok"] 	= refresh_token
-				# mongo_users.save(user)
+				### save new refresh token in user db
+				user["auth"]["refr_tok"] 	= refresh_token
+				mongo_users.save(user)
 				
 				### update user log in db
 				### TO DO 
+
+				### DEBUGGING CONFIRMATION EMAIL
+				# confirm_email_token = generate_confirmation_token(payload_email)
+				# log.debug("confirm_email_token : %s", confirm_email_token)
 
 				return {	
 									"msg" 		: "user -{}- is logged".format(payload_email) , 

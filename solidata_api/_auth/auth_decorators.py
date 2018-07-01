@@ -26,51 +26,54 @@ from flask_jwt_extended import (
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 
+### CLAIMS LOADER INTO JWT 
+### cf : https://flask-jwt-extended.readthedocs.io/en/latest/custom_decorators.html 
 @jwt_manager.user_claims_loader
 def add_claims_to_access_token(user):
-		"""
-		Create a function that will be called whenever create_access_token
-		is used. It will take whatever object is passed into the
-		create_access_token method, and lets us define what custom claims
-		should be added to the access token.
-		"""
-		log.debug("user : \n%s", user)
+	"""
+	Create a function that will be called whenever create_access_token
+	is used. It will take whatever object is passed into the
+	create_access_token method, and lets us define what custom claims
+	should be added to the access token.
+	"""
+	log.debug("user : \n%s", user)
 
-		claims_to_store_into_jwt =  {
-			'_id'							: user["_id"],
-			'infos'						: user["infos"],
-			'auth'						: user["auth"],
-			# 'datasets'			: user["datasets"],
-			'preferences'			: user["preferences"],
-			# 'profile'		    : user["profile"],
-			# 'professional'	: user["professional"],
-		}
+	claims_to_store_into_jwt =  {
+		'_id'							: user["_id"],
+		'infos'						: user["infos"],
+		'auth'						: user["auth"],
+		# 'datasets'			: user["datasets"],
+		'preferences'			: user["preferences"],
+		# 'profile'		    : user["profile"],
+		# 'professional'	: user["professional"],
+	}
 
-		log.debug("claims_to_store_into_jwt : \n%s", pformat(claims_to_store_into_jwt))
+	log.debug("claims_to_store_into_jwt : \n%s", pformat(claims_to_store_into_jwt))
 
-		return claims_to_store_into_jwt
+	return claims_to_store_into_jwt
 
 
+### 
 @jwt_manager.user_identity_loader
 def user_identity_lookup(user):
-		"""
-		Create a function that will be called whenever create_access_token
-		is used. It will take whatever object is passed into the
-		create_access_token method, and lets us define what the identity
-		of the access token should be.
-		"""
-		log.debug("user : \n %s", pformat(user))
+	"""
+	Create a function that will be called whenever create_access_token
+	is used. It will take whatever object is passed into the
+	create_access_token method, and lets us define what the identity
+	of the access token should be.
+	"""
+	log.debug("user : \n %s", pformat(user))
+	
+	### load email as identity in jwt
+	try : 
+		identity = user["infos"]["email"]
+		# identity = str(user["_id"])
+	except : 
+		identity = None
 		
-		### load email as identity in jwÒt
-		try : 
-			identity = user["infos"]["email"]
-			# identity = str(user["_id"])
-		except : 
-			identity = None
-			
-		log.debug("identity : \n %s", identity)
+	log.debug("identity : \n %s", identity)
 
-		return identity
+	return identity
 
 
 

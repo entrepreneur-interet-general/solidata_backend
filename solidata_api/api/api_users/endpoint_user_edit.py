@@ -143,16 +143,20 @@ class User_update(Resource) :
 		"""
 		TO DO - Update an user given its _id / for client use
 		only takes the following client infos : 
-		> user_basics : 
+		
+    > user_basics : 
 			- name
 			- surmame 
-			- email
-		> user_preferences_in : 
+			- email --> sends a confirmation email with refresh token valid 7 days
+		
+    > user_preferences_in : 
 			- lang
-		> user_professional : 
+		
+    > user_professional : 
 			- struct_
 			- profiles
-		"""
+		
+    """
 
 		### DEBUGGING
 		print()

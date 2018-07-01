@@ -20,10 +20,15 @@ from 	werkzeug.security 	import 	generate_password_hash #, check_password_hash
 ### import mailing utils
 from flask_mail import Message
 
+
 ### import JWT utils
 import jwt
 from datetime import datetime, timedelta
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
+from flask_jwt_extended import (
+			create_access_token, create_refresh_token, 
+			jwt_required, jwt_refresh_token_required, current_user,
+			get_jwt_claims, get_jwt_identity
+)
 
 ### import mongo utils
 from solidata_api.application import mongo
@@ -120,8 +125,10 @@ class Register(Resource):
 			
 			log.debug("... refresh_token")
 			### just create refresh token once / so it could be blacklisted
-			refresh_token = create_refresh_token(identity=new_user)
-			
+			# refresh_token = create_refresh_token(identity=new_user)
+			expires 			= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
+			refresh_token = create_refresh_token(identity=new_user, expires_delta=expires)
+
 			tokens = {
 					'access_token'	: access_token,
 					'refresh_token'	: refresh_token
@@ -129,9 +136,7 @@ class Register(Resource):
 			log.info("tokens : \n%s", pformat(tokens))
 
 			# update new user in db
-			# new_user["auth"]["acc_tok"] 	= access_token
 			# new_user["auth"]["refr_tok"] 	= refresh_token
-			# new_user["auth"]["acc_tok"]		= user_created["auth"]["acc_tok"] 	= access_token
 			new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] 	= refresh_token
 			mongo_users.save(user_created)
 
@@ -143,13 +148,13 @@ class Register(Resource):
 
 			### TO DO 
 			### send a confirmation email
-			email_msg 	= Message( "Confirm emal", sender=app.config["ADMINS"][0], recipients=payload_email )
-			# email_link 	= ns.url_for("confirm_email.get", token=refresh_token, external=True)
+			email_msg 			= Message( "Confirm emal", sender=app.config["ADMINS"][0], recipients=payload_email )
+			# email_link 		= ns.url_for("confirm_email.get", token=refresh_token, external=True)
 
 
 
 			return { 
-								"msg"			: "new user has been created and a confirmation link has been sent",
+								"msg"			: "new user has been created and a confirmation link has been sent,  you have {} days to confirm your email...".format(expires),
 								"data"		: new_user_out,
 								"tokens"	: tokens
 							}, 200
@@ -160,37 +165,52 @@ class Register(Resource):
 
 
 
-@ns.route("/confirm?token=<string:token>")
+@ns.route("/confirm_email")
 @ns.response(404, 'error in the redirection to confirm email')
 @ns.param('token', 'The token sent by email when registering to confirm your email')
 class Confirm_email(Resource):
 
+	# The config  query paramater where the JWT is looked for is `token`,
+	# The default query paramater where the JWT is looked for is `jwt`,
+	# and can be changed with the JWT_QUERY_STRING_NAME option.
+	# Making a request to this endpoint would look like:
+	# /confirm?token=<REFRESH_TOKEN>
 	@ns.doc('confirm_email')
-	@jwt_required ### verify token from request args or header
-	def get(self, token):
+	# @jwt_required 
+	@jwt_refresh_token_required ### verify refresh_token from request args or header
+	def get(self):
 		"""
-		TO DO - url to confirm email sent once registered
+		URL to confirm email sent once registered or when change email
+		needs a refresh_token as URL argument like : 
+		.../api/users/register/confirm?token=<REFRESH_TOKEN>
 		"""
 		print()
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
+		user_email 	= get_jwt_identity()
+		log.debug( "user_email : \n %s", user_email ) 
+
+		### !!! only works with access_token
+		# claims = get_jwt_claims() 
+		# log.debug(" claims : \n %s ", pformat(claims) )
 		### retrieve and read token to get user's email
-		user_oid 		= current_user["_id"]
-		user_email 	= current_user["infos"]["email"]
+		# user_oid 		= claims["_id"]
 
-		### find user created in db
-		user_to_confirm 	= mongo_users.find_one({"_id" : ObjectId(user_oid)})
-
-		### retrieve its existing refresh token
-		refresh_token			= user_to_confirm["auth"["refr_tok"]]
-
-		### confirm user's email ["auth"]["conf_usr"]
-		user_to_confirm["auth"]["conf_usr"] = True
-		mongo_users.save(user_to_confirm)
+		### find user created in db 
+		# user_to_confirm 	= mongo_users.find_one({"_id" : ObjectId(user_oid)})
+		user_to_confirm 	= mongo_users.find_one({"infos.email" : user_email })
 
 		### marshal user infos
-		user_light 				= marshal( user , model_user_access)
+		user_light 				= marshal( user_to_confirm , model_user_access)
 		user_light["_id"] = str(user_to_confirm["_id"])
+
+		### renew the existing refresh token
+		refresh_token 		= create_refresh_token(identity=user_light)
+
+		### confirm user's email and create a real refresh_token
+		user_to_confirm["auth"]["refr_tok"] = refresh_token
+		user_to_confirm["auth"]["conf_usr"] = True
+		mongo_users.save(user_to_confirm)
 
 		### create a new access token
 		access_token = create_access_token(identity=user_light)
@@ -201,6 +221,6 @@ class Confirm_email(Resource):
 		log.info("tokens : \n%s", pformat(tokens))
 
 		return { 
-							"msg" : "email confirmed",
+							"msg" : "email {} confirmed, new refresh token created...".format(user_email),
 							"tokens"	: tokens
 						}, 200
