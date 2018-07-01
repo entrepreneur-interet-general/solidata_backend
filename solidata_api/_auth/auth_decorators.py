@@ -11,7 +11,7 @@ log.debug ("... loading token_required ...")
 from functools import wraps, partial, update_wrapper
 from flask import request, current_app as app
 
-# extended JWT 
+#### extended JWT 
 # cf : http://flask-jwt-extended.readthedocs.io/en/latest/tokens_from_complex_object.html
 # import jwt
 from solidata_api.application import jwt_manager

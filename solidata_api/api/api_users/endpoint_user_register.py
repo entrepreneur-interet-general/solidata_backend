@@ -154,7 +154,7 @@ class Register(Resource):
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
 				
 				# create url for confirmation to send in the mail
-				confirm_url = api.url_for(Confirm_email, token=refresh_token, external=True)
+				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(Confirm_email, token=refresh_token, external=True)
 				log.info("confirm_url : \n %s", confirm_url)
 
 				# generate html body of the email

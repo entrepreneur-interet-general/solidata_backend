@@ -94,18 +94,22 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 	with app.app_context() :
 
+		# import async functions and decorators
+		from solidata_api._core.async_tasks import async
+
 		# access mongodb collections
-		from solidata_api._core.queries_db import db, \
-			mongo_users,mongo_licences,mongo_projects,mongo_datamodels, \
-			mongo_datamodels_fields,mongo_connectors, \
-			mongo_datasets_inputs,mongo_datasets_outputs, \
-			mongo_recipes,mongo_corr_dicts
+		from solidata_api._core.queries_db import ( db, 
+				mongo_users,mongo_licences,mongo_projects,mongo_datamodels, 
+				mongo_datamodels_fields,mongo_connectors, 
+				mongo_datasets_inputs,mongo_datasets_outputs, 
+				mongo_recipes,mongo_corr_dicts 
+			) 
 
 		# import token required
 		from solidata_api._auth import authorizations #, token_required
 
 		# import emailing functions
-		from solidata_api._core.emailing import send_email 
+		from solidata_api._core.emailing import send_email, send_async_email 
 
 	## DEBUGGING
 	print()
