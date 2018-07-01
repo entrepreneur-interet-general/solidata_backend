@@ -23,10 +23,10 @@ from threading import Thread
 
 
 def async(f):
-  
+	"""
+	async decorator to run a function as a thread
+	"""
 	def wrapper(*args, **kwargs):
-  	
 		thr = Thread(target=f, args=args, kwargs=kwargs)
 		thr.start()
-
 	return wrapper

@@ -167,8 +167,8 @@ class Register(Resource):
 
 			return { 
 								"msg"			: "new user has been created and a confirmation link has been sent,  you have {} days to confirm your email...".format(expires),
-								"data"		: new_user_out,
 								"tokens"	: tokens
+								"data"		: new_user_out,
 							}, 200
 
 		else :

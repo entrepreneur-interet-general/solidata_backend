@@ -19,13 +19,12 @@ from flask_mail import Message
 from solidata_api.application import mail
 from solidata_api._core.async_tasks import async
 
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### EMAILING FUNCTIONS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # cf : https://www.twilio.com/blog/2018/03/send-email-programmatically-with-gmail-python-and-flask.html
 # cf : https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support 
-
-
 
 
 @async
@@ -54,11 +53,16 @@ def send_email( subject,
 		sender			= sender, 
 		html				= template,
 	)
-	# mail.send(msg)
 
 	app = current_app._get_current_object()
 	### cf : http://flask.pocoo.org/docs/0.12/reqcontext/#notes-on-proxies
 
+	### simple and synchronous run
+	# mail.send(msg)
+
+	### asynchronous run
 	# thr = Thread(target=send_async_email, args=[app, msg])
 	# thr.start()
+
+	### asynchronous run based on send_async_email and async decorator
 	send_async_email(app, msg)
