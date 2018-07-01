@@ -148,8 +148,6 @@ class Register(Resource):
 			new_user_out = marshal(new_user, model_register_user_out)
 
 
-
-			### TO DO 
 			### send a confirmation email if not RUN_MODE not 'dev'
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
 				
@@ -167,7 +165,7 @@ class Register(Resource):
 
 			return { 
 								"msg"			: "new user has been created and a confirmation link has been sent,  you have {} days to confirm your email...".format(expires),
-								"tokens"	: tokens
+								"tokens"	: tokens,
 								"data"		: new_user_out,
 							}, 200
 

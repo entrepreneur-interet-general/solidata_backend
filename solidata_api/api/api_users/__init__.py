@@ -21,12 +21,12 @@ from solidata_api._auth.authorizations import authorizations as auth_check
 ### create blueprint and api wrapper
 blueprint = Blueprint( 'api_users', __name__, template_folder='templates' )
 api = Api( 	blueprint,
-						title="Solidata API : USERS",
-						version="0.1",
-						description="create, list, delete, edit... users",
-						doc='/documentation',
-						default='register',
-						authorizations=auth_check,
+						title						= "Solidata API : USERS",
+						version					= "0.2",
+						description			= "create, list, delete, edit... users",
+						doc							= '/documentation',
+						default					= 'register',
+						authorizations	= auth_check,
 						# security='apikey' # globally ask for pikey auth
 )
 

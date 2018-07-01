@@ -19,14 +19,14 @@ from solidata_api._auth.authorizations import authorizations as auth_check
 
 
 ### create blueprint and api wrapper
-blueprint = Blueprint( 'api_auth', __name__ )
+blueprint = Blueprint( 'api_auth', __name__, template_folder='templates' )
 api = Api( 	blueprint,
-						title="Solidata API : AUTH SERVER",
-						version="0.1",
-						description="auth server / manages tokens",
-						doc='/documentation',
-						default='login',
-						authorizations=auth_check,
+						title						="Solidata API : AUTH SERVER",
+						version					= "0.1",
+						description			= "auth server / manages tokens",
+						doc							= '/documentation',
+						default					= 'login',
+						authorizations	= auth_check,
 						# security='apikey' # globally ask for apikey auth
 )
 

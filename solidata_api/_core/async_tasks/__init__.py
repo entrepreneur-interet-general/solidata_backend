@@ -2,7 +2,7 @@
 
 """
 _core/async_tasks/__init__.py  
-- provides ASYNC FUNCTIONS and DECORATORS 
+- provides ASYNC FUNCTIONS | DECORATORS 
 """
 
 from log_config import log, pformat
