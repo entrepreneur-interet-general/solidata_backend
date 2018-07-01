@@ -13,6 +13,7 @@ import json
 from ._choices_user import * 
 
 
+### basic informations about a user
 name 						= fields.String(
 										description	= "name of the user",
 										attribute		= "name",
@@ -29,7 +30,7 @@ surname 				= fields.String(
 email 					= fields.String(
 										description = "email of the user",
 										attribute		= "email",
-										example			= "commons@come.on",
+										example			= "elinor.ostrom@emailna.co", ### uses https://www.mohmal.com for temporary emails
 										required		= True,
 									)
 

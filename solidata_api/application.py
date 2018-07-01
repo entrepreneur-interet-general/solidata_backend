@@ -104,6 +104,8 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		# import token required
 		from solidata_api._auth import authorizations #, token_required
 
+		# import emailing functions
+		from solidata_api._core.emailing import send_email 
 
 	## DEBUGGING
 	print()

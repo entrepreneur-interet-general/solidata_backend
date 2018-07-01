@@ -8,6 +8,7 @@ from datetime import timedelta
 
 class BaseConfig(object):  
 
+	RUN_MODE				= "dev"
 	DEBUG = True
 
 	# used for encryption and session management
@@ -67,6 +68,7 @@ class BaseConfig(object):
 	MAIL_PASSWORD 	= os.environ.get('MAIL_PASSWORD')
 	# administrator list
 	ADMINS									= ['your-gmail-username@gmail.com']
+	MAIL_DEFAULT_SENDER			= 'your-gmail-username@gmail.com'
 
 	""" ENCRYPTION FOR CONFIRMATION EMAIL """
 	SECURITY_PASSWORD_SALT 	= 'my_precious_salt_security'

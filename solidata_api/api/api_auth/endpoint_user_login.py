@@ -14,7 +14,7 @@ from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-from flask import current_app as app #, request
+from flask import current_app as app, url_for #, request
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
@@ -126,7 +126,6 @@ class Login(Resource):
 				log.debug("user_light['_id'] : %s", user_light["_id"] )
 				log.debug("new_access_token  : %s", new_access_token )
 				log.debug("refresh_token 		 : %s", refresh_token )
-				log.debug("new_refresh_token : %s", new_refresh_token )
 				print()
 
 				### save new refresh token in user db
@@ -136,9 +135,6 @@ class Login(Resource):
 				### update user log in db
 				### TO DO 
 
-				### DEBUGGING CONFIRMATION EMAIL
-				# confirm_email_token = generate_confirmation_token(payload_email)
-				# log.debug("confirm_email_token : %s", confirm_email_token)
 
 				return {	
 									"msg" 		: "user -{}- is logged".format(payload_email) , 

@@ -13,13 +13,16 @@ from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-from flask import current_app as app, request, url_for
+from . import api
+
+from flask import current_app as app, request, render_template
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash #, check_password_hash
 
 ### import mailing utils
-from flask_mail import Message
-
+# from solidata_api.application import mail
+# from flask_mail import Message
+from solidata_api._core.emailing import send_email
 
 ### import JWT utils
 import jwt
@@ -69,8 +72,8 @@ example form from client :
 {
 	"name": "Elinor",
 	"surname": "Ostrom",
-	"email": "jparis.py@gmail.com",
-	"pwd": "my_password"
+	"email": "elinor.ostrom@emailna.co",
+	"pwd": "a-very-common-password"
 }
 """
 
@@ -147,9 +150,18 @@ class Register(Resource):
 
 
 			### TO DO 
-			### send a confirmation email
-			email_msg 			= Message( "Confirm emal", sender=app.config["ADMINS"][0], recipients=payload_email )
-			# email_link 		= ns.url_for("confirm_email.get", token=refresh_token, external=True)
+			### send a confirmation email if not RUN_MODE not 'dev'
+			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
+				
+				# create url for confirmation to send in the mail
+				confirm_url = api.url_for(Confirm_email, token=refresh_token, external=True)
+				log.info("confirm_url : \n %s", confirm_url)
+
+				# generate html body of the email
+				html = render_template('emails/confirm_email.html', confirm_url=confirm_url)
+				
+				# send the mail
+				send_email( "Confirm your emal", payload_email, template=html )
 
 
 

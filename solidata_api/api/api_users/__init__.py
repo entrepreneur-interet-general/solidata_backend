@@ -19,7 +19,7 @@ from solidata_api._auth.authorizations import authorizations as auth_check
 
 
 ### create blueprint and api wrapper
-blueprint = Blueprint( 'api_users', __name__ )
+blueprint = Blueprint( 'api_users', __name__, template_folder='templates' )
 api = Api( 	blueprint,
 						title="Solidata API : USERS",
 						version="0.1",

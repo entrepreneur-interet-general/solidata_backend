@@ -67,7 +67,7 @@ class Refresh(Resource) :
 	@jwt_refresh_token_required
 	def post(self) : 
 		"""
-		refresh the access token
+		Refresh the access token
 		needs to send the refresh token
 		in the header 
 		"""
@@ -78,12 +78,12 @@ class Refresh(Resource) :
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
-		### retrieve current_user identity from refresh token
-		current_user = get_jwt_identity()
-		log.debug("current_user : \n %s", current_user)
+		### retrieve current user identity from refresh token
+		user_email = get_jwt_identity()
+		log.debug("user_email : \n %s", user_email)
 
 		### retrieve user from db to get all infos
-		user = mongo_users.find_one( {"infos.email" : current_user } )
+		user = mongo_users.find_one( {"infos.email" : user_email } )
 		log.debug("user : \n %s", pformat(user)) 
 
 		user_light 	= marshal( user , model_user_access)
@@ -91,16 +91,12 @@ class Refresh(Resource) :
 
 		### create new access token
 		new_access_token = create_access_token(identity=user_light, fresh=False)
-		
-		### save new access token in user db
-		# user["auth"]["acc_tok"] = new_access_token
-		# mongo_users.save(user)
 
 		token = {
 				'access_token': new_access_token
 		}
 		
 		return {	
-							"msg" 		: "user -{}- has a new access token ".format(current_user) , 
+							"msg" 		: "new access token for user {}  ".format(user_email) , 
 							"tokens"	:  token
 					}, 200
