@@ -16,6 +16,32 @@ from solidata_api._serializers.schema_users import *
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
 
+class AnonymousUser : 
+	"""
+	Generic class t
+	"""
+	def __init__(	self, 
+								_id					= None, 
+								infos				= {"email"		: "anonymous"							}, 
+								auth 				= {"conf_usr"	: False, 	"role" : "guest"},
+								preferences = None
+								) :
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
+		# self.data = {
+		# 	"_id"					: None,
+		# 	"infos" 			: ,
+		# 	"auth"				: {"conf_usr" : False, "role" : "guest"},
+		# 	"preferences"	:	None
+		# }
+		self._id 					= _id
+		self.infos 				= infos
+		self.auth	 				= auth
+		self.preferences 	= preferences
+
+
+
+
 class EmailUser : 
 	"""
 	Simple model to display one user's email
@@ -23,6 +49,19 @@ class EmailUser :
 
 	def __init__(self, ns_):
 		self.mod = ns_.model( "User_email", user_identity )
+	
+	@property
+	def model(self): 
+		return self.mod
+
+
+class PasswordUser : 
+	"""
+	Simple model to display one user's password
+	"""
+
+	def __init__(self, ns_):
+		self.mod = ns_.model( "User_password", user_pwd )
 	
 	@property
 	def model(self): 

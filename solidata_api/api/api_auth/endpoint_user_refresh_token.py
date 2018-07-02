@@ -37,14 +37,14 @@ from solidata_api._core.queries_db import mongo_users
 # from solidata_api._serializers.schema_users import *  
 
 ### create namespace
-ns = Namespace('refresh', description='User refresh token ')
+ns = Namespace('refresh', description='User : tokens freshening related endpoints')
 
 ### import parsers
 # from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 # from .models import * # model_user, model_new_user
-from solidata_api._models.models_user import *  
+from solidata_api._models.models_user import User_infos, AnonymousUser
 model_user_access				= User_infos(ns).model_access
 
 
@@ -56,7 +56,7 @@ model_user_access				= User_infos(ns).model_access
 
 
 @ns.route('/')
-class Refresh(Resource) :
+class RefreshAccessToken(Resource) :
 
 	# The jwt_refresh_token_required decorator insures a valid refresh
 	# token is present in the request before calling this endpoint. We
@@ -67,36 +67,51 @@ class Refresh(Resource) :
 	@jwt_refresh_token_required
 	def post(self) : 
 		"""
-		Refresh the access token
-		needs to send the refresh token
-		in the header 
+		Refresh the access_token given a valid refresh_token
+			--- needs : a valid refresh_token in the header 
+			>>> returns : a new_access_token
 		"""
 
 		### DEBUGGING
 		print()
 		print("-+- "*40)
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
-		log.debug ("payload : \n{}".format(pformat(ns.payload)))
+		# log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		### retrieve current user identity from refresh token
 		user_email = get_jwt_identity()
 		log.debug("user_email : \n %s", user_email)
 
+
 		### retrieve user from db to get all infos
 		user = mongo_users.find_one( {"infos.email" : user_email } )
 		log.debug("user : \n %s", pformat(user)) 
 
-		user_light 	= marshal( user , model_user_access)
-		user_light["_id"] = str(user["_id"])
 
-		### create new access token
-		new_access_token = create_access_token(identity=user_light, fresh=False)
+		if user or user_email == "anonymous":
+			
+			if user : 
+				user_light 	= marshal( user , model_user_access)
+				user_light["_id"] = str(user["_id"])
 
-		token = {
-				'access_token': new_access_token
-		}
-		
-		return {	
-							"msg" 		: "new access token for user {}  ".format(user_email) , 
-							"tokens"	:  token
-					}, 200
+			elif user_email == "anonymous" :
+				anon_user_class = AnonymousUser()
+				user_light 			= anon_user_class.__dict__
+
+			### create new access token
+			new_access_token = create_access_token(identity=user_light, fresh=False)
+
+			token = {
+					'access_token': new_access_token
+			}
+
+			return {	
+								"msg" 		: "new access token for user : {}  ".format(user_email) , 
+								"tokens"	:  token
+						}, 200
+	
+
+		else : 
+			return {
+								"msg" 		: "user '{}' not found ".format(user_email) , 
+			}, 401

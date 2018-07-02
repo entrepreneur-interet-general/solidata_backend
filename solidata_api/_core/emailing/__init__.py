@@ -25,11 +25,13 @@ from solidata_api._core.async_tasks import async
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # cf : https://www.twilio.com/blog/2018/03/send-email-programmatically-with-gmail-python-and-flask.html
 # cf : https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support 
+# cf : https://stackoverflow.com/questions/11047307/run-flask-mail-asynchronously/18407455#18407455 
 
 
 @async
 def send_async_email(curr_app, msg):
 	"""
+  send an email asynchronously due to the decorator
 	"""
 	log.debug("... sending async email...")
 	

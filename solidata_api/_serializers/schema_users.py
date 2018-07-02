@@ -145,6 +145,10 @@ user_identity = {
 	"email" 			: email,
 }
 
+user_pwd = {
+	"pwd"		      : pwd,
+}
+
 user_login = {
 	"email" 			: email,
 	"pwd"		      : pwd,

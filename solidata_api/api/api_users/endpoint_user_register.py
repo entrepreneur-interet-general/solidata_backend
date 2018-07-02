@@ -32,6 +32,7 @@ from flask_jwt_extended import (
 			jwt_required, jwt_refresh_token_required, current_user,
 			get_jwt_claims, get_jwt_identity
 )
+from solidata_api._auth import admin_required, current_user_required, anonymous_required # token_required
 
 ### import mongo utils
 from solidata_api.application import mongo
@@ -44,7 +45,7 @@ from solidata_api._core.queries_db import mongo_users
 from solidata_api._serializers.schema_users import *  
 
 ### create namespace
-ns = Namespace('register', description='User register ')
+ns = Namespace('register', description='Users : register related endpoints')
 
 ### import parsers
 from solidata_api._parsers.parser_pagination import pagination_arguments
@@ -82,12 +83,16 @@ example form from client :
 class Register(Resource):
 	
 	@ns.doc('create_user')
+	@ns.doc(security='apikey')
 	@ns.expect(model_register_user, validate=True)
+	# @jwt_required 
+	@anonymous_required
 	# @ns.marshal_with(model_register_user_out, envelope="new_user", code=201)
 	def post(self):
 		"""
-		create / register a new user
-		just needs an email, a name, a surname and and a password
+		Create / register a new user
+			--- needs		: an anonymous access_token, an email, a name, a surname and and a password
+			>>> returns : msg, access_token + refresh_token for not confirmed email, user's data marshalled 
 		"""
 		print()
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
@@ -103,26 +108,26 @@ class Register(Resource):
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})
 		log.debug("existing_user : %s ", pformat(existing_user))
 
-		if existing_user is None and payload_pwd not in bad_passwords :
+		if existing_user is None and payload_pwd not in bad_passwords and payload_email != "anonymous" :
 
-			# create hashpassword
+			### create hashpassword
 			hashpass = generate_password_hash(payload_pwd, method='sha256')
 			log.debug("hashpass : %s", hashpass)
 
-			# create user dict from form's data
+			### create user dict from form's data
 			new_user_infos 					= {"infos" : ns.payload, "auth" : ns.payload }
 			new_user 								= marshal( new_user_infos , model_user_complete)
 			new_user["auth"]["pwd"] = hashpass
 		
-			# temporary save new user in db 
+			### temporary save new user in db 
 			mongo_users.insert( new_user )
 			log.info("new user is being created : \n%s", pformat(new_user))
 
-			# get back user from db to add its 
+			### get back user from db to add its 
 			user_created = mongo_users.find_one({"infos.email" : payload_email})
 			new_user["_id"] = str(user_created["_id"])
 
-			# create access and refresh tokens
+			### create access and refresh tokens
 			log.debug("... create_access_token")
 			access_token 	= create_access_token(identity=new_user)
 			
@@ -164,7 +169,7 @@ class Register(Resource):
 
 
 			return { 
-								"msg"			: "new user has been created and a confirmation link has been sent,  you have {} days to confirm your email...".format(expires),
+								"msg"			: "new user has been created and a confirmation link has been sent,  you have {} days to confirm your email, otherwise this account will be erased...".format(expires),
 								"tokens"	: tokens,
 								"data"		: new_user_out,
 							}, 200
@@ -191,8 +196,9 @@ class Confirm_email(Resource):
 	def get(self):
 		"""
 		URL to confirm email sent once registered or when change email
-		needs a refresh_token as URL argument like : 
-		.../api/users/register/confirm?token=<REFRESH_TOKEN>
+			--- needs a refresh_token as URL argument like : 
+			'.../api/users/register/confirm?token=<REFRESH_TOKEN>'
+			>>> returns : msg, access_token, refresh_tokens
 		"""
 		print()
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
@@ -219,6 +225,7 @@ class Confirm_email(Resource):
 
 		### confirm user's email and create a real refresh_token
 		user_to_confirm["auth"]["refr_tok"] = refresh_token
+		user_to_confirm["auth"]["conf_usr"] = "registred"
 		user_to_confirm["auth"]["conf_usr"] = True
 		mongo_users.save(user_to_confirm)
 

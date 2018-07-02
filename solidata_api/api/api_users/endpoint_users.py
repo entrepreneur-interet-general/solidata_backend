@@ -37,7 +37,7 @@ from solidata_api._core.queries_db import * # mongo_users, etc...
 from solidata_api._serializers.schema_users import *  
 
 ### create namespace
-ns = Namespace('users', description='Users list ')
+ns = Namespace('users', description='Users : users lists related endpoints ')
 
 ### import parsers
 from solidata_api._parsers.parser_pagination import pagination_arguments
@@ -65,8 +65,9 @@ class UsersList(Resource):
 	@ns.marshal_list_with( model_user, skip_none=True)#, envelop="users_list" ) 
 	def get(self):
 		"""
-		list of all users in db 
-		without _id 
+		List of all users in db (without _id)
+			--- needs : a valid admin access_token in the header
+			>>> returns : msg, users data as a list
 		"""
 		### DEBUGGING
 		print()

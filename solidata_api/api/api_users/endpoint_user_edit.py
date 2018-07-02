@@ -21,10 +21,11 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 ### import JWT utils
 import jwt
 from flask_jwt_extended import (
-		jwt_required, jwt_optional, create_access_token, create_refresh_token,
+		jwt_required, jwt_optional, fresh_jwt_required,
+		create_access_token, create_refresh_token,
 		get_jwt_identity, get_jwt_claims
 )
-from solidata_api._auth import admin_required, current_user_required # token_required
+from solidata_api._auth import admin_required, current_user_required, anonymous_required # token_required
 
 ### import mongo utils
 from solidata_api.application import mongo
@@ -35,7 +36,7 @@ from solidata_api._core.queries_db import * # mongo_users, etc...
 # from solidata_api._serializers.schema_users import *  
 
 ### create namespace
-ns = Namespace('user_edit', description='User edition')
+ns = Namespace('user_edit', description="Users : user's info edition related endpoints")
 
 ### import parsers
 from solidata_api._parsers.parser_pagination import pagination_arguments
@@ -75,6 +76,8 @@ class User(Resource) :
 	def get(self, user_oid):
 		"""
 		Fetch a given user given its _id in DB
+			--- needs : a valid access_token (as admin or current user) in the header, an oid of the user
+			>>> returns : msg, user data marshalled
 		"""
 
 		### DEBUGGING
@@ -106,6 +109,8 @@ class User(Resource) :
 	def delete(self, user_oid):
 		"""
 		Delete an user given its _id
+			--- needs : a valid access_token (as admin or current user) in the header, an oid of the user
+			>>> returns : response 204 as user is deleted
 		"""
 
 		### DEBUGGING
@@ -122,7 +127,6 @@ class User(Resource) :
 		### TO DO - delete user info from all projects and other datasets 
 		### TO DO - OR choice to keep at least email / or / delete all data
 
-
 		return {
 							"msg"		  : "user deleted : oid {} ".format(user_oid),
 					}, 204
@@ -134,7 +138,7 @@ class User(Resource) :
 @ns.response(404, 'user not found')
 @ns.param('user_oid', 'The user unique identifier')
 class User_update(Resource) :
-  	
+		
 	### TO DO 
 	@ns.doc('update_user_infos')
 	@current_user_required
@@ -144,19 +148,19 @@ class User_update(Resource) :
 		TO DO - Update an user given its _id / for client use
 		only takes the following client infos : 
 		
-    > user_basics : 
+		> user_basics : 
 			- name
 			- surmame 
 			- email --> sends a confirmation email with refresh token valid 7 days
 		
-    > user_preferences_in : 
+		> user_preferences_in : 
 			- lang
 		
-    > user_professional : 
+		> user_professional : 
 			- struct_
 			- profiles
 		
-    """
+		"""
 
 		### DEBUGGING
 		print()
@@ -184,7 +188,6 @@ class User_update(Resource) :
 		}
 
 		### update user info from data in pyaload
-
 
 
 

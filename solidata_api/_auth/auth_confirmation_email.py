@@ -13,6 +13,11 @@ from flask import current_app as app
 from itsdangerous import URLSafeTimedSerializer
 
 
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### !!! - DEPRECATED - 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
 ### cf : https://realpython.com/handling-email-confirmation-in-flask/ 
 
 def generate_confirmation_token(email):

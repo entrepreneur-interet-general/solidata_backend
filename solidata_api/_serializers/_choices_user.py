@@ -12,7 +12,8 @@ user_roles = [
 	"staff", 
 	"collective", 
 	"registred", 
-	"guest"
+	"guest",
+  "anonymous"
 ]
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

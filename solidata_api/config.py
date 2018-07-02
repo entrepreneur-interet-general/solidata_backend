@@ -29,7 +29,10 @@ class BaseConfig(object):
 	JWT_QUERY_STRING_NAME 		= "token"
 	JWT_ACCESS_TOKEN_EXPIRES 	= timedelta(minutes=15) # minutes=15
 	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=5*365)  
+	### custom JWT expirations
+	JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES			= timedelta(minutes=15)  
 	JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES = timedelta(days=7)  
+	JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES			= timedelta(days=1)  
 	# beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
 	# otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 
 	# not very comptatible with Flask-RestPlus authorization schemas described in _auth.authorizations.py
