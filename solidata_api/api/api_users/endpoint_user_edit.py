@@ -82,6 +82,7 @@ class User(Resource) :
 
 		### DEBUGGING
 		print()
+		print("-+- "*40)
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		### check if user requiring info is current user or admin
@@ -164,6 +165,7 @@ class User_update(Resource) :
 
 		### DEBUGGING
 		print()
+		print("-+- "*40)
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug("user_oid : %s", user_oid)
 

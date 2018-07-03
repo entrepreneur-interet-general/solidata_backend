@@ -6,6 +6,18 @@ _auth.__init__.py.py
 - creates a token_required decorator
 """
 
-from .auth_decorators import admin_required, current_user_required, anonymous_required # token_required
+from log_config import log, pformat
+print()
+log.debug(">>> _auth.__init__.py ..." )
+log.debug(">>> _auth ... loading auth functions and decorators")
+
+
 from .authorizations import authorizations
+
+from .auth_decorators import ( 
+																# import custom decorators
+																anonymous_required,
+																admin_required, current_user_required, 
+																renew_pwd_required, confirm_email_required
+															) # token_required
 # from .auth_confirmation_email import generate_confirmation_token, confirm_token

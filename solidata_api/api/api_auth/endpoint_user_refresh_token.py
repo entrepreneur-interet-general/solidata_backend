@@ -16,7 +16,7 @@ log.debug(">>> api_users ... creating api endpoints for USER_REFRESH_TOKEN")
 # from	bson.json_util import dumps
 
 from flask import current_app, request
-from flask_restplus import Namespace, Resource #, fields, marshal, reqparse
+from flask_restplus import Namespace, Resource, marshal #, fields, reqparse
 # from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 ### import JWT utils
@@ -68,7 +68,7 @@ class RefreshAccessToken(Resource) :
 	def post(self) : 
 		"""
 		Refresh the access_token given a valid refresh_token
-			--- needs : a valid refresh_token in the header 
+			--- needs 	: a valid refresh_token in the header 
 			>>> returns : a new_access_token
 		"""
 
@@ -95,18 +95,20 @@ class RefreshAccessToken(Resource) :
 				user_light["_id"] = str(user["_id"])
 
 			elif user_email == "anonymous" :
-				anon_user_class = AnonymousUser()
-				user_light 			= anon_user_class.__dict__
+				anon_user_class 						= AnonymousUser()
+				user_light 									= anon_user_class.__dict__
 
 			### create new access token
 			new_access_token = create_access_token(identity=user_light, fresh=False)
+			log.debug("new_access_token : \n %s ", new_access_token)
 
+			### store tokens
 			token = {
 					'access_token': new_access_token
 			}
 
 			return {	
-								"msg" 		: "new access token for user : {}  ".format(user_email) , 
+								"msg" 		: "new access token for user : {} ".format(user_email) , 
 								"tokens"	:  token
 						}, 200
 	

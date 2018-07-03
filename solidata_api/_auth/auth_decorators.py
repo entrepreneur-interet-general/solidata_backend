@@ -40,6 +40,7 @@ def add_claims_to_access_token(user):
 	sent_token = get_raw_jwt()
 	log.debug("sent_token : \n %s", pformat(sent_token))
 
+	### common claims
 	claims_to_store_into_jwt =  {
 		'_id'							: user["_id"],
 		'infos'						: user["infos"],
@@ -49,6 +50,20 @@ def add_claims_to_access_token(user):
 		# 'profile'		    : user["profile"],
 		# 'professional'	: user["professional"],
 	}
+
+	### specific claims
+	if "renew_pwd" in user : 
+		claims_to_store_into_jwt["renew_pwd"] = user["renew_pwd"]
+
+	if "confirm_email" in user : 
+		claims_to_store_into_jwt["confirm_email"] = user["confirm_email"]
+
+	if user["infos"]["email"] == "anonymous" : 
+		claims_to_store_into_jwt["is_anonymous"] = True
+
+	if "renew_refresh_token" in user : 
+		claims_to_store_into_jwt["renew_refresh_token"] = True
+
 
 	log.debug("claims_to_store_into_jwt : \n%s", pformat(claims_to_store_into_jwt))
 
@@ -110,8 +125,29 @@ def my_expired_token_callback():
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # cf : http://flask-jwt-extended.readthedocs.io/en/latest/custom_decorators.html 
 
-
 def anonymous_required(func):
+	"""
+	Check if user is not logged yet in access_token 
+	and has a 'anonymous' role
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- anonymous checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if claims["auth"]["role"] != 'anonymous' :
+			return { "msg" : "Anonymous users only !!! " }, 403
+		else :
+			return func(*args, **kwargs)
+	
+	return wrapper
+
+
+def anonymous_or_guest_required(func):
 	"""
 	Check if user is not logged yet in access_token 
 	and has a 'guest' or 'anonymous' role
@@ -136,7 +172,7 @@ def anonymous_required(func):
 
 def admin_required(func):
 	"""
-	Check if user has addmin level in access_token
+	Check if user has admin level in access_token
 	"""
 	@wraps(func)
 	def wrapper(*args, **kwargs):
@@ -155,6 +191,47 @@ def admin_required(func):
 	return wrapper
 
 
+def renew_pwd_required(func):
+	"""
+	Check if access_token has a claim 'renew_pwd' == True
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- renew_pwd checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if claims["renew_pwd"] != True:
+			return { "msg" : "'renew_pwd' token expected !!! " }, 403
+		else:
+			return func(*args, **kwargs)
+	
+	return wrapper
+
+
+def confirm_email_required(func):
+	"""
+	Check if access_token has a claim 'confirm_email' == True
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- confirm_email checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if claims["confirm_email"] != True:
+			return { "msg" : "'confirm_email' token expected !!! " }, 403
+		else:
+			return func(*args, **kwargs)
+	
+	return wrapper
+
 
 ### cf : https://stackoverflow.com/questions/13931633/how-can-a-flask-decorator-have-arguments/13932942#13932942
 def current_user_required(func):
@@ -169,6 +246,7 @@ def current_user_required(func):
 
 		log.debug("-@- current_user checker")
 
+		### check in kwargs
 		user_oid = kwargs["user_oid"] 
 		log.debug( "user_oid : %s" , user_oid )
 
@@ -182,7 +260,7 @@ def current_user_required(func):
 				return func(*args, **kwargs)
 
 			else : 
-				return { "msg" : "Admins or user {} only  !!! ".format(user_oid) }, 403
+				return { "msg" : "Admins or registred user {} only  !!! ".format(user_oid) }, 403
 
 		else:
 			return func(*args, **kwargs)

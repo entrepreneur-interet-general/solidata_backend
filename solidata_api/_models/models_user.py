@@ -22,8 +22,10 @@ class AnonymousUser :
 	"""
 	def __init__(	self, 
 								_id					= None, 
-								infos				= {"email"		: "anonymous"							}, 
-								auth 				= {"conf_usr"	: False, 	"role" : "guest"},
+								infos				= {	"email"			: "anonymous"}, 
+								auth 				= {	"conf_usr"	: False, 
+																"role" 			: "anonymous"
+															},
 								preferences = None
 								) :
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )

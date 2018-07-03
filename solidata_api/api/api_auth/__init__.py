@@ -7,7 +7,7 @@ api_auth/__init__.py
 """
 
 from log_config import log, pformat
-log.debug(">>> api_auth ... creating api blueprint for USERS")
+log.debug("\n>>> api_auth ... creating api blueprint for AUTH")
 
 from flask import Blueprint, current_app as app
 from flask_restplus import Api

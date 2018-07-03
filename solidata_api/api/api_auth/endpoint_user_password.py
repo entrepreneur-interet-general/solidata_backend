@@ -31,7 +31,7 @@ from flask_jwt_extended import (
 		create_access_token, create_refresh_token,
 		get_jwt_identity, get_jwt_claims, get_raw_jwt,
 )
-from solidata_api._auth import admin_required, current_user_required, anonymous_required # token_required
+from solidata_api._auth import admin_required, current_user_required, anonymous_required, renew_pwd_required # token_required
 
 ### import mongo utils
 # from solidata_api.application import mongo
@@ -39,7 +39,7 @@ from solidata_api._core.queries_db import mongo_users
 
 
 # ### import data serializers
-# from solidata_api._serializers.schema_users import *  
+from solidata_api._serializers._choices_user import bad_passwords
 
 ### create namespace
 ns = Namespace('password', description='User : password related endpoints')
@@ -88,7 +88,7 @@ class PasswordForgotten(Resource):
 
 		### retrieve infos from form
 		payload_email = ns.payload["email"]
-		log.debug("email 	: %s", payload_email )
+		log.info("...'{}' has forgotten its password...".format(payload_email) )
 
 		### retrieve user from db
 		user = mongo_users.find_one( {"infos.email" : payload_email } ) #, {"_id": 0 })
@@ -103,21 +103,22 @@ class PasswordForgotten(Resource):
 		if user :  
 			
 			### marshal user's info 
-			user_light 				= marshal( user , model_user)
-			user_light["_id"] = str(user["_id"])
+			user_light							= marshal( user , model_user)
+			user_light["_id"]				= str(user["_id"])
+			user_light["renew_pwd"] = True
 			log.debug("user_light : \n %s", pformat(user_light)) 
 
 			# Use create_refresh_token() to create user's new access token for n days
-			expires 					= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
-			new_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
+			expires 								= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
+			renew_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
 			# new_refresh_token = create_refresh_token(identity=user_light, expires_delta=expires)
-			log.debug("new_access_token : \n %s", new_access_token)
+			log.debug("renew_pwd_access_token : \n %s", renew_pwd_access_token)
 
 			### send a confirmation email if not RUN_MODE not 'dev'
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
 				
 				# create url for confirmation to send in the mail
-				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(PasswordReset, token=new_access_token, external=True)
+				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(PasswordReset, token=renew_pwd_access_token, external=True)
 				log.info("confirm_url : \n %s", confirm_url)
 
 				# generate html body of the email
@@ -127,7 +128,7 @@ class PasswordForgotten(Resource):
 				send_email( "Reset your password", payload_email, template=html )
 			
 			return { 
-								"msg" : "email sent to {} with a link containing the access_token to refresh your password".format(payload_email)
+								"msg" : "email sent to {} with a link containing the renew_pwd_access_token to refresh your password".format(payload_email)
 							}, 200
 
 
@@ -152,11 +153,12 @@ class PasswordReset(Resource):
 	# @jwt_refresh_token_required
 	# @jwt_required ### verify token from request args or header
 	@fresh_jwt_required
+	@renew_pwd_required
 	def get(self):
 		"""
 		Open a link (GET) to allow the user to reset its password
-			--- needs 	: a valid refresh_token (received by email, with a short expiration date)
-			>>> returns : a new refresh_token + a new access_token
+			--- needs 	: a valid fresh renew_pwd_access_token (received by email, with a short expiration date)
+			>>> returns : a new renew_pwd_access_token
 		"""
 		
 		### DEBUGGING
@@ -166,7 +168,7 @@ class PasswordReset(Resource):
 
 		### retrieve user's email from jwt
 		user_email 	= get_jwt_identity()
-		log.debug( "user_email : \n %s", user_email ) 
+		log.info( "...'{}' is renewing its password...".format(user_email) ) 
 
 		### retrieve sent token 
 		sent_token = get_raw_jwt()
@@ -176,33 +178,37 @@ class PasswordReset(Resource):
 		user = mongo_users.find_one({"infos.email" : user_email })
 		
 		### marshall infos
-		user_light = marshal( user , model_user)
-		user_light["_id"] = str(user["_id"])
-		
+		user_light							= marshal( user , model_user)
+		user_light["_id"] 			= str(user["_id"])
+		user_light["renew_pwd"] = True
+
 		### create a new and temporary refresh_token 
-		expires 			= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
-		access_token 	= create_access_token(identity=user_light)
-		refresh_token = sent_token
+		expires 								= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
+		renew_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
+		# refresh_token	= user["auth"]["refr_tok"]
+		# refresh_token = create_refresh_token(identity=user_light, expires_delta=expires) # sent_token
 
 		### store tokens
 		tokens = {
-				'access_token'	: access_token,
-				'refresh_token'	: refresh_token
+				'access_token'	: renew_pwd_access_token,
+				# 'refresh_token'	: refresh_token
 		}
-		log.info("tokens : \n%s", pformat(tokens))
+		log.info("tokens : \n %s", pformat(tokens))
 
 		return { 
-							"msg" 		: "you are now allowed to enter/POST your new password, you have {} renew your password".format(expires), 
+							"msg" 		: "you are now allowed to enter/POST your new password with the renew_pwd_access_token sent, you have {} to renew your password".format(expires), 
 							"tokens" 	: tokens
 						}, 200
 
 	
-	@jwt_refresh_token_required
+	# @jwt_refresh_token_required
+	@fresh_jwt_required
+	@renew_pwd_required
 	@ns.expect(model_pwd_user)
 	def post(self):
 		"""
 		Update user's password with the new password : hash it, then save it in DB in corresponding user's data
-			--- needs		: a valid refresh_token (received by email, with a short expiration date)
+			--- needs		: a valid fresh renew_pwd_access_token (received by opening reset_password[GET], with a short expiration date)
 			>>> returns : a new refresh_token + a new access_token
 		"""
 		### DEBUGGING
@@ -212,36 +218,46 @@ class PasswordReset(Resource):
 
 		### retrieve user's email
 		user_email 	= get_jwt_identity()
+		log.info( "...'{}' has posted its new password...".format(user_email) ) 
 
 		### retrieve infos from form 
 		payload_pwd 	= ns.payload["pwd"]
-		log.debug("email : %s", payload_email )
-		log.debug("password : %s", payload_pwd )
+		log.debug("payload_pwd : %s", payload_pwd )
 
-		# create hashpassword
-		hashpass = generate_password_hash(payload_pwd, method='sha256')
-		log.debug("hashpass : %s", hashpass)
+		### validate password
+		if payload_pwd not in bad_passwords : 
 
-		### find user in DB
-		user = mongo_users.find_one({"infos.email" : user_email })
+			### create hashpassword
+			hashpass = generate_password_hash(payload_pwd, method='sha256')
+			log.debug("hashpass : %s", hashpass)
 
-		### save new hashed password into user in DB
-		user["auth"]["pwd"] = hashpass
-		mongo_users.save(user)
+			### find user in DB
+			user = mongo_users.find_one({"infos.email" : user_email })
 
-		### marshall infos
-		user_light = marshal( user , model_user)
-		user_light["_id"] = str(user["_id"])
+			### save new hashed password into user in DB
+			user["auth"]["pwd"] = hashpass
+			mongo_users.save(user)
 
-		### generate and store tokens
-		access_token 	= create_access_token(identity=user_light)
-		refresh_token = create_refresh_token(identity=user_light)
-		tokens = {
-				'access_token'	: access_token,
-				'refresh_token'	: refresh_token
-		}
+			### marshall infos
+			user_light = marshal( user , model_user)
+			user_light["_id"] = str(user["_id"])
 
-		return {
-							"msg" 		: "your password is now updated", 
-							"tokens" 	: tokens
-					}
+			### generate and store tokens as if it were a login
+			access_token 	= create_access_token(identity=user_light)
+			# refresh_token = create_refresh_token(identity=user_light)
+			refresh_token = user["auth"]["refr_tok"]
+			tokens = {
+					'access_token'	: access_token,
+					'refresh_token'	: refresh_token
+			}
+
+			return {
+								"msg" 		: "your password is now updated with your new one", 
+								"tokens" 	: tokens
+						}, 200
+
+		### password is very bad
+		else :
+			return {
+								"msg" 		: "your password is very bad mate !!!", 
+						}, 401
