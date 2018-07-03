@@ -60,6 +60,7 @@ class BaseConfig(object):
 	MONGO_COLL_DATASETS_OUTPUTS	  = "datasets_outputs"
 	MONGO_COLL_RECIPES					  = "recipes"
 	MONGO_COLL_CORR_DICTS				  = "corr_dicts"
+	MONGO_COLL_JWT_BLACKLIST			= "jwt_blacklist"
 
 	""" EMAILING """
 	# email server

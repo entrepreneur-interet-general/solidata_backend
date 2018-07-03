@@ -42,19 +42,19 @@ ns = Namespace('user_edit', description="Users : user's info edition related end
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-# from .models import * # model_user, model_new_user
 from solidata_api._models.models_user import *  
-model_new_user		= NewUser(ns).model
-model_user_out		= User_infos(ns).model_complete
-model_user_in			= User_infos(ns).model_in
-model_user_update	= User_infos(ns).model_update
-model_user_token	= User_infos(ns).model_for_token
+model_new_user				= NewUser(ns).model
+model_user_out				= User_infos(ns).model_complete_out
+model_user_out_admin	= User_infos(ns).mod_complete_in
+# model_user_update	= User_infos(ns).model_update
+# model_user_access	= User_infos(ns).model_access
 
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
 
 @ns.doc(security='apikey')
@@ -69,14 +69,16 @@ class User(Resource) :
 	PUT - Updates user infos
 	DELETE - Lets you delete them
 	"""
-
-	@current_user_required
+	
 	@ns.doc('get_user_infos')
 	# @ns.marshal_with(model_user_out)
+	@current_user_required
 	def get(self, user_oid):
 		"""
-		Fetch a given user given its _id in DB
-			--- needs : a valid access_token (as admin or current user) in the header, an oid of the user
+		Fetch an user given its _id (<user_oid>) in DB
+
+		>
+			--- needs 	: a valid access_token (as admin or current user) in the header, an oid of the user
 			>>> returns : msg, user data marshalled
 		"""
 
@@ -88,30 +90,50 @@ class User(Resource) :
 		### check if user requiring info is current user or admin
 		log.debug("user_oid : %s", user_oid)
 
+		### check if client is an admin or if is the current user
+		claims 	= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+		is_client_admin = claims["auth"]["role"]
+
 		### retrieve personnal infos from user in db
 		user = mongo_users.find_one({"_id" : ObjectId(user_oid)})
 		log.debug("user : %s", pformat(user))
 
 		### possible no user found if access as admin and random _id search
-		user_out = marshal( user, model_user_out )
+		if user : 
+			
+			if is_client_admin == "admin" : 
+				### marshall infos for admin
+				user_out = marshal( user, model_user_out_admin )
 
-		### marchall info
+			else :
+				### marchall info for user
+				user_out = marshal( user, model_user_out )
 
-		
-		return {
-							"msg"		  : "infos for user with oid {}".format(user_oid),
-							"data"		: user_out
-					}, 200
+
+			return {
+								"msg"		  : "infos for user with oid {}".format(user_oid),
+								"data"		: user_out
+						}, 200
+
+		else : 
+			return {
+					"msg"		  : "no user found with oid {}".format(user_oid),
+			}, 401
+
 
 
 	@ns.doc('delete_user')
-	@current_user_required
 	# @ns.response(204, 'Todo deleted')
+	@current_user_required
 	def delete(self, user_oid):
 		"""
-		Delete an user given its _id
-			--- needs : a valid access_token (as admin or current user) in the header, an oid of the user
-			>>> returns : response 204 as user is deleted
+		Delete an user given its _id / only doable by admin or current_user
+		
+		> 
+			--- needs   : a valid access_token (as admin or current user) in the header, an user_oid of the user in the request
+			>>> returns : msg, response 204 as user is deleted
+		
 		"""
 
 		### DEBUGGING
@@ -135,25 +157,29 @@ class User(Resource) :
 
 @ns.doc(security='apikey')
 @ns.route("/<string:user_oid>/<field_to_update>")
-# @ns.route("/<string:user_oid>/<field_to_update>/<string:data_oid>")
 @ns.response(404, 'user not found')
-@ns.param('user_oid', 'The user unique identifier')
+@ns.param('user_oid', 'The user unique identifier in DB')
 class User_update(Resource) :
 		
 	### TO DO 
 	@ns.doc('update_user_infos')
-	@current_user_required
 	# @ns.expect(model_user_update)
+	@current_user_required
 	def put(self, user_oid, field_to_update=None) : #, data_oid=None):
 		"""
 		TO DO - Update an user given its _id / for client use
 		only takes the following client infos : 
-		
+
+		--- 
+
 		> user_basics : 
 			- name
 			- surmame 
-			- email --> sends a confirmation email with refresh token valid 7 days
+			- email --> sends a confirmation email with refresh token valid 3 days
 		
+		> user_auth :
+			- pwd --> sends a confirmation email with refresh token valid 1 days
+
 		> user_preferences_in : 
 			- lang
 		
@@ -161,36 +187,38 @@ class User_update(Resource) :
 			- struct_
 			- profiles
 		
+		>
+			--- needs 	: a valid access_token (as admin or current user) in the header, an user_oid of the user + the field to update in the request
+			>>> returns : msg, updated data copy
+
 		"""
 
 		### DEBUGGING
 		print()
 		print("-+- "*40)
-		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+		log.debug("ROUTE class : %s", self.__class__.__name__ )
 		log.debug("user_oid : %s", user_oid)
 
 		### retrieve user's data from payload
 		user_updated_data = ns.payload
-		log.debug("user_updated_data : \n %s" , pformat(user_updated_data) ) 
+		log.debug("user_updated_data : \n %s", pformat(user_updated_data) ) 
 
 		### retrieve personnal infos from user in db
 		user = mongo_users.find_one({"_id" : ObjectId(user_oid)})
 		log.debug("user : \n %s", pformat(user))
 
 		### marshall user in order to make tokens
-		user_light 					= marshal( user, model_user_token )
+		user_light 					= marshal( user, model_user_out )
 		user_light["_id"] 	= str(user["_id"])
 
-		### remake access and refresh token
-		access_token 	= create_access_token(  identity = user_light )
-		# refresh_token = user["auth"]["refr_tok"] # create_refresh_token( identity = user_light )
-		tokens = {
-				'access_token'	: access_token,
-				# 'refresh_token'	: refresh_token
-		}
+
 
 		### update user info from data in pyaload
 
 
 
-		return "updating user {} ".format(user_oid) # DAO.update(id, api.payload)
+		return { 
+							"msg" 					: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
+							"field_updated"	: field_to_update,
+							"data_sent"			: user_updated_data
+					}

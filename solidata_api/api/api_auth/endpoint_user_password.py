@@ -7,7 +7,7 @@ endpoint_user_password.py
 """
 
 from log_config import log, pformat
-log.debug(">>> api_users ... creating api endpoints for USER_PASSWORD")
+log.debug(">>> api_auth ... creating api endpoints for USER_PASSWORD")
 
 from  datetime import datetime, timedelta
 from	bson import json_util
@@ -21,7 +21,6 @@ from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 ### import mailing utils
-# from flask_mail import Message
 from solidata_api._core.emailing import send_email
 
 ### import JWT utils
@@ -48,7 +47,6 @@ ns = Namespace('password', description='User : password related endpoints')
 # from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-# from .models import * # model_user, model_new_user
 from solidata_api._models.models_user import EmailUser, PasswordUser, User_infos
 model_email_user  	= EmailUser(ns).model
 model_pwd_user			= PasswordUser(ns).model
@@ -57,13 +55,9 @@ model_user					= User_infos(ns).model_access
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-# cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-
-# @ns.doc(security='apikey')
-# @ns.route("/pwd_forgot/<string:user_oid>", defaults={'user_oid': None} )
-# @ns.param('user_oid', 'The user unique identifier')
 @ns.route("/password_forgotten" )
 @ns.response(404, 'user not found')
 class PasswordForgotten(Resource):
@@ -71,13 +65,14 @@ class PasswordForgotten(Resource):
 	@ns.doc(security='apikey')
 	@ns.doc('password_send_email')
 	@ns.expect(model_email_user)
-	# @jwt_required
 	@anonymous_required
 	def post(self):
 		"""
 		Send an email to allow user to reset its password
-			--- needs 	: a valid anonymous access_token
-			>>> returns : a fresh access_token sent by email inside a link
+
+		>
+			--- needs   : a valid anonymous access_token
+			>>> returns : msg, a fresh access_token sent by email inside a link
 		"""
 
 		### DEBUGGING
@@ -141,8 +136,6 @@ class PasswordForgotten(Resource):
 # /reset_password?token=<REFRESH_TOKEN>
 # /reset_password + in <REFRESH_TOKEN> in header
 
-# @ns.route("/reset_password/<string:token>")
-# @ns.route("/reset_password?token=<string:token>")
 @ns.doc(security='apikey')
 @ns.route("/reset_password")
 @ns.response(404, 'error in the redirection to rest password')
@@ -150,15 +143,15 @@ class PasswordForgotten(Resource):
 class PasswordReset(Resource):
 
 	@ns.doc('password_reset')
-	# @jwt_refresh_token_required
-	# @jwt_required ### verify token from request args or header
 	@fresh_jwt_required
 	@renew_pwd_required
 	def get(self):
 		"""
 		Open a link (GET) to allow the user to reset its password
-			--- needs 	: a valid fresh renew_pwd_access_token (received by email, with a short expiration date)
-			>>> returns : a new renew_pwd_access_token
+
+		>
+			--- needs   : a valid fresh renew_pwd_access_token (f.e. received by email, with a short expiration date)
+			>>> returns : msg, a new renew_pwd_access_token
 		"""
 		
 		### DEBUGGING
@@ -201,15 +194,16 @@ class PasswordReset(Resource):
 						}, 200
 
 	
-	# @jwt_refresh_token_required
 	@fresh_jwt_required
 	@renew_pwd_required
 	@ns.expect(model_pwd_user)
 	def post(self):
 		"""
 		Update user's password with the new password : hash it, then save it in DB in corresponding user's data
-			--- needs		: a valid fresh renew_pwd_access_token (received by opening reset_password[GET], with a short expiration date)
-			>>> returns : a new refresh_token + a new access_token
+
+		>
+			--- needs   : a valid fresh renew_pwd_access_token (received by opening reset_password[GET], with a short expiration date)
+			>>> returns : msg, a new refresh_token + a new access_token
 		"""
 		### DEBUGGING
 		print()

@@ -31,7 +31,7 @@ part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
 - _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**... wrapper JWT for Flask
 - _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**... templating, sending, etc...
 
-#### Features
+#### Features :
 
 - JWT (JSON Web Tokens) :
 	- access and refresh token for security over all the app

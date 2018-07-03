@@ -30,9 +30,6 @@ from solidata_api._auth import admin_required
 from solidata_api.application import mongo
 from solidata_api._core.queries_db import * # mongo_users, etc...
 
-### import auth utils
-# from solidata_api._auth import token_required
-
 # ### import data serializers
 from solidata_api._serializers.schema_users import *  
 
@@ -43,30 +40,31 @@ ns = Namespace('users', description='Users : users lists related endpoints ')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-# from .models import * # model_user, model_new_user
 from solidata_api._models.models_user import *  
 model_new_user  = NewUser(ns).model
-model_user			= User_infos(ns).model_complete
+model_user_out	= User_infos(ns).model_complete_out
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
 
 @ns.doc(security='apikey')
 @ns.route('/')
 class UsersList(Resource):
 
 	@ns.doc('users_list')
-	# @token_required
-	# @jwt_required
 	@admin_required
 	@ns.expect(pagination_arguments)
-	@ns.marshal_list_with( model_user, skip_none=True)#, envelop="users_list" ) 
+	@ns.marshal_list_with( model_user_out, skip_none=True)#, envelop="users_list" ) 
 	def get(self):
 		"""
 		List of all users in db (without _id)
-			--- needs : a valid admin access_token in the header
+
+		>
+			--- needs   : a valid admin access_token in the header
 			>>> returns : msg, users data as a list
 		"""
 		### DEBUGGING
@@ -80,16 +78,19 @@ class UsersList(Resource):
 		log.debug('useremail from jwt : \n%s', user_identity )  
 
 		### get pagination
-		args = pagination_arguments.parse_args(request)
-		page = args.get('page', 1)
-		per_page = args.get('per_page', 10)
+		args 			= pagination_arguments.parse_args(request)
+		page 			= args.get('page', 1)
+		per_page 	= args.get('per_page', 10)
 
 		### retrieve from db
-		cursor = mongo_users.find({}, {"_id": 0 })
-		users = list(cursor)
+		cursor 	= mongo_users.find({}, {"_id": 0 })
+		users		= list(cursor)
 		log.debug( "users : \n %s", pformat(users) )
 
-		return users, 200
+		return { 
+							"msg"					: "dear admin, there is the users list... ", 
+							"users_list"  : users 
+					}, 200
 
 
 

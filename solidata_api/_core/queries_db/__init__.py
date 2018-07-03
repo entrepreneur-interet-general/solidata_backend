@@ -29,6 +29,8 @@ mongo_datasets_outputs 	= mongo.db[ app.config["MONGO_COLL_DATASETS_OUTPUTS"] ]
 mongo_recipes 					= mongo.db[ app.config["MONGO_COLL_RECIPES"] ]
 mongo_corr_dicts 				= mongo.db[ app.config["MONGO_COLL_CORR_DICTS"] ]
 
+mongo_jwt_blacklist 		= mongo.db[ app.config["MONGO_COLL_JWT_BLACKLIST"] ]
+
 db = {
 					"mongo_users"							: mongo_users,
 					"mongo_licences"					: mongo_licences,
@@ -40,6 +42,7 @@ db = {
 					"mongo_datasets_outputs"	: mongo_datasets_outputs,
 					"mongo_recipes"						: mongo_recipes,
 					"mongo_corr_dicts"				: mongo_corr_dicts,
+					"mongo_jwt_blacklist"			: mongo_jwt_blacklist,
 			}
 
 def select_collection(coll_name):

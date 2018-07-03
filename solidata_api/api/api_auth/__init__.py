@@ -53,7 +53,7 @@ def default_error_handler(e):
 from .endpoint_user_login import ns as ns_user_login
 api.add_namespace(ns_user_login)
 
-from .endpoint_user_refresh_token import ns as ns_user_refresh
+from .endpoint_user_tokens import ns as ns_user_refresh
 api.add_namespace(ns_user_refresh)
 
 from .endpoint_user_password import ns as ns_user_password

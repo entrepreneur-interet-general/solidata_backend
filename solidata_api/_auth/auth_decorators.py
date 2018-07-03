@@ -236,7 +236,7 @@ def confirm_email_required(func):
 ### cf : https://stackoverflow.com/questions/13931633/how-can-a-flask-decorator-have-arguments/13932942#13932942
 def current_user_required(func):
 	"""
-	Check in access_token if user eihter : 
+	Check in access_token + user_oidif user eihter : 
 	- is who he claims to be 
 	- if he has admin level 
 	"""
@@ -260,7 +260,7 @@ def current_user_required(func):
 				return func(*args, **kwargs)
 
 			else : 
-				return { "msg" : "Admins or registred user {} only  !!! ".format(user_oid) }, 403
+				return { "msg" : "Admins or your own user only  !!! ".format(user_oid) }, 403
 
 		else:
 			return func(*args, **kwargs)

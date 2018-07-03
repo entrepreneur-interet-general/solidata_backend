@@ -27,7 +27,7 @@ class AnonymousUser :
 																"role" 			: "anonymous"
 															},
 								preferences = None
-								) :
+							) :
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		# self.data = {
@@ -42,6 +42,17 @@ class AnonymousUser :
 		self.preferences 	= preferences
 
 
+class ExpiredRefreshToken : 
+	"""
+	Simple model to display an old refresh token
+	"""
+
+	def __init__(self, ns_):
+		self.mod = ns_.model( "Old_refresh_token", old_refresh_token )
+	
+	@property
+	def model(self): 
+		return self.mod
 
 
 class EmailUser : 
@@ -104,102 +115,100 @@ class User_infos :
 
 	def __init__(self, ns_) :
 		
-		self.mod_complete  = ns_.model('User', {
+		### IN / complete data to enter in DB
+		self.mod_complete_in  = ns_.model('User_in', {
 				'infos': fields.Nested(
-					ns_.model('User_public_data', user_basics )
+					ns_.model('User_public_data', 			user_basics )
 				),
 				'auth': fields.Nested(
-					ns_.model('User_authorizations',  user_auth  )
+					ns_.model('User_authorizations',  	user_auth_in  )
 				),
 				'preferences': fields.Nested(
-					ns_.model('User_preferences',  user_preferences_out  )
+					ns_.model('User_preferences',  			user_preferences_in  )
 				),
 				'datasets': fields.Nested(
-					ns_.model('User_datasets',  user_datasets_out  )
+					ns_.model('User_datasets',  				user_datasets_in  )
 				),
 				'profile' : fields.Nested(
-					ns_.model('User_profiles', user_profiles)
+					ns_.model('User_profiles', 					user_profiles)
 				),
 				'professional' : fields.Nested(
-					ns_.model('User_profesional', user_professional )
+					ns_.model('User_profesional', 			user_professional_in )
 				),
 		})
 
-		self.mod_for_token = ns_.model('User_token', {
+		### OUT / complete data to enter in DB
+		self.mod_complete_out  = ns_.model('User_out', {
 				'infos': fields.Nested(
-					ns_.model('User_public_data', user_identity )
+					ns_.model('User_public_data', 			user_basics )
 				),
 				'auth': fields.Nested(
-					ns_.model('User_authorizations',  user_auth_out  )
+					ns_.model('User_authorizations',  	user_auth_out  )
 				),
 				'preferences': fields.Nested(
-					ns_.model('User_preferences',  user_preferences_out  )
+					ns_.model('User_preferences',  			user_preferences_out  )
 				),
 				'datasets': fields.Nested(
-					ns_.model('User_datasets',  user_datasets_out  )
-				),
-		})
-
-		self.mod_in        = ns_.model('User_in', {
-				'infos': fields.Nested(
-					ns_.model('User_public_data', user_basics )
-				),
-				'auth': fields.Nested(
-					ns_.model('User_authorizations',  user_auth  )
-				),
-				'preferences': fields.Nested(
-					ns_.model('User_preferences',  user_preferences_in  )
-				),
-				'datasets': fields.Nested(
-					ns_.model('User_datasets',  user_datasets_in  )
-				),
-		})
-
-		self.mod_update  = ns_.model('User_update', {
-				'infos': fields.Nested(
-					ns_.model('User_public_data', user_basics )
+					ns_.model('User_datasets', 					user_datasets_out  )
 				),
 				'profile' : fields.Nested(
-					ns_.model('User_profiles', user_profiles)
-				),
-				'preferences': fields.Nested(
-					ns_.model('User_preferences',  user_preferences_out  )
+					ns_.model('User_profiles', 					user_profiles)
 				),
 				'professional' : fields.Nested(
-					ns_.model('User_profesional', user_professional )
+					ns_.model('User_profesional', 			user_professional_out )
 				),
 		})
 
+		### OUT / for update
+		# self.mod_update  = ns_.model('User_update', {
+		# 		'infos': fields.Nested(
+		# 			ns_.model('User_public_data', 			user_basics )
+		# 		),
+		# 		'auth': fields.Nested(
+		# 			ns_.model('User_authorizations',  	user_auth_out  )
+		# 		),
+		# 		'preferences': fields.Nested(
+		# 			ns_.model('User_preferences',			  user_preferences_out  )
+		# 		),
+		# 		'datasets': fields.Nested(
+		# 			ns_.model('User_datasets',  				user_datasets_in  )
+		# 		),
+		# 		'profile' : fields.Nested(
+		# 			ns_.model('User_profiles', 					user_profiles)
+		# 		),
+		# 		'professional' : fields.Nested(
+		# 			ns_.model('User_profesional', 			user_professional_out )
+		# 		),
+		# })
+
+		### OUT / for access tokens
 		self.mod_access  = ns_.model('User_access', {
 				'infos': fields.Nested(
-					ns_.model('User_public_data', user_basics )
+					ns_.model('User_public_data',				user_basics )
 				),
 				'auth': fields.Nested(
-					ns_.model('User_authorizations',  user_auth_out  )
+					ns_.model('User_authorizations',  	user_auth_out  )
 				),
 				'profile' : fields.Nested(
-					ns_.model('User_profiles', user_profiles)
+					ns_.model('User_profiles', 					user_profiles)
 				),
 				'preferences': fields.Nested(
-					ns_.model('User_preferences',  user_preferences_out  )
+					ns_.model('User_preferences',  			user_preferences_out  )
 				),
 		})
 
-	@property
-	def model_complete(self): 
-		return self.mod_complete
 
 	@property
-	def model_in(self): 
-		return self.mod_in
+	def model_complete_in(self): 
+		return self.mod_complete_in
 
 	@property
-	def model_for_token(self): 
-		return self.mod_for_token
+	def model_complete_out(self): 
+		return self.mod_complete_out
 
-	@property
-	def model_update(self): 
-		return self.mod_update
+	# @property
+	# def model_update(self): 
+	# 	return self.mod_update
 
 	@property
 	def model_access(self): 

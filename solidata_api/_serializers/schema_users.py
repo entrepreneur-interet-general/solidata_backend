@@ -48,6 +48,13 @@ confirmed_usr		= fields.Boolean(
 										required		= False,
 										default			= False,
 									)
+blacklisted_usr		= fields.Boolean(
+										description	= "user has confirmed its account from his email",
+										attribute		= "blklst_usr",
+										example			= False,
+										required		= False,
+										default			= False,
+									)
 role						= fields.String(
 										description = "role / authorization level of the user",
 										attribute		= "role",
@@ -66,6 +73,13 @@ refr_tok				= fields.String(
 										attribute		= "refr_tok",
 										example			= "a-json-web-refresh-token",
 										default			= "no_refresh_token",
+									)
+old_refr_tok		= fields.String(
+										description	= "expired refresh token of user",
+										attribute		= "old_refr_tok",
+										example			= "an-old-json-web-refresh-token",
+										default			= "no_old_refresh_token",
+										required		= False,
 									)
 
 ### preferences
@@ -167,25 +181,27 @@ user_register = {
 	"pwd"		      : pwd,
 }
 
-user_auth = {
+old_refresh_token = {
+	"old_refresh_token" : old_refr_tok,
+}
+
+
+
+
+### FOR MODELS TO INSERT IN DB
+user_auth_in = {
 	"pwd"		      : pwd,
 	"conf_usr"		: confirmed_usr,
 	"role"	      : role,
 	# "acc_tok"			: acc_tok,
 	"refr_tok"		: refr_tok,
+  "blklst_usr"  : blacklisted_usr,
 }
 
-user_auth_out = {
-	# "pwd"		      : pwd,
-	"role"	      : role,
-	# "acc_tok"			: acc_tok,
-}
-
-### FOR MODELS TO INSERT IN DB
 user_datasets_in = {
 	"proj_"	: proj_list,
 	"dm_"		: dm_list,
-	"dsi"		: dsi_list,
+	"dsi_"	: dsi_list,
 	"dso_"	: dso_list,
 	"dc_"	  : dc_list,
 	"rec_"	: rec_list,
@@ -194,11 +210,23 @@ user_preferences_in = {
 	"lang"  : language,
 }
 
+user_professional_in = {
+	"struct" 					: structures,
+	"struct_profiles" : struct_profiles,
+}
+
 user_profiles = {
 	"profiles" 			: profiles,
 }
 
 ### FOR MODELS TO EXPORT OUT OF DB
+user_auth_out = {
+	# "pwd"		      : pwd,
+	"role"	      : role,
+	"conf_usr"		: confirmed_usr,
+	# "acc_tok"			: acc_tok,
+}
+
 user_datasets_out = {
 	"projects"							: proj_list,
 	"datamodels"						: dm_list,
@@ -212,7 +240,7 @@ user_preferences_out = {
 	"language" : language
 }
 
-user_professional = {
+user_professional_out = {
 	"structures" 					: structures,
 	"structures_profiles" : struct_profiles,
 }

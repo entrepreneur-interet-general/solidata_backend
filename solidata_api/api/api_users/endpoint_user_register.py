@@ -20,8 +20,6 @@ from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash #, check_password_hash
 
 ### import mailing utils
-# from solidata_api.application import mail
-# from flask_mail import Message
 from solidata_api._core.emailing import send_email
 
 ### import JWT utils
@@ -38,9 +36,6 @@ from solidata_api._auth import admin_required, current_user_required, anonymous_
 from solidata_api.application import mongo
 from solidata_api._core.queries_db import mongo_users
 
-### import auth utils
-# from solidata_api._auth import token_required
-
 # ### import data serializers
 from solidata_api._serializers.schema_users import *  # user_roles, bad_passwords, ...
 
@@ -51,31 +46,19 @@ ns = Namespace('register', description='Users : register related endpoints')
 from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
-# from .models import * # model_user, model_new_user
 from solidata_api._models.models_user import *  
 model_register_user			= NewUser(ns).model
-model_register_user_out	= User_infos(ns).model_for_token
-model_user							= User_infos(ns).model_in
-model_user_complete			= User_infos(ns).model_complete
-model_user_access				= User_infos(ns).model_access #model_complete
+model_register_user_out	= User_infos(ns).model_complete_out
+model_user_complete_in	= User_infos(ns).model_complete_in
+model_user_access				= User_infos(ns).model_access
 
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-# cf : response codes : https://restfulapi.net/http-status-codes/ 
-
-"""
-example form from client : 
-{
-	"name": "Elinor",
-	"surname": "Ostrom",
-	"email": "elinor.ostrom@emailna.co",
-	"pwd": "a-very-common-password"
-}
-"""
 
 
 @ns.route('/')
@@ -84,13 +67,14 @@ class Register(Resource):
 	@ns.doc('create_user')
 	@ns.doc(security='apikey')
 	@ns.expect(model_register_user, validate=True)
-	# @jwt_required 
 	@anonymous_required
 	# @ns.marshal_with(model_register_user_out, envelope="new_user", code=201)
 	def post(self):
 		"""
 		Create / register a new user
-			--- needs		: an anonymous access_token, an email, a name, a surname and and a password
+
+		>
+			--- needs   : an anonymous access_token, an email, a name, a surname and and a password
 			>>> returns : msg, access_token + refresh_token for not confirmed email, user's data marshalled 
 		"""
 		print()
@@ -116,9 +100,8 @@ class Register(Resource):
 
 			### create user dict from form's data
 			new_user_infos 						= {"infos" : ns.payload, "auth" : ns.payload }
-			new_user 									= marshal( new_user_infos , model_user_complete)
+			new_user 									= marshal( new_user_infos , model_user_complete_in)
 			new_user["auth"]["pwd"] 	= hashpass
-			new_user["confirm_email"] = True
 
 			### temporary save new user in db 
 			mongo_users.insert( new_user )
@@ -137,6 +120,9 @@ class Register(Resource):
 			# refresh_token = create_refresh_token(identity=new_user)
 			expires 										= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
 			refresh_token 							= create_refresh_token(identity=new_user, expires_delta=expires)
+			
+			### add confirm_email claim
+			new_user["confirm_email"]		= True
 			access_token_confirm_email 	= create_access_token(identity=new_user, expires_delta=expires)
 
 			tokens = {
@@ -144,11 +130,12 @@ class Register(Resource):
 					'refresh_token'								: refresh_token,
 					# 'access_token_confirm_email' 	: access_token_confirm_email
 			}
-			log.info("tokens : \n%s", pformat(tokens))
+			log.info("tokens : \n %s", pformat(tokens))
 
 			# update new user in db
 			# new_user["auth"]["refr_tok"] 	= refresh_token
-			new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] 	= refresh_token
+			# new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] = refresh_token
+			user_created["auth"]["refr_tok"] = refresh_token
 			mongo_users.save(user_created)
 			log.info("new user is updated with its tokens : \n%s", pformat(new_user))
 
@@ -201,8 +188,10 @@ class Confirm_email(Resource):
 	def get(self):
 		"""
 		URL to confirm email sent once registered or when change email
-			--- needs a access_token_confirm_email as URL argument like : 
-			'.../api/users/register/confirm?token=<access_token_confirm_email>'
+
+		> 
+			--- needs   : access_token_confirm_email as URL argument like : 
+				'.../api/users/register/confirm?token=<access_token_confirm_email>'
 			>>> returns : msg, access_token, refresh_tokens
 		"""
 		print()
@@ -222,18 +211,20 @@ class Confirm_email(Resource):
 		# user_to_confirm 	= mongo_users.find_one({"_id" : ObjectId(user_oid)})
 		user_to_confirm 	= mongo_users.find_one({"infos.email" : user_email })
 
-		### marshal user infos
+		### marshal user infos to create token
 		user_light 				= marshal( user_to_confirm , model_user_access)
 		user_light["_id"] = str(user_to_confirm["_id"])
+		log.debug( "user_light : \n %s", pformat(user_light) ) 
 
 		### create a new access token
 		access_token = create_access_token(identity=user_light)
 
 		### check if user is already confirmed
-		is_confirmed = user_to_confirm["auth"]["conf_usr"] 
+		is_confirmed 		= user_to_confirm["auth"]["conf_usr"] 
+		is_blacklisted 	= user_to_confirm["auth"]["blklst_usr"] 
 
 		### user is not confirmed yet
-		if is_confirmed == False :
+		if is_confirmed == False and is_blacklisted == False :
 
 			### renew the existing refresh token as a more valid token 
 			refresh_token = create_refresh_token(identity=user_light)
@@ -269,6 +260,6 @@ class Confirm_email(Resource):
 			}
 			log.info("tokens : \n%s", pformat(tokens))
 			return { 
-								"msg" 		: "email '{}' is already confirmed, existing refresh token is returned...".format(user_email),
+								"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),
 								"tokens"	: tokens
 							}, 200
