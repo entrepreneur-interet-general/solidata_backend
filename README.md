@@ -20,10 +20,6 @@ A public service for managing, consolidating, and sharing data
 - be able to manage projects by teams and share data/recipes/
 
 
--------
-
-![alt text](./screenshots/endpoints_users.png "endpoint users")
-
 ------
 
 ## TECHNICAL POINTS
@@ -50,4 +46,15 @@ A public service for managing, consolidating, and sharing data
 
 - [Dataiku](https://www.dataiku.com/), [Parabola](https://parabola.io/), but they are proprietary solutions (and too complex for our pruposes)... Not to mention they are very expensive...
 - [Match ID](https://matchid-project.github.io/), but the backend doesn't resolve the "sharing" part with the level, and no BDD to back up recipes
+
+
+-------
+
+## SCREENSHOTS
+
+-------
+![alt text](./screenshots/endpoints_users.png "endpoint users")
+
+-------
+![alt text](./screenshots/endpoints_auth_server.png "endpoint users")
 
