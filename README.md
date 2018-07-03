@@ -6,7 +6,7 @@
 
 part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
 
-A public service for managing, consolidating, and sharing data 
+#### Building a public service for managing, consolidating, and sharing data 
 
 
 -------
@@ -25,28 +25,67 @@ A public service for managing, consolidating, and sharing data
 ## TECHNICAL POINTS
 
 #### Tech stack
-- _Language_  : **Python3**... yes ... I know ... hmmm ... gnnn ... don't judge me ?
+- _Language_  : **[Python 3.6](https://www.python.org/)**... yes ... I know ... Python again ... hmmm ... gnnn ... don't judge me ?!
 - _Framework_ : **[Flask](http://flask.pocoo.org/)**... minimalistic Python framework
 - _API_       : **[Flask-RestPlus](http://flask-restplus.readthedocs.io/en/stable/)**... Swagger documentation integrated
-- _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**
-- _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**
+- _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**... wrapper JWT for Flask
+- _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**... templating, sending, etc...
 
 #### Features
-- login / register user ; 
-- JSON web tokens (access and refresh) for security ; 
-- confirm user by sending a confirmation link (protected) in an email ; 
-- password forgotten by sending a link (protected) in an email with redirection to new password form ; 
-- reset password from client interface or by sending an email with redirection to new password form... ; 
-- documentation of all API endpoints with Swagger ;
 
+- JWT (JSON Web Tokens) :
+	- access and refresh token for security over all the app
+- user :
+	- anonymous login (automatic)
+	- login / register user 
+	- confirm user by sending a confirmation link (protected) in an email 
+	- password forgotten by sending a link (protected) in an email with redirection to new password form 
+	- reset password from client interface (protected) ...
+- Documentation 
+	- on all API endpoints with Swagger (and some patience from the developer)
+
+##### Features TO DO  :
+- user : 
+	- edit user
+	- edit email
+- add/edit a project : 
+	- edit project infos : licence, author, title...
+	- edit team and access levels
+	- add project to users involved
+	- delete project
+- import data : 
+	- data as csv / excel sheets...
+	- data as api endpoints to request... 
+
+-------
+
+## INSTALLATION WALKTHROUGH 
+
+### _LOCALLY_
+
+	__... tutorial still to do ...__
 
 ------
 
 ## INSPIRATIONS / BENCHMARK
 
 - [Dataiku](https://www.dataiku.com/), [Parabola](https://parabola.io/), but they are proprietary solutions (and too complex for our pruposes)... Not to mention they are very expensive...
-- [Match ID](https://matchid-project.github.io/), but the backend doesn't resolve the "sharing" part with the level, and no BDD to back up recipes
+- [Match ID](https://matchid-project.github.io/), but the backend doesn't resolve the "sharing" part with levels as ["opendata", "commons", "collective", "private"], and no BDD to back up recipes
 
+
+-------
+
+## CREDITS 
+
+#### Solidata's team thanks :
+
+- the [SocialConnect](https://entrepreneur-interet-general.etalab.gouv.fr/defi/2017/09/26/socialconnect/) project, aka "Carrefour des Innovations Sociales"
+- the [EIG](https://entrepreneur-interet-general.etalab.gouv.fr/) program by [Etalab](https://www.etalab.gouv.fr/)
+- the [CGET](http://www.cget.gouv.fr/)
+
+#### Contacts - maintainance :
+
+- [Julien Paris](<mailto:julien.paris@cget.gouv.fr>), developer (aka [JPy](https://twitter.com/jparis_py) on Twitter)
 
 -------
 
