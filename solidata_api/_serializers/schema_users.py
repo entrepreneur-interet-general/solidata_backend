@@ -12,6 +12,17 @@ import json
 
 from ._choices_user import * 
 
+log.debug("... loading schema_users.py ...")
+
+
+### generic info for update
+generic_data 		= fields.String(
+										description	= "data about the user",
+										attribute		= "data",
+										example			= "example",
+										default			= 'a new data',
+										required		= True,
+									)
 
 ### basic informations about a user
 name 						= fields.String(
@@ -155,6 +166,10 @@ rec_list				= fields.List(
 
 
 ### FOR GENERIC MODELS
+user_data = {
+	"data" 			: generic_data,
+}
+
 user_identity = {
 	"email" 			: email,
 }

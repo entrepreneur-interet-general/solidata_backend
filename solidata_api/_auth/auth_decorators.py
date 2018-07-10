@@ -254,11 +254,14 @@ def current_user_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		### check if oid sent is the same as the claim "_id"
 		if user_oid != claims["_id"]  : 
-
+			
+			### authorize if user is an admin
 			if claims["auth"]["role"] == 'admin' :
 				return func(*args, **kwargs)
 
+			### stops if user is neither an admin nor the current user
 			else : 
 				return { "msg" : "Admins or your own user only  !!! ".format(user_oid) }, 403
 

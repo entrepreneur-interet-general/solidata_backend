@@ -1,5 +1,15 @@
 # -*- encoding: utf-8 -*-
 
+"""
+_choices_user.py  
+- all choices related to user UX
+"""
+from copy import copy, deepcopy
+
+from log_config import log, pformat
+
+log.debug("... loading _choices_user.py ...")
+
 
 ### TO DO : MULTI LANGUAGE FOR ALL CHOICES 
 
@@ -22,19 +32,53 @@ bad_passwords = [
 	'12345' 
 ]
 
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### CHOICES FOR USERS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-
-user_fields_client_can_update = {
+### user fields as recorded in DB - most exhaustive
+### check 'schema_users.py' for coherence and description
+user_fields_admin_can_update = {
 	"infos" 				: ["name", "surname", "email"], 
-	"auth" 					: ["pwd"],
-	"preferences" 	: ["language"],
-	"datasets" 			: ["projects", "datamodels", "datasets_inputs", "datasets_outputs", "recipes"],
+	"auth" 					: ["pwd", "conf_usr", "role", "refr_tok", "blklst_usr"],
+	"preferences" 	: ["lang"],
+	"datasets" 			: ["proj_", "dm_", "dsi_", "dso_", "dc_", "rec_"],
 	"profile" 			: ["profiles"],
-	"professional" 	: ["structures", "structures_profiles"]
+	"professional" 	: ["struct", "struct_profiles"]
 }
+
+
+user_fields_admin_can_update_list = [ ]
+user_fields_dict 									= { }
+for k,v in user_fields_admin_can_update.items() : 
+	for i in v :
+		user_fields_admin_can_update_list.append(i)
+		user_fields_dict[i] = {"field" : k}
+
+
+user_fields_client_can_update 				= deepcopy(user_fields_admin_can_update)
+# user_fields_client_can_update["auth"] = ["pwd"]
+del user_fields_client_can_update["auth"]
+
+user_fields_client_can_update_list = [ ]
+# user_fields_client_can_update_dict = { }
+for k,v in user_fields_client_can_update.items() : 
+	for i in v :
+		user_fields_client_can_update_list.append(i)
+		# user_fields_client_can_update_dict[i] = {"field" : k}
+
+
+
+log.debug("user_fields_admin_can_update_list : \n %s", pformat(user_fields_admin_can_update_list))
+log.debug("user_fields_dict : \n %s", pformat(user_fields_dict))
+log.debug("user_fields_client_can_update_list : \n %s", pformat(user_fields_client_can_update_list))
+# log.debug("user_fields_client_can_update_dict : \n %s", pformat(user_fields_client_can_update_dict))
+
+
+
+
 
 user_profiles = [
 	"helper",

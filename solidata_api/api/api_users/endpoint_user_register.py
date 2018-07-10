@@ -243,7 +243,7 @@ class Confirm_email(Resource):
 			log.info("tokens : \n%s", pformat(tokens))
 
 			return { 
-								"msg" : "email '{}' confirmed, new refresh token created...".format(user_email),
+								"msg"     : "email '{}' confirmed, new refresh token created...".format(user_email),
 								"tokens"	: tokens
 							}, 200
 		

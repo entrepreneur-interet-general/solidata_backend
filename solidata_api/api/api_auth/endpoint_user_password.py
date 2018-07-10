@@ -65,6 +65,7 @@ class PasswordForgotten(Resource):
 	@ns.doc(security='apikey')
 	@ns.doc('password_send_email')
 	@ns.expect(model_email_user)
+	@ns.doc(responses={401: 'error client : incorrect login or no user'})
 	@anonymous_required
 	def post(self):
 		"""
@@ -138,7 +139,7 @@ class PasswordForgotten(Resource):
 
 @ns.doc(security='apikey')
 @ns.route("/reset_password")
-@ns.response(404, 'error in the redirection to rest password')
+@ns.response(404, 'error in the redirection to reset password')
 @ns.param('token', 'the refresh_token sent by email to allow you to post your new password')
 class PasswordReset(Resource):
 
@@ -197,6 +198,7 @@ class PasswordReset(Resource):
 	@fresh_jwt_required
 	@renew_pwd_required
 	@ns.expect(model_pwd_user)
+	@ns.doc(responses={401: 'error client : choose a better password'})
 	def post(self):
 		"""
 		Update user's password with the new password : hash it, then save it in DB in corresponding user's data

@@ -59,6 +59,7 @@ model_user_access		= User_infos(ns).model_access
 class AnonymousLogin(Resource):
 
 	@ns.doc('user_anonymous')
+	@ns.doc(responses={200: 'success : anonymous user created with its access and refresh tokens'})
 	def get(self):
 		"""
 		Login as anonymous user
@@ -106,8 +107,9 @@ class Login(Resource):
 	@ns.doc('user_login')
 	@ns.doc(security='apikey')
 	@ns.expect(model_login_user)
-	# @jwt_required
 	@anonymous_required
+	@ns.doc(responses={200: 'success : user logged with its access and refresh tokens'})
+	@ns.doc(responses={401: 'error client : incorrect login or no user'})
 	def post(self):
 		"""
 		Log in an user given an email and a password 

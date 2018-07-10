@@ -15,6 +15,18 @@ from solidata_api._serializers.schema_users import *
 # nested models : https://github.com/noirbizarre/flask-restplus/issues/8
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
+class UserData : 
+	"""
+	Simple model to display an user data
+	"""
+
+	def __init__(self, ns_):
+		self.mod = ns_.model( "User_data", user_data )
+	
+	@property
+	def model(self): 
+		return self.mod
+		
 
 class AnonymousUser : 
 	"""

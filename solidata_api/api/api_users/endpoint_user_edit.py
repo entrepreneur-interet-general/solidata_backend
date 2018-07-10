@@ -9,14 +9,20 @@ endpoint_user_edit.py
 from log_config import log
 log.debug(">>> api_users ... creating api endpoints for USER_EDITION")
 
-from  datetime import datetime, timedelta
+from	copy import copy, deepcopy
+from	datetime import datetime, timedelta
 from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
+from . import api
+
 from flask import current_app, request
 from flask_restplus import Namespace, Resource, fields, marshal, reqparse
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
+
+### import mailing utils
+from solidata_api._core.emailing import send_email
 
 ### import JWT utils
 import jwt
@@ -48,7 +54,7 @@ model_user_out				= User_infos(ns).model_complete_out
 model_user_out_admin	= User_infos(ns).mod_complete_in
 # model_user_update	= User_infos(ns).model_update
 # model_user_access	= User_infos(ns).model_access
-
+model_data						= UserData(ns).model
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -65,8 +71,8 @@ class User(Resource) :
 		
 	"""
 	User edition
-	GET - Shows a single user item infos 
-	PUT - Updates user infos
+	GET    - Shows a single user item infos 
+	PUT    - Updates user infos
 	DELETE - Lets you delete them
 	"""
 	
@@ -103,11 +109,11 @@ class User(Resource) :
 		if user : 
 			
 			if is_client_admin == "admin" : 
-				### marshall infos for admin
+				### marshall all infos for admin
 				user_out = marshal( user, model_user_out_admin )
 
 			else :
-				### marchall info for user
+				### marchall authorized visible info for user
 				user_out = marshal( user, model_user_out )
 
 
@@ -126,6 +132,8 @@ class User(Resource) :
 	@ns.doc('delete_user')
 	# @ns.response(204, 'Todo deleted')
 	@current_user_required
+	@ns.doc(responses={204: 'success : user was deleted'})
+	@ns.doc(responses={401: 'error client : wrong user oid'})
 	def delete(self, user_oid):
 		"""
 		Delete an user given its _id / only doable by admin or current_user
@@ -143,32 +151,45 @@ class User(Resource) :
 		### check if user requiring info is current user or admin
 		log.debug("user_oid : %s", user_oid)
 
-		### delete user from db
-		mongo_users.delete_one({"_id" : ObjectId(user_oid)})
+		try :  
+			### delete user from db
+			mongo_users.delete_one({"_id" : ObjectId(user_oid)})
 
+			### TO DO - delete user info from all projects and other datasets 
+			### TO DO - OR choice to keep at least email / or / delete all data
 
-		### TO DO - delete user info from all projects and other datasets 
-		### TO DO - OR choice to keep at least email / or / delete all data
+			return {
+								"msg"		: "user deleted (oid) : {} ".format(user_oid),
+						}, 204
+		
+		except : 
 
-		return {
-							"msg"		  : "user deleted : oid {} ".format(user_oid),
-					}, 204
+			return {
+								"msg"		: "error trying to delete oid : {} ".format(user_oid),
+						}, 401
+
 
 
 @ns.doc(security='apikey')
 @ns.route("/<string:user_oid>/<field_to_update>")
-@ns.response(404, 'user not found')
+# @ns.response(404, 'user not found')
+@ns.doc(responses={401: 'error client : incorrect values'})
+@ns.doc(responses={404: 'error client : user not found'})
+# @ns.expect(model_data)
 @ns.param('user_oid', 'The user unique identifier in DB')
 class User_update(Resource) :
 		
 	### TO DO 
 	@ns.doc('update_user_infos')
-	# @ns.expect(model_user_update)
+	@ns.expect(model_data)
 	@current_user_required
 	def put(self, user_oid, field_to_update=None) : #, data_oid=None):
 		"""
 		TO DO - Update an user given its _id / for client use
+		only update fields one by one
 		only takes the following client infos : 
+		- in URL     : oid, field_to_update
+		- in payload : the new value to put into the field
 
 		--- 
 
@@ -199,26 +220,106 @@ class User_update(Resource) :
 		log.debug("ROUTE class : %s", self.__class__.__name__ )
 		log.debug("user_oid : %s", user_oid)
 
+		### check if client is an admin or if is the current user
+		claims 	= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+		is_client_admin = claims["auth"]["role"]
+
+
 		### retrieve user's data from payload
-		user_updated_data = ns.payload
+		user_updated_data = copy(ns.payload["data"])
 		log.debug("user_updated_data : \n %s", pformat(user_updated_data) ) 
 
 		### retrieve personnal infos from user in db
 		user = mongo_users.find_one({"_id" : ObjectId(user_oid)})
 		log.debug("user : \n %s", pformat(user))
 
-		### marshall user in order to make tokens
-		user_light 					= marshal( user, model_user_out )
-		user_light["_id"] 	= str(user["_id"])
+
+		if user : 
+
+			### update user info from data in pyaload
+			if field_to_update in user_fields_admin_can_update_list : 
+				
+				log.debug("field_to_update in admin authorized fields : %s", field_to_update )
+
+				### stop from updating not authorized field if client is not admin
+				if is_client_admin == False and field_to_update not in user_fields_client_can_update_list : 
+					return {
+							"msg"		  : "you are not authorized to update the field '{}'".format(field_to_update),
+					}, 401
+
+
+				else : 
+
+					field_root 			= user_fields_dict[field_to_update]["field"]
+					original_data		= user[field_root][field_to_update]
+					if user_updated_data != original_data : 
+
+						### marshall user in order to make tokens
+						user_light 					= marshal( user, model_user_out )
+						user_light["_id"] 	= str(user["_id"])
+
+						### special function for user's email update
+						if field_to_update == "email" :
+								
+							### add confirm_email claim
+							user_light["confirm_email"]	= True
+							expires 										= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
+							access_token_confirm_email 	= create_access_token(identity=user_light, expires_delta=expires)
+
+							### send a confirmation email if not RUN_MODE not 'dev'
+							if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
+								
+								# create url for confirmation to send in the mail
+								confirm_url = app.config["DOMAIN_NAME"] + api.url_for(Confirm_email, token=access_token_confirm_email, external=True)
+								log.info("confirm_url : \n %s", confirm_url)
+
+								# generate html body of the email
+								html = render_template('emails/confirm_email.html', confirm_url=confirm_url)
+								
+								# send the mail
+								send_email( "Confirm your email", payload_email, template=html )
+						
+							### flag user's email as not confirmed
+							user["auth"]["conf_usr"] = False
+
+
+						### special function for user's pwd update 
+						### --> only admin can access and create new password for users...
+						if field_to_update == "pwd" :
+								### create new hashpassword
+								user_updated_data = generate_password_hash(user_updated_data, method='sha256')
+								log.debug("hashpass : %s", hashpass)
+
+
+						### update data in DB
+						user[ field_root ][field_to_update] = user_updated_data
+						mongo_users.save(user)
+
+
+						return { 
+											"msg" 					: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
+											"field_updated"	: field_to_update,
+											# "data_sent"			: user_updated_data
+									}, 200
+
+
+					else : {
+									"msg"		  : "no difference between previous and sent data for field '{}'".format(field_to_update),
+							}, 201
+	
+			else : 
+				return {
+						"msg"		  : "impossible to update the field '{}'".format(field_to_update),
+				}, 401
+
+
+		else : 
+			return {
+					"msg"		  : "user oid '{}' not found".format(user_oid),
+			}, 401
 
 
 
-		### update user info from data in pyaload
 
 
-
-		return { 
-							"msg" 					: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
-							"field_updated"	: field_to_update,
-							"data_sent"			: user_updated_data
-					}
