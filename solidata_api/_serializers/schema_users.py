@@ -104,14 +104,14 @@ language				= fields.String(
 ### profesional infos
 structures			= fields.List(
 										fields.String(
-										description	= "structures / organisations the user"),
+											description	= "structures / organisations the user"),
 										example			= ["my structure A", "my structure B"],
 										attribute		= "struct",	
 										default			= []
 									)
 struct_profiles	= fields.List(
 										fields.String(
-										description	= "structures / organisations profile"),
+											description	= "structures / organisations profile"),
 										enum				= user_structure,
 										example			= ["public_state"],
 										attribute		= "struct_profiles",	
@@ -119,7 +119,7 @@ struct_profiles	= fields.List(
 									)
 profiles				= fields.List(
 										fields.String(
-										description	= "profiles of the user"),
+											description	= "profiles of the user"),
 										enum				= user_profiles,
 										example			= ["organizer"],
 										attribute		= "profiles",	
@@ -129,39 +129,56 @@ profiles				= fields.List(
 ### datasets infos
 proj_list				= fields.List(
 										fields.String(
-										description = "ids of the projects created by the user"),
+											description = "ids of the projects created by the user"),
 										attribute		= "proj_list", 
 										default			= [] 
 									)
 dm_list					= fields.List(
 										fields.String(
-										description	= "ids of the datamodels created by the user"),
+											description	= "ids of the datamodels created by the user"),
 										attribute		= "dm_list",
 										default			= [] 
 									)
 dsi_list				= fields.List(
 										fields.String(
-										description	= "ids of the datasets_in imported by the user"),
+											description	= "ids of the datasets_in imported by the user"),
 										attribute		= "dsi_list",
 										default			= [] 
 									)
 dso_list				= fields.List(
 										fields.String(
-										description	= "ids of the datasets_out exported by the user"), 
+											description	= "ids of the datasets_out exported by the user"), 
 										attribute		= "dso_list",
 										default			= [] 
 									)
 dc_list					= fields.List(
 										fields.String(
-										description	= "ids of the correspondance_dicts created by the user"), 
+											description	= "ids of the correspondance_dicts created by the user"), 
 										attribute		= "dc_list",
 										default			= [] 
 									)
 rec_list				= fields.List(
 										fields.String(
-										description	= "ids of the recipes created by the user"),
+											description	= "ids of the recipes created by the user"),
 										attribute		= "rec_list",
 										default			= [] 
+									)
+
+### USER LOG
+created_at 			= fields.DateTime( 
+										description	= "creation date", 
+										attribute		= "created_at" ,
+										required		= False, 
+									)
+modified_at			= fields.DateTime( 
+										description	= "modification date", 
+										attribute		= "modif_at" ,
+										required		= False, 
+									)
+modified_for		= fields.String(	 
+										description	= "modification action",
+										attribute		= "modif_for" ,
+										required		= False, 
 									)
 
 
@@ -200,7 +217,14 @@ old_refresh_token = {
 	"old_refresh_token" : old_refr_tok,
 }
 
-
+user_log 					= {
+	"created_at" 		: created_at,
+	# "modified_log" 	: modified_log
+}
+modification = {
+	"modif_at" 		: modified_at,
+	"modif_for" 	: modified_for
+}
 
 
 ### FOR MODELS TO INSERT IN DB
@@ -210,7 +234,7 @@ user_auth_in = {
 	"role"	      : role,
 	# "acc_tok"			: acc_tok,
 	"refr_tok"		: refr_tok,
-  "blklst_usr"  : blacklisted_usr,
+	"blklst_usr"  : blacklisted_usr,
 }
 
 user_datasets_in = {

@@ -6,7 +6,7 @@ auth_decorator.py
 """
 
 from log_config import log, pprint, pformat
-log.debug ("... loading token_required ...")
+log.debug (">>> _auth ... loading auth_decorator ...")
 
 from functools import wraps, partial, update_wrapper
 from flask import request, current_app as app, jsonify
@@ -27,13 +27,15 @@ from flask_jwt_extended import (
 
 ### CLAIMS LOADER INTO JWT - for access_token
 ### cf : https://flask-jwt-extended.readthedocs.io/en/latest/custom_decorators.html 
-@jwt_manager.user_claims_loader
+@jwt_manager.user_claims_loader 
 def add_claims_to_access_token(user):
 	"""
 	Create a function that will be called whenever create_access_token
 	is used. It will take whatever object is passed into the
 	create_access_token method, and lets us define what custom claims
 	should be added to the access token.
+
+	> needs a 'model_user_out' or 'model_access' as 'user'
 	"""
 	log.debug("-@- claims loader")
 
@@ -54,6 +56,9 @@ def add_claims_to_access_token(user):
 	### specific claims
 	if "renew_pwd" in user : 
 		claims_to_store_into_jwt["renew_pwd"] = user["renew_pwd"]
+
+	if "reset_pwd" in user : 
+		claims_to_store_into_jwt["reset_pwd"] = user["reset_pwd"]
 
 	if "confirm_email" in user : 
 		claims_to_store_into_jwt["confirm_email"] = user["confirm_email"]
@@ -204,10 +209,33 @@ def renew_pwd_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
-		if claims["renew_pwd"] != True:
+		try :
+			if claims["renew_pwd"] == True:
+				return func(*args, **kwargs)
+		except :
 			return { "msg" : "'renew_pwd' token expected !!! " }, 403
-		else:
-			return func(*args, **kwargs)
+	
+	return wrapper
+
+
+def reset_pwd_required(func):
+	"""
+	Check if access_token has a claim 'reset_pwd' == True
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- reset_pwd checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		try :  
+			if claims["reset_pwd"] == True:
+				return func(*args, **kwargs)
+		except :
+			return { "msg" : "'reset_pwd' token expected !!! " }, 403
 	
 	return wrapper
 

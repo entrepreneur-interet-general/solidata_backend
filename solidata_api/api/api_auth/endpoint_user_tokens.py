@@ -23,7 +23,7 @@ from flask_restplus import Namespace, Resource, marshal #, fields, reqparse
 # import jwt
 from flask_jwt_extended import (
 		jwt_refresh_token_required, jwt_optional,
-		create_access_token,
+		create_access_token, create_refresh_token,
 		get_jwt_identity, get_raw_jwt, decode_token
 )
 
@@ -120,7 +120,7 @@ class RefreshAccessToken(Resource) :
 
 @ns.doc(security='apikey')
 @ns.route("/fresh_access_token")
-class FreshLogin(Resource):
+class FreshAccessToken(Resource):
 	
 	@ns.doc('user_fresh_token')
 	@jwt_refresh_token_required
@@ -172,9 +172,9 @@ class FreshLogin(Resource):
 						}, 401
 
 
-# @ns.route('/refresh_token' )
-# @ns.route('/refresh_token/', defaults={ 'old_refresh_token':'your_old_refresh_token' } )
-@ns.route('/refresh_token/<string:old_refresh_token>' )
+# @ns.route('/new_refresh_token' )
+# @ns.route('/new_refresh_token/', defaults={ 'old_refresh_token':'your_old_refresh_token' } )
+@ns.route('/new_refresh_token/<string:old_refresh_token>' )
 @ns.param('old_refresh_token', 'The expired refresh_token')
 class NewRefreshToken(Resource) :
 
@@ -215,9 +215,6 @@ class NewRefreshToken(Resource) :
 		log.debug('user_identity from old refresh_token : \n%s', user_identity )
 
 
-		### TO DO : check if jwt is blacklisted
-
-
 		if user_identity != "anonymous" and jwt_type == "refresh" : 
 
 			### find user  in db
@@ -226,7 +223,7 @@ class NewRefreshToken(Resource) :
 
 			if user :
 
-				### check if there is something wrong 
+				### check if there is something wrong : user's email not confirmed | user blacklisted
 				if user["auth"]["conf_usr"] and user["auth"]["blklst_usr"] == False : 
 
 					### marshal user's info 
@@ -234,7 +231,7 @@ class NewRefreshToken(Resource) :
 					user_light["_id"] = str(user["_id"])
 
 					# create a new refresh_token 
-					new_refresh_token 				= create_access_token(identity=user_light)
+					new_refresh_token 				= create_refresh_token(identity=user_light)
 
 					# and save it into user's data in DB
 					user["auth"]["refr_tok"] 	= new_refresh_token
@@ -250,21 +247,24 @@ class NewRefreshToken(Resource) :
 					
 					### return new tokens 
 					return {	
-										"msg" 		: "fresh access_token created for user '{}' ".format(user_identity) , 
+										"msg" 		: "new refresh_token created for user '{}' ".format(user_identity) , 
 										"tokens"	: tokens
 								}, 200
-			
+
+				### user's email not confirmed or blacklisted
 				else : 
 					return {
-										"msg" : "no such user in DB"
+										"msg" : "you need to confirm your email '{}' first before...".format(user_identity)
 								}, 401
 			
+			### user not in DB
 			else : 
 				return {
-									"msg" : "you need to confirm your email '{}' first before...".format(user_identity)
+									"msg" : "no such user in DB"
 							}, 401
 
+		### user is anonymous | wrong jwt
 		else : 
 			return {
-								"msg" : "anonyous users can't refresh their refresh token OR wrong jwt type..."
+								"msg" : "anonyous users can't renew their refresh_token OR wrong jwt type..."
 						}, 401

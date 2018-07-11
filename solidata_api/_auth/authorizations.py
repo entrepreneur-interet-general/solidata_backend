@@ -8,7 +8,7 @@ cf : https://flask-restplus.readthedocs.io/en/stable/swagger.html?highlight=auth
 """
 
 from log_config import log, pprint, pformat
-log.debug ("... loading authorizations ...")
+log.debug (">>> _auth ... loading authorizations ...")
 
 from flask import current_app as app #, request
 

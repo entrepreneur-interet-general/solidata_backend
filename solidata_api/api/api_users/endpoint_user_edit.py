@@ -36,6 +36,7 @@ from solidata_api._auth import admin_required, current_user_required, anonymous_
 ### import mongo utils
 from solidata_api.application import mongo
 from solidata_api._core.queries_db import * # mongo_users, etc...
+from solidata_api._core.utils import create_modif_log
 
 
 # ### import data serializers
@@ -221,7 +222,7 @@ class User_update(Resource) :
 		log.debug("user_oid : %s", user_oid)
 
 		### check if client is an admin or if is the current user
-		claims 	= get_jwt_claims() 
+		claims 					= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 		is_client_admin = claims["auth"]["role"]
 
@@ -243,7 +244,7 @@ class User_update(Resource) :
 				log.debug("field_to_update in admin authorized fields : %s", field_to_update )
 
 				### stop from updating not authorized field if client is not admin
-				if is_client_admin == False and field_to_update not in user_fields_client_can_update_list : 
+				if is_client_admin != "admin" and field_to_update not in user_fields_client_can_update_list : 
 					return {
 							"msg"		  : "you are not authorized to update the field '{}'".format(field_to_update),
 					}, 401
@@ -253,6 +254,7 @@ class User_update(Resource) :
 
 					field_root 			= user_fields_dict[field_to_update]["field"]
 					original_data		= user[field_root][field_to_update]
+
 					if user_updated_data != original_data : 
 
 						### marshall user in order to make tokens
@@ -265,7 +267,7 @@ class User_update(Resource) :
 							### add confirm_email claim
 							user_light["confirm_email"]	= True
 							expires 										= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
-							access_token_confirm_email 	= create_access_token(identity=user_light, expires_delta=expires)
+							access_token 								= create_access_token(identity=user_light, expires_delta=expires)
 
 							### send a confirmation email if not RUN_MODE not 'dev'
 							if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
@@ -291,16 +293,26 @@ class User_update(Resource) :
 								user_updated_data = generate_password_hash(user_updated_data, method='sha256')
 								log.debug("hashpass : %s", hashpass)
 
+						### update value in marshalled user
+						if field_to_update != "pwd" : 
+							user_light[ field_root ][ field_to_update ] = user_updated_data
 
 						### update data in DB
-						user[ field_root ][field_to_update] = user_updated_data
+						user[ field_root ][ field_to_update ] = user_updated_data
+						
+						### update modfication in user data
+						user = create_modif_log(doc=user, action="update " + field_to_update )
+						# modif = {"modif_at" : datetime.utcnow(), "modif_for" : field_to_update }
+						# user["log"]["modified_log"].insert(0, modif)
+
 						mongo_users.save(user)
+
 
 
 						return { 
 											"msg" 					: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
 											"field_updated"	: field_to_update,
-											# "data_sent"			: user_updated_data
+											# "new_tokens"			: user_updated_data
 									}, 200
 
 

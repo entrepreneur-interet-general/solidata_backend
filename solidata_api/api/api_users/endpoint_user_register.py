@@ -21,6 +21,7 @@ from 	werkzeug.security 	import 	generate_password_hash #, check_password_hash
 
 ### import mailing utils
 from solidata_api._core.emailing import send_email
+from solidata_api._core.utils import create_modif_log
 
 ### import JWT utils
 import jwt
@@ -99,9 +100,10 @@ class Register(Resource):
 			log.debug("hashpass : %s", hashpass)
 
 			### create user dict from form's data
-			new_user_infos 						= {"infos" : ns.payload, "auth" : ns.payload }
-			new_user 									= marshal( new_user_infos , model_user_complete_in)
-			new_user["auth"]["pwd"] 	= hashpass
+			new_user_infos 								= {"infos" : ns.payload, "auth" : ns.payload }
+			new_user 											= marshal( new_user_infos , model_user_complete_in)
+			new_user["auth"]["pwd"] 			= hashpass
+			new_user["log"]["created_at"] = datetime.utcnow()
 
 			### temporary save new user in db 
 			mongo_users.insert( new_user )
@@ -124,6 +126,7 @@ class Register(Resource):
 			### add confirm_email claim
 			new_user["confirm_email"]		= True
 			access_token_confirm_email 	= create_access_token(identity=new_user, expires_delta=expires)
+			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
 
 			tokens = {
 					'access_token'								: access_token,
@@ -132,7 +135,7 @@ class Register(Resource):
 			}
 			log.info("tokens : \n %s", pformat(tokens))
 
-			# update new user in db
+			### update new user in db		
 			# new_user["auth"]["refr_tok"] 	= refresh_token
 			# new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] = refresh_token
 			user_created["auth"]["refr_tok"] = refresh_token
@@ -159,6 +162,7 @@ class Register(Resource):
 
 			return { 
 								"msg"			: "new user has been created and a confirmation link has been sent, you have {} days to confirm your email, otherwise this account will be erased...".format(expires),
+								"expires"	: str(expires), 
 								"tokens"	: tokens,
 								"data"		: new_user_out,
 							}, 200
@@ -233,6 +237,10 @@ class Confirm_email(Resource):
 			user_to_confirm["auth"]["refr_tok"] = refresh_token
 			user_to_confirm["auth"]["role"] 		= "registred"
 			user_to_confirm["auth"]["conf_usr"] = True
+
+			### update modfication in user data
+			user_to_confirm = create_modif_log(doc=user_to_confirm, action="confirm_email" )
+
 			mongo_users.save(user_to_confirm)
 
 			### store tokens
@@ -262,4 +270,4 @@ class Confirm_email(Resource):
 			return { 
 								"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),
 								"tokens"	: tokens
-							}, 200
+							}, 401

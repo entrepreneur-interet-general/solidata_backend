@@ -30,11 +30,15 @@ from flask_jwt_extended import (
 		create_access_token, create_refresh_token,
 		get_jwt_identity, get_jwt_claims, get_raw_jwt,
 )
-from solidata_api._auth import admin_required, current_user_required, anonymous_required, renew_pwd_required # token_required
+from solidata_api._auth import ( 
+		admin_required, current_user_required, 
+		anonymous_required, renew_pwd_required, reset_pwd_required 
+) # token_required
 
 ### import mongo utils
 # from solidata_api.application import mongo
 from solidata_api._core.queries_db import mongo_users
+from solidata_api._core.utils import create_modif_log
 
 
 # ### import data serializers
@@ -50,7 +54,7 @@ ns = Namespace('password', description='User : password related endpoints')
 from solidata_api._models.models_user import EmailUser, PasswordUser, User_infos
 model_email_user  	= EmailUser(ns).model
 model_pwd_user			= PasswordUser(ns).model
-model_user					= User_infos(ns).model_access
+model_access_user		= User_infos(ns).model_access
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
@@ -73,7 +77,7 @@ class PasswordForgotten(Resource):
 
 		>
 			--- needs   : a valid anonymous access_token
-			>>> returns : msg, a fresh access_token sent by email inside a link
+			>>> returns : msg, a fresh renew_pwd_access_token sent by email inside a link
 		"""
 
 		### DEBUGGING
@@ -99,7 +103,7 @@ class PasswordForgotten(Resource):
 		if user :  
 			
 			### marshal user's info 
-			user_light							= marshal( user , model_user)
+			user_light							= marshal( user , model_access_user)
 			user_light["_id"]				= str(user["_id"])
 			user_light["renew_pwd"] = True
 			log.debug("user_light : \n %s", pformat(user_light)) 
@@ -114,7 +118,7 @@ class PasswordForgotten(Resource):
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
 				
 				# create url for confirmation to send in the mail
-				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(PasswordReset, token=renew_pwd_access_token, external=True)
+				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(ResetPassword, token=renew_pwd_access_token, external=True)
 				log.info("confirm_url : \n %s", confirm_url)
 
 				# generate html body of the email
@@ -124,7 +128,8 @@ class PasswordForgotten(Resource):
 				send_email( "Reset your password", payload_email, template=html )
 			
 			return { 
-								"msg" : "email sent to {} with a link containing the renew_pwd_access_token to refresh your password".format(payload_email)
+								"msg" 		: "email sent to {} with a link containing the renew_pwd_access_token to refresh your password".format(payload_email),
+								"expires" : str(expires),
 							}, 200
 
 
@@ -140,8 +145,8 @@ class PasswordForgotten(Resource):
 @ns.doc(security='apikey')
 @ns.route("/reset_password")
 @ns.response(404, 'error in the redirection to reset password')
-@ns.param('token', 'the refresh_token sent by email to allow you to post your new password')
-class PasswordReset(Resource):
+# @ns.param('token', 'the refresh_token sent by email to allow you to post your new password')
+class ResetPassword(Resource):
 
 	@ns.doc('password_reset')
 	@fresh_jwt_required
@@ -152,7 +157,7 @@ class PasswordReset(Resource):
 
 		>
 			--- needs   : a valid fresh renew_pwd_access_token (f.e. received by email, with a short expiration date)
-			>>> returns : msg, a new renew_pwd_access_token
+			>>> returns : msg, a new reset_pwd_access_token
 		"""
 		
 		### DEBUGGING
@@ -166,37 +171,39 @@ class PasswordReset(Resource):
 
 		### retrieve sent token 
 		sent_token = get_raw_jwt()
-		log.debug( "sent_token : \n %s", sent_token ) 
+		log.debug( "sent_token : \n %s", pformat(sent_token) ) 
 
 		### find user in DB
 		user = mongo_users.find_one({"infos.email" : user_email })
 		
 		### marshall infos
-		user_light							= marshal( user , model_user)
+		user_light							= marshal( user , model_access_user)
 		user_light["_id"] 			= str(user["_id"])
-		user_light["renew_pwd"] = True
+		user_light["reset_pwd"] = True
 
 		### create a new and temporary refresh_token 
 		expires 								= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
-		renew_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
+		reset_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
 		# refresh_token	= user["auth"]["refr_tok"]
 		# refresh_token = create_refresh_token(identity=user_light, expires_delta=expires) # sent_token
+		log.debug("reset_pwd_access_token : \n %s", reset_pwd_access_token)
 
 		### store tokens
 		tokens = {
-				'access_token'	: renew_pwd_access_token,
+				'access_token'	: reset_pwd_access_token,
 				# 'refresh_token'	: refresh_token
 		}
 		log.info("tokens : \n %s", pformat(tokens))
 
 		return { 
-							"msg" 		: "you are now allowed to enter/POST your new password with the renew_pwd_access_token sent, you have {} to renew your password".format(expires), 
+							"msg" 		: "you are now allowed to enter/POST your new password with the reset_pwd_access_token sent, you have {} to renew your password".format(expires), 
+							"expires"	: str(expires),
 							"tokens" 	: tokens
 						}, 200
 
 	
 	@fresh_jwt_required
-	@renew_pwd_required
+	@reset_pwd_required
 	@ns.expect(model_pwd_user)
 	@ns.doc(responses={401: 'error client : choose a better password'})
 	def post(self):
@@ -204,7 +211,7 @@ class PasswordReset(Resource):
 		Update user's password with the new password : hash it, then save it in DB in corresponding user's data
 
 		>
-			--- needs   : a valid fresh renew_pwd_access_token (received by opening reset_password[GET], with a short expiration date)
+			--- needs   : a valid fresh reset_pwd_access_token (received by opening reset_password[GET], with a short expiration date)
 			>>> returns : msg, a new refresh_token + a new access_token
 		"""
 		### DEBUGGING
@@ -230,12 +237,17 @@ class PasswordReset(Resource):
 			### find user in DB
 			user = mongo_users.find_one({"infos.email" : user_email })
 
+			### update modfication in user data
+			# modif = {"modif_at" : datetime.utcnow(), "modif_for" : field_to_update }
+			# user["log"]["modified_log"].insert(0, modif)
+			user = create_modif_log(doc=user, action="reset_pwd")
+
 			### save new hashed password into user in DB
 			user["auth"]["pwd"] = hashpass
 			mongo_users.save(user)
 
 			### marshall infos
-			user_light = marshal( user , model_user)
+			user_light = marshal( user , model_access_user)
 			user_light["_id"] = str(user["_id"])
 
 			### generate and store tokens as if it were a login
