@@ -127,6 +127,24 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 	from solidata_api.api.api_auth 	import blueprint as api_auth
 	app.register_blueprint( api_auth, url_prefix='/api/auth')
 
+	from solidata_api.api.api_projects 	import blueprint as api_proj
+	app.register_blueprint( api_proj, url_prefix='/api/projects')
+
+	# from solidata_api.api.api_datamodels 	import blueprint as api_dm
+	# app.register_blueprint( api_dm, url_prefix='/api/datamodels')
+
+	# from solidata_api.api.api_datasets_in 	import blueprint as api_dsi
+	# app.register_blueprint( api_dsi, url_prefix='/api/datasets_input')
+
+	# from solidata_api.api.api_corr_dicts 	import blueprint as api_dc
+	# app.register_blueprint( api_dc, url_prefix='/api/correspondance_dicts')
+
+	# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
+	# app.register_blueprint( api_dso, url_prefix='/api/datasets_output')
+
+	# from solidata_api.api.api_recipes 	import blueprint as api_rec
+	# app.register_blueprint( api_rec, url_prefix='/api/recipes')
+
 
 
 	### DEBUG

@@ -6,44 +6,19 @@ endpoint_user_tokens.py
 	REST requests and responses
 """
 
-from log_config import log, pformat
+from solidata_api.api import *
+
+# from log_config import log, pformat
 log.debug(">>> api_auth ... creating api endpoints for USER_TOKENS")
-
-
-# from  datetime import datetime, timedelta
-# from	bson import json_util
-# from	bson.objectid import ObjectId
-# from	bson.json_util import dumps
-
-from flask import current_app, request
-from flask_restplus import Namespace, Resource, marshal #, fields, reqparse
-# from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-
-### import JWT utils
-# import jwt
-from flask_jwt_extended import (
-		jwt_refresh_token_required, jwt_optional,
-		create_access_token, create_refresh_token,
-		get_jwt_identity, get_raw_jwt, decode_token
-)
-
-### import mongo utils
-# from solidata_api.application import mongo
-from solidata_api._core.queries_db import mongo_users
-
-# ### import data serializers
-# from solidata_api._serializers.schema_users import *  
 
 ### create namespace
 ns = Namespace('tokens', description='User : tokens freshening related endpoints')
-
-### import parsers
-# from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 from solidata_api._models.models_user import * #User_infos, AnonymousUser
 model_user_access				= User_infos(ns).model_access
 model_old_refresh_token = ExpiredRefreshToken(ns).model
+
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES

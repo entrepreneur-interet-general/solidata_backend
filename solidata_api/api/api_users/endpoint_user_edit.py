@@ -6,55 +6,20 @@ endpoint_user_edit.py
 	REST requests and responses
 """
 
-from log_config import log
-log.debug(">>> api_users ... creating api endpoints for USER_EDITION")
+from solidata_api.api import *
 
-from	copy import copy, deepcopy
-from	datetime import datetime, timedelta
-from	bson import json_util
-from	bson.objectid import ObjectId
-from	bson.json_util import dumps
+log.debug(">>> api_users ... creating api endpoints for USER_EDITION")
 
 from . import api
 
-from flask import current_app, request
-from flask_restplus import Namespace, Resource, fields, marshal, reqparse
-from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-
-### import mailing utils
-from solidata_api._core.emailing import send_email
-
-### import JWT utils
-import jwt
-from flask_jwt_extended import (
-		jwt_required, jwt_optional, fresh_jwt_required,
-		create_access_token, create_refresh_token,
-		get_jwt_identity, get_jwt_claims
-)
-from solidata_api._auth import admin_required, current_user_required, anonymous_required # token_required
-
-### import mongo utils
-from solidata_api.application import mongo
-from solidata_api._core.queries_db import * # mongo_users, etc...
-from solidata_api._core.utils import create_modif_log
-
-
-# ### import data serializers
-# from solidata_api._serializers.schema_users import *  
-
 ### create namespace
-ns = Namespace('user_edit', description="Users : user's info edition related endpoints")
-
-### import parsers
-from solidata_api._parsers.parser_pagination import pagination_arguments
+ns = Namespace('edit', description="Users : user's info edition related endpoints")
 
 ### import models 
 from solidata_api._models.models_user import *  
 model_new_user				= NewUser(ns).model
 model_user_out				= User_infos(ns).model_complete_out
 model_user_out_admin	= User_infos(ns).mod_complete_in
-# model_user_update	= User_infos(ns).model_update
-# model_user_access	= User_infos(ns).model_access
 model_data						= UserData(ns).model
 
 
@@ -287,7 +252,7 @@ class User_update(Resource) :
 
 
 						### special function for user's pwd update 
-						### --> only admin can access and create new password for users...
+						### WARNING --> only admin can access and create new password for users...
 						if field_to_update == "pwd" :
 								### create new hashpassword
 								user_updated_data = generate_password_hash(user_updated_data, method='sha256')

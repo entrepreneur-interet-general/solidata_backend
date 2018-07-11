@@ -7,22 +7,26 @@ schema_users.py
 
 from log_config import log, pformat
 
-from flask_restplus import fields, marshal
-import json
-
-from ._choices_user import * 
-
 log.debug("... loading schema_users.py ...")
 
 
-### generic info for update
-generic_data 		= fields.String(
-										description	= "data about the user",
-										attribute		= "data",
-										example			= "example",
-										default			= 'a new data',
-										required		= True,
-									)
+from flask_restplus import fields #, marshal
+# import json
+
+from ._choices_user import * 
+from .schema_generic import *
+from .schema_logs import *
+
+
+
+# ### generic info for update
+# generic_data 		= fields.String(
+# 										description	= "data about the user",
+# 										attribute		= "data",
+# 										example			= "example",
+# 										default			= 'a new data',
+# 										required		= True,
+# 									)
 
 ### basic informations about a user
 name 						= fields.String(
@@ -46,7 +50,7 @@ email 					= fields.String(
 									)
 
 ### auth 
-pwd				      = fields.String(
+pwd							= fields.String(
 										description = "password of the user",
 										attribute		= "pwd",
 										example			= "a-very-common-password",
@@ -99,6 +103,12 @@ language				= fields.String(
 										example 		= "en",
 										attribute		= "lang",	
 										default			= "en",
+									)
+fav_list				= fields.List(
+										fields.String(
+											description = "ids of the favorites projects created by the user"),
+										attribute		= "fav_list", 
+										default			= [] 
 									)
 
 ### profesional infos
@@ -165,21 +175,21 @@ rec_list				= fields.List(
 									)
 
 ### USER LOG
-created_at 			= fields.DateTime( 
-										description	= "creation date", 
-										attribute		= "created_at" ,
-										required		= False, 
-									)
-modified_at			= fields.DateTime( 
-										description	= "modification date", 
-										attribute		= "modif_at" ,
-										required		= False, 
-									)
-modified_for		= fields.String(	 
-										description	= "modification action",
-										attribute		= "modif_for" ,
-										required		= False, 
-									)
+# created_at 			= fields.DateTime( 
+# 										description	= "creation date", 
+# 										attribute		= "created_at" ,
+# 										required		= False, 
+# 									)
+# modified_at			= fields.DateTime( 
+# 										description	= "modification date", 
+# 										attribute		= "modif_at" ,
+# 										required		= False, 
+# 									)
+# modified_for		= fields.String(	 
+# 										description	= "modification action",
+# 										attribute		= "modif_for" ,
+# 										required		= False, 
+# 									)
 
 
 ### FOR GENERIC MODELS
@@ -217,14 +227,14 @@ old_refresh_token = {
 	"old_refresh_token" : old_refr_tok,
 }
 
-user_log 					= {
-	"created_at" 		: created_at,
-	# "modified_log" 	: modified_log
-}
-modification = {
-	"modif_at" 		: modified_at,
-	"modif_for" 	: modified_for
-}
+# user_log 					= {
+# 	"created_at" 		: created_at,
+# 	# "modified_log" 	: modified_log
+# }
+# modification = {
+# 	"modif_at" 		: modified_at,
+# 	"modif_for" 	: modified_for
+# }
 
 
 ### FOR MODELS TO INSERT IN DB
@@ -246,7 +256,8 @@ user_datasets_in = {
 	"rec_"	: rec_list,
 }
 user_preferences_in = {
-	"lang"  : language,
+	"lang"  		: language,
+	"fav_list" 	: fav_list
 }
 
 user_professional_in = {
@@ -276,7 +287,8 @@ user_datasets_out = {
 }
 
 user_preferences_out = {
-	"language" : language
+	"language" 	: language,
+	"favorites"	: fav_list
 }
 
 user_professional_out = {

@@ -6,42 +6,15 @@ endpoint_user_login.py
 	REST requests and responses
 """
 
-from log_config import log, pformat
+from solidata_api.api import *
+
 log.debug(">>> api_auth ... creating api endpoints for USER_LOGIN")
 
-from  datetime import datetime, timedelta
-from	bson import json_util
-from	bson.objectid import ObjectId
-from	bson.json_util import dumps
-
-from flask import current_app as app, url_for #, request
-from flask_restplus import Namespace, Resource, fields, marshal, reqparse
-from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-
-### DEBUGGING CONFIRMAITON EMAIL 
-# from solidata_api._auth import generate_confirmation_token
-
-### import JWT utils
-import jwt
-from flask_jwt_extended import (
-		jwt_required, jwt_optional, jwt_refresh_token_required, 
-		create_access_token, create_refresh_token,
-		get_jwt_identity, get_jwt_claims
-)
-from solidata_api._auth import admin_required, current_user_required, anonymous_required # token_required
-
 ### import mongo utils
-# from solidata_api.application import mongo
 from solidata_api._core.queries_db import mongo_users
-
-# ### import data serializers
-# from solidata_api._serializers.schema_users import *  
 
 ### create namespace
 ns = Namespace('login', description='User : login related endpoints')
-
-### import parsers
-# from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 from solidata_api._models.models_user import LoginUser, User_infos, AnonymousUser
@@ -118,7 +91,7 @@ class Login(Resource):
 
 		>
 			--- needs   : an anonymous access_token (please use '.../login/anonymous/' first)
-			>>> returns : msg, access_token, refresh_tokens
+			>>> returns : msg, is_user_confirmed, preferences, access_token, refresh_tokens
 		"""
 
 		### DEBUGGING
@@ -179,11 +152,15 @@ class Login(Resource):
 
 				
 				### update user log in db
-				### TO DO 
+				user = create_modif_log(doc=user, action="login")
+				user["log"]["login_count"] += 1
+				mongo_users.save(user)
+
 
 				return {	
 									"msg" 							: "user '{}' is logged".format(payload_email),
 									"is_user_confirmed" : user["auth"]["conf_usr"],
+									"preferences"				: user["preferences"],
 									"tokens"						: tokens
 							}, 200
 

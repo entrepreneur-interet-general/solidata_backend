@@ -32,6 +32,14 @@ bad_passwords = [
 	'12345' 
 ]
 
+user_actions = [
+	"can_edit_dm",
+	"can_edit_dsi",
+	"can_edit_dc",
+	"can_edit_rec",
+	"can_only_view"
+]
+
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -43,7 +51,7 @@ bad_passwords = [
 user_fields_admin_can_update = {
 	"infos" 				: ["name", "surname", "email"], 
 	"auth" 					: ["pwd", "conf_usr", "role", "refr_tok", "blklst_usr"],
-	"preferences" 	: ["lang"],
+	"preferences" 	: ["lang", "fav_list"],
 	"datasets" 			: ["proj_", "dm_", "dsi_", "dso_", "dc_", "rec_"],
 	"profile" 			: ["profiles"],
 	"professional" 	: ["struct", "struct_profiles"]

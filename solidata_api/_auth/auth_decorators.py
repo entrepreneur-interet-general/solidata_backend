@@ -48,7 +48,7 @@ def add_claims_to_access_token(user):
 		'infos'						: user["infos"],
 		'auth'						: user["auth"],
 		# 'datasets'			: user["datasets"],
-		'preferences'			: user["preferences"],
+		# 'preferences'			: user["preferences"],
 		# 'profile'		    : user["profile"],
 		# 'professional'	: user["professional"],
 	}

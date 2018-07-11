@@ -6,38 +6,12 @@ endpoint_users.py
 	REST requests and responses
 """
 
-from log_config import log
+from solidata_api.api import *
+
 log.debug(">>> api_users ... creating api endpoints for USERS")
 
-from  datetime import datetime, timedelta
-from	bson import json_util
-from	bson.objectid import ObjectId
-from	bson.json_util import dumps
-
-from flask import current_app, request
-from flask_restplus import Namespace, Resource, fields, marshal, reqparse
-from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-
-### import JWT utils
-import jwt
-from flask_jwt_extended import (
-		jwt_required, jwt_optional, create_access_token, create_refresh_token,
-		get_jwt_identity, get_jwt_claims
-)
-from solidata_api._auth import admin_required
-
-### import mongo utils
-from solidata_api.application import mongo
-from solidata_api._core.queries_db import * # mongo_users, etc...
-
-# ### import data serializers
-from solidata_api._serializers.schema_users import *  
-
 ### create namespace
-ns = Namespace('users', description='Users : users lists related endpoints ')
-
-### import parsers
-from solidata_api._parsers.parser_pagination import pagination_arguments
+ns = Namespace('list', description='Users : users lists related endpoints ')
 
 ### import models 
 from solidata_api._models.models_user import *  
@@ -58,7 +32,7 @@ class UsersList(Resource):
 	@ns.doc('users_list')
 	@admin_required
 	@ns.expect(pagination_arguments)
-	@ns.marshal_list_with( model_user_out, skip_none=True)#, envelop="users_list" ) 
+	@ns.marshal_list_with( model_user_out, skip_none=True) #, envelop="users_list" ) 
 	def get(self):
 		"""
 		List of all users in db (without _id)
@@ -75,9 +49,9 @@ class UsersList(Resource):
 
 		### DEBUG check
 		user_identity = get_jwt_identity()
-		log.debug('useremail from jwt : \n%s', user_identity )  
+		log.debug('user_identity from jwt : \n%s', user_identity )  
 
-		### get pagination
+		### TO DO : get pagination
 		args 			= pagination_arguments.parse_args(request)
 		page 			= args.get('page', 1)
 		per_page 	= args.get('per_page', 10)

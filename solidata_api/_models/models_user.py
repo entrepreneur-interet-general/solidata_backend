@@ -1,13 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 """
-_models/models.py  
+_models/models_users.py  
 - provides the models for all api routes
 """
+
+from log_config import log, pformat
+
+log.debug("... loading models_users.py ...")
+
 
 from flask_restplus import fields
 
 ### import data serializers
+from solidata_api._serializers.schema_logs import *  
+from solidata_api._serializers.schema_generic import *  
 from solidata_api._serializers.schema_users import *  
 
 
@@ -128,6 +135,8 @@ class User_infos :
 
 	def __init__(self, ns_) :
 		
+
+		### SELF MODULES
 		self.basic_infos		= fields.Nested(
 					ns_.model('User_public_data', user_basics )
 				)
@@ -145,6 +154,7 @@ class User_infos :
 		self.user_log 			= fields.Nested( 
 			ns_.model("User_log", {
 				'created_at'		: created_at,
+				'login_count'		: count,
 				'modified_log'	: self.modifications
 			})
 		)

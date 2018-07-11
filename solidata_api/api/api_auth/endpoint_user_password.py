@@ -6,55 +6,21 @@ endpoint_user_password.py
 	REST requests and responses
 """
 
-from log_config import log, pformat
-log.debug(">>> api_auth ... creating api endpoints for USER_PASSWORD")
+from solidata_api.api import *
 
-from  datetime import datetime, timedelta
-from	bson import json_util
-from	bson.objectid import ObjectId
-from	bson.json_util import dumps
+log.debug(">>> api_auth ... creating api endpoints for USER_PASSWORD")
 
 from . import api
 
-from flask import request, current_app as app, render_template
-from flask_restplus import Namespace, Resource, fields, marshal, reqparse
-from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-
-### import mailing utils
-from solidata_api._core.emailing import send_email
-
-### import JWT utils
-import jwt
-from flask_jwt_extended import (
-		jwt_required, jwt_refresh_token_required, jwt_optional, fresh_jwt_required,
-		create_access_token, create_refresh_token,
-		get_jwt_identity, get_jwt_claims, get_raw_jwt,
-)
-from solidata_api._auth import ( 
-		admin_required, current_user_required, 
-		anonymous_required, renew_pwd_required, reset_pwd_required 
-) # token_required
-
-### import mongo utils
-# from solidata_api.application import mongo
-from solidata_api._core.queries_db import mongo_users
-from solidata_api._core.utils import create_modif_log
-
-
-# ### import data serializers
-from solidata_api._serializers._choices_user import bad_passwords
-
 ### create namespace
 ns = Namespace('password', description='User : password related endpoints')
-
-### import parsers
-# from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 from solidata_api._models.models_user import EmailUser, PasswordUser, User_infos
 model_email_user  	= EmailUser(ns).model
 model_pwd_user			= PasswordUser(ns).model
 model_access_user		= User_infos(ns).model_access
+
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES

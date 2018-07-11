@@ -6,19 +6,24 @@ api_auth/__init__.py
 	REST requests and responses
 """
 
-from log_config import log, pformat
+from solidata_api.api import *
+
+# from log_config import log, pformat
 log.debug("\n>>> api_auth ... creating api blueprint for AUTH")
 
-from flask import Blueprint, current_app as app
-from flask_restplus import Api
+# from flask import Blueprint, current_app as app
+# from flask_restplus import Api
 
 ### import db collections dict
 # from solidata_api.application import mongo
-from solidata_api._auth.authorizations import authorizations as auth_check
+# from solidata_api._auth.authorizations import authorizations as auth_check
 # from solidata_api._auth.auth_decorators import token_required
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
 blueprint = Blueprint( 'api_auth', __name__, template_folder='templates' )
 api = Api( 	blueprint,
 						title						="Solidata API : AUTH SERVER",
@@ -48,7 +53,10 @@ def default_error_handler(e):
 #     return {'message': 'A database result was required but none was found.'}, 404
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### import api namespaces / add namespaces to api wrapper
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
 
 from .endpoint_user_login import ns as ns_user_login
 api.add_namespace(ns_user_login)

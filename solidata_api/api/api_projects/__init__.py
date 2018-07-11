@@ -6,50 +6,56 @@ api_projects/__init__.py
 	REST requests and responses
 """
 
-from flask import Blueprint
-from flask_restplus import Api
+from solidata_api.api import *
 
+# from log_config import log, pformat
+log.debug("\n>>> api_projects ... creating api blueprint for PROJECTS")
+
+# from flask import Blueprint, current_app as app
+# from flask_restplus import Api
+
+### import db collections dict
+# from solidata_api.application import mongo
+# from solidata_api._auth.authorizations import authorizations as auth_check
+# from solidata_api._auth.auth_decorators import token_required
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
-blueprint = Blueprint( 'api_projects', __name__)
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+blueprint = Blueprint( 'api_projects', __name__, template_folder='templates' )
 api = Api( 	blueprint,
-						title="SOLIDATA - PROJECTS API",
-						version="0.1",
-						description="create, list, delete, edit... projects",
-						doc='/documentation',
-						default='projects_list'
-					)
-
-### import data schemas
-### TO DO 
-
-### mocking a project definition
-projects = [
-	{
-		"id" : 1,
-		"proj_title"				: "my project",
-		"owner"							: "email",
-		"collaborators"			: [],
-
-		"datamodel"					: "dfghjkl", 	# datamodel id in DB
-		"datasets_inputs"		: [],					# list of datasets_input ids in DB
-		"corr_dicts"				: [],					# list of corr_dict ids in DB
-		
-		"recipes" 					: {
-			"on_datamodel" 	: {},
-			"on_datasets"		: {},
-			"on_corr_dict"	: {}, 
-		},
-
-		"dataset_output"	: "",						# unique dataset output id in DB
-
-		"exports"					: [],						# description of exports settings
-		
-	}
-]
+						title						= "Solidata API : PROJECTS",
+						version					= "0.1",
+						description			= "create, list, delete, edit... projects",
+						doc							= '/documentation',
+						default					= 'create',
+						authorizations	= auth_check,
+						security				='apikey' # globally ask for pikey auth
+)
 
 
-### import api namespaces
-from .proj_list import api as api_proj_list
+### errors handlers
 
-### add namespaces to api wrapper
-api.add_namespace(api_proj_list)
+@api.errorhandler
+def default_error_handler(e):
+		message = 'An unhandled exception occurred.'
+		log.exception(message)
+
+		if not app.config["FLASK_DEBUG"]:
+				return {'message': message}, 500
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### import api namespaces / add namespaces to api wrapper
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+from .endpoint_projects import 		ns as ns_proj_list
+api.add_namespace(ns_proj_list)
+
+from .endpoint_proj_create import 		ns as ns_proj_create
+api.add_namespace(ns_proj_create)
+
+from .endpoint_proj_edit import 		ns as ns_proj_edit
+api.add_namespace(ns_proj_edit)

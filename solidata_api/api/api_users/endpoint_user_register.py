@@ -6,45 +6,14 @@ endpoint_login.py
 	REST requests and responses
 """
 
-from log_config import log, pformat
-log.debug(">>> api_users ... creating api endpoints for USER_REGISTER")
+from solidata_api.api import *
 
-from	bson import json_util
-from	bson.objectid import ObjectId
-from	bson.json_util import dumps
+log.debug(">>> api_users ... creating api endpoints for USER_REGISTER")
 
 from . import api
 
-from flask import current_app as app, request, render_template
-from flask_restplus import Namespace, Resource, fields, marshal, reqparse
-from 	werkzeug.security 	import 	generate_password_hash #, check_password_hash
-
-### import mailing utils
-from solidata_api._core.emailing import send_email
-from solidata_api._core.utils import create_modif_log
-
-### import JWT utils
-import jwt
-from datetime import datetime, timedelta
-from flask_jwt_extended import (
-			create_access_token, create_refresh_token, 
-			jwt_required, jwt_refresh_token_required, current_user,
-			get_jwt_claims, get_jwt_identity
-)
-from solidata_api._auth import admin_required, current_user_required, anonymous_required, confirm_email_required # token_required
-
-### import mongo utils
-from solidata_api.application import mongo
-from solidata_api._core.queries_db import mongo_users
-
-# ### import data serializers
-from solidata_api._serializers.schema_users import *  # user_roles, bad_passwords, ...
-
 ### create namespace
 ns = Namespace('register', description='Users : register related endpoints')
-
-### import parsers
-from solidata_api._parsers.parser_pagination import pagination_arguments
 
 ### import models 
 from solidata_api._models.models_user import *  
@@ -52,7 +21,6 @@ model_register_user			= NewUser(ns).model
 model_register_user_out	= User_infos(ns).model_complete_out
 model_user_complete_in	= User_infos(ns).model_complete_in
 model_user_access				= User_infos(ns).model_access
-
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
