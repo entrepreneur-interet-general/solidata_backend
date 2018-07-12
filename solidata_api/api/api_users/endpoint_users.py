@@ -29,6 +29,7 @@ model_user_out	= User_infos(ns).model_complete_out
 @ns.route('/')
 class UsersList(Resource):
 
+	### TO DO  : pagination arguments
 	@ns.doc('users_list')
 	@admin_required
 	@ns.expect(pagination_arguments)

@@ -1,9 +1,13 @@
 # -*- encoding: utf-8 -*-
 
 """
-model_projects.py  
+schema_projects.py  
 - provides the model for PROJECT definition in DB and Flask-Restplus
 """
+
+from log_config import log, pformat
+
+log.debug("... loading schema_projects.py ...")
 
 from flask_restplus import fields
 
@@ -13,35 +17,38 @@ from .schema_users import *
 
 
 
-
 ### FOR GENERIC MODELS
-project_data = {
-	"data" 			: generic_data,
-}
+# project_data = {
+# 	"data" 			: generic_data,
+# }
 
-project_basics = {
-	"title" 				: title,
-	"owner" 				: oid,
-	"dso"						: oid
-}
+is_running		= fields.Boolean(
+										description	= "is the project currently running ?",
+										attribute		= "is_running",
+										example			= False,
+										required		= True,
+										default			= False,
+									)
 
-project_team = {
-	
-}
 
-project_datasets = {
-	"dm_" 					: None,
-}
+# project_collaborator = {
+# 	"user_oid" 			: oid,
+# 	"auth_level"		: None,
+# }
 
-project_recipes = {
-	"on_datamodel" 	: None,
-	"on_datasets" 	: None,
-	"on_corr_dict" 	: None,
-}
+# project_datasets = {
+# 	"dm_" 					: None,
+# }
 
-project_outputs = {
+# project_recipes = {
+# 	"on_datamodel" 	: None,
+# 	"on_datasets" 	: None,
+# 	"on_corr_dict" 	: None,
+# }
 
-}
+# project_outputs = {
+
+# }
 
 
 

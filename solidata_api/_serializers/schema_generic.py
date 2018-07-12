@@ -13,6 +13,7 @@ from flask_restplus import fields #, marshal
 log.debug("... loading schema_generic.py ...")
 
 
+
 ### generic info for updates
 generic_data 		= fields.String(
 										description	= "data about a document",
@@ -22,12 +23,26 @@ generic_data 		= fields.String(
 										required		= True,
 									)
 
-### basic informations about a document : project / dataset / ...
+### basic informations about a document : project / licence / oid ...
 title 					= fields.String(
 										description	= "title of the document",
 										attribute		= "title",
 										example			= "my-title",
 										default			= 'title',
+										required		= True,
+									)
+descript 					= fields.String(
+										description	= "description of the document",
+										attribute		= "description",
+										example			= "my-description",
+										default			= 'description',
+										required		= False,
+									)
+licence 				= fields.String(
+										description	= "licence of the document",
+										attribute		= "licence",
+										example			= "my-licence",
+										default			= 'licence',
 										required		= True,
 									)
 oid 						= fields.String(
@@ -36,12 +51,17 @@ oid 						= fields.String(
 										example			= "5b461ed90a82867e7b114f44",
 										required		= True,
 									)
-edit_auth				= fields.String(
-										description = "authorization level for edition",
-										attribute		= "owner_oid",
-										example			= "can_edit",
+doc_categ 			= fields.String(
+										description	= "category of a document : usr, dm_t, dm_p, dsi, cd, rec ...",
+										attribute		= "doc_categ",
+										example			= "usr",
+										default			= 'usr',
 										required		= True,
-										default			= 'title',
 									)
 
-
+### preformat some generic fields
+doc_basics = {
+	"title" 				: title,
+	"licence"				: licence,
+	"description"		: descript,
+}

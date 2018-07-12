@@ -9,9 +9,7 @@ from log_config import log, pformat
 
 log.debug("... loading schema_users.py ...")
 
-
-from flask_restplus import fields #, marshal
-# import json
+from flask_restplus import fields 
 
 from ._choices_user import * 
 from .schema_generic import *
@@ -96,6 +94,13 @@ old_refr_tok		= fields.String(
 										default			= "no_old_refresh_token",
 										required		= False,
 									)
+edit_auth				= fields.List(
+										fields.String(
+											description = "edit auth of an user"
+										),
+										attribute		= "edit_auth", 
+										default			= [] 
+									)
 
 ### preferences
 language				= fields.String(
@@ -106,7 +111,8 @@ language				= fields.String(
 									)
 fav_list				= fields.List(
 										fields.String(
-											description = "ids of the favorites projects created by the user"),
+											description = "ids of the favorites projects created by the user"
+										),
 										attribute		= "fav_list", 
 										default			= [] 
 									)
@@ -114,23 +120,27 @@ fav_list				= fields.List(
 ### profesional infos
 structures			= fields.List(
 										fields.String(
-											description	= "structures / organisations the user"),
+											description	= "structures / organisations the user"
+										),
 										example			= ["my structure A", "my structure B"],
 										attribute		= "struct",	
 										default			= []
 									)
 struct_profiles	= fields.List(
 										fields.String(
-											description	= "structures / organisations profile"),
-										enum				= user_structure,
-										example			= ["public_state"],
+											description	= "structures / organisations profile",
+											example			= "public_state",
+											enum				= user_structure,
+										),
 										attribute		= "struct_profiles",	
 										default			= []
 									)
 profiles				= fields.List(
 										fields.String(
-											description	= "profiles of the user"),
-										enum				= user_profiles,
+											description	= "profiles of the user",
+											enum				= user_structure,
+										),
+										# enum				= user_profiles,
 										example			= ["organizer"],
 										attribute		= "profiles",	
 										default			= []
@@ -138,38 +148,44 @@ profiles				= fields.List(
 
 ### datasets infos
 proj_list				= fields.List(
-										fields.String(
-											description = "ids of the projects created by the user"),
+										oid,
+										description = "ids of the projects created by the user",
 										attribute		= "proj_list", 
 										default			= [] 
 									)
-dm_list					= fields.List(
-										fields.String(
-											description	= "ids of the datamodels created by the user"),
-										attribute		= "dm_list",
+dm_t_list					= fields.List(
+										oid,
+										description	= "ids of the datamodels templates created by the user",
+										attribute		= "dm_t_list",
 										default			= [] 
 									)
-dsi_list				= fields.List(
-										fields.String(
-											description	= "ids of the datasets_in imported by the user"),
-										attribute		= "dsi_list",
+dm_p_list					= fields.List(
+										oid,
+										description	= "ids of the datamodels parts created by the user",
+										attribute		= "dm_p_list",
 										default			= [] 
 									)
-dso_list				= fields.List(
-										fields.String(
-											description	= "ids of the datasets_out exported by the user"), 
-										attribute		= "dso_list",
+ds_i_list				= fields.List(
+										oid,
+										description	= "ids of the datasets_in imported by the user",
+										attribute		= "ds_i_list",
 										default			= [] 
 									)
+# dso_list				= fields.List(
+# 										oid,
+# 										description	= "ids of the datasets_out exported by the user", 
+# 										attribute		= "dso_list",
+# 										default			= [] 
+# 									)
 dc_list					= fields.List(
-										fields.String(
-											description	= "ids of the correspondance_dicts created by the user"), 
+										oid,
 										attribute		= "dc_list",
+										description	= "ids of the correspondance_dicts created by the user", 
 										default			= [] 
 									)
 rec_list				= fields.List(
-										fields.String(
-											description	= "ids of the recipes created by the user"),
+										oid,
+										description	= "ids of the recipes created by the user",
 										attribute		= "rec_list",
 										default			= [] 
 									)
@@ -248,16 +264,17 @@ user_auth_in = {
 }
 
 user_datasets_in = {
-	"proj_"	: proj_list,
-	"dm_"		: dm_list,
-	"dsi_"	: dsi_list,
-	"dso_"	: dso_list,
-	"dc_"	  : dc_list,
-	"rec_"	: rec_list,
+	"proj_list"	: proj_list,
+	"dm_t_list"	: dm_t_list,
+	"dm_p_list"	: dm_p_list,
+	"ds_i_list"	: ds_i_list,
+	# "ds_o_list"	: dso_list,
+	"dc_list"	  : dc_list,
+	"rec_list"	: rec_list,
 }
 user_preferences_in = {
 	"lang"  		: language,
-	"fav_list" 	: fav_list
+	# "fav_list" 	: fav_list
 }
 
 user_professional_in = {
@@ -279,16 +296,17 @@ user_auth_out = {
 
 user_datasets_out = {
 	"projects"							: proj_list,
-	"datamodels"						: dm_list,
-	"datasets_inputs"				: dsi_list,
-	"datasets_outputs"			: dso_list,
+	"datamodels_templates"	: dm_t_list,
+	"datamodels_parts"			: dm_p_list,
+	"datasets_inputs"				: ds_i_list,
+	# "datasets_outputs"			: dso_list,
 	"correspondance_dicts"	: dc_list,
 	"recipes"								: rec_list,
 }
 
 user_preferences_out = {
 	"language" 	: language,
-	"favorites"	: fav_list
+	# "favorites"	: fav_list
 }
 
 user_professional_out = {

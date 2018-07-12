@@ -17,6 +17,8 @@ from solidata_api._serializers.schema_logs import *
 from solidata_api._serializers.schema_generic import *  
 from solidata_api._serializers.schema_users import *  
 
+### import generic models functions
+from solidata_api._models.models_generic import *
 
 ### create models from serializers
 # nested models : https://github.com/noirbizarre/flask-restplus/issues/8
@@ -33,7 +35,7 @@ class UserData :
 	@property
 	def model(self): 
 		return self.mod
-		
+
 
 class AnonymousUser : 
 	"""
@@ -145,27 +147,45 @@ class User_infos :
 					ns_.model('User_profiles', 					user_profiles)
 				)
 
-		self.modifications 	=  fields.List(
-					fields.Nested(
-							ns_.model('Modifications', 			modification )
-					),
-					default			= [] 
-		)
-		self.user_log 			= fields.Nested( 
-			ns_.model("User_log", {
-				'created_at'		: created_at,
-				'login_count'		: count,
-				'modified_log'	: self.modifications
+		# self.modifications 	=  fields.List(
+		# 			fields.Nested(
+		# 					ns_.model('Modifications', 			modification )
+		# 			),
+		# 			default			= [] 
+		# )
+		# self.user_log 			= fields.Nested( 
+		# 	ns_.model("User_log", {
+		# 		'created_at'		: created_at,
+		# 		'login_count'		: count,
+		# 		'modified_log'	: self.modifications
+		# 	})
+		# )
+
+		self.user_log = create_model_modif_log(ns_, "User_log", schema=modification, include_counts=True, counts_name='login_count', include_created_by=False)
+
+		### favorites
+		self.fav_ 			= fields.Nested( 
+			ns_.model("User_fav", {
+				'oid'				: oid,
+				'doc_categ'	: doc_categ,
+				'added_at'	: created_at,
 			})
 		)
+		self.favorites = fields.List( 
+												self.fav_ , 
+												description = "list of user's favorite documents",
+												attribute		= "favorites",
+												default			= [] 
+										)
 
 
 		### IN / complete data to enter in DB
 		self.mod_complete_in  = ns_.model('User_in', {
 
-				'infos' 	: self.basic_infos,
-				'profile' : self.profiles,
-				'log' 		: self.user_log , 
+				'infos' 		: self.basic_infos,
+				'profile' 	: self.profiles,
+				'log' 			: self.user_log , 
+				'favorites'	: self.favorites,
 
 				'auth': fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_in  )
@@ -184,9 +204,10 @@ class User_infos :
 		### OUT / complete data to enter in DB
 		self.mod_complete_out  = ns_.model('User_out', {
 
-				'infos' 	: self.basic_infos,
-				'profile' : self.profiles,
-				'log' 		: self.user_log , 
+				'infos' 		: self.basic_infos,
+				'profile' 	: self.profiles,
+				'log' 			: self.user_log , 
+				'favorites'	: self.favorites,
 
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
@@ -207,9 +228,10 @@ class User_infos :
 		### OUT / for access tokens
 		self.mod_access  = ns_.model('User_access', {
 
-				'infos' 	: self.basic_infos,
-				# 'log' 		: self.user_log, 
-				# 'profile' : self.profiles,
+				'infos' 			: self.basic_infos,
+				# 'log' 			: self.user_log, 
+				# 'profile' 	: self.profiles,
+				# 'favorites'	: self.favorites,
 
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
@@ -236,25 +258,3 @@ class User_infos :
 	def model_access(self): 
 		return self.mod_access
 
-# class User_in : 
-
-# 	def __init__(self, ns_) :
-
-# 		self.mod        = ns_.model('User', {
-# 				'infos': fields.Nested(
-# 					ns_.model('User_public_data', user_basics )
-# 				),
-# 				'auth': fields.Nested(
-# 					ns_.model('User_authorizations',  user_auth  )
-# 				),
-# 				'preferences': fields.Nested(
-# 					ns_.model('User_preferences',  user_preferences_in  )
-# 				),
-# 				'datasets': fields.Nested(
-# 					ns_.model('User_datasets',  user_datasets_in  )
-# 				),
-# 		})
-
-# 	@property
-# 	def model(self): 
-# 		return self.mod

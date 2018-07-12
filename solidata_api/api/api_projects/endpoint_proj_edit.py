@@ -16,7 +16,7 @@ ns = Namespace('edit', description='Edit a project : ... ')
 ### import models 
 from solidata_api._models.models_projects import * 
 model_project_in		= Project_infos(ns).mod_complete_in
-model_project_out		= Project_infos(ns).mod_complete_out
+# model_project_out		= Project_infos(ns).mod_complete_out
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

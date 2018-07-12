@@ -10,7 +10,7 @@ from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-from flask import Blueprint, current_app as app, url_for, request
+from flask import Blueprint, current_app as app, url_for, request, render_template
 
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
