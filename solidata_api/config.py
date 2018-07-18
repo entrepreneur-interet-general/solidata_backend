@@ -50,17 +50,17 @@ class BaseConfig(object):
 	MONGO_DBNAME								= 'solidata'
 	MONGO_URI										= 'mongodb://localhost:27017/solidata'
 	# collections
-	MONGO_COLL_USERS						  = "users"
-	MONGO_COLL_LICENCES					  = "licences"
-	MONGO_COLL_PROJECTS					  = "projects"
-	MONGO_COLL_DATAMODELS			  	= "datamodels"
-	MONGO_COLL_DATAMODELS_FIELDS	= "datamodels_fields"
-	MONGO_COLL_CONNECTORS				  = "connectors"
-	MONGO_COLL_DATASETS_INPUTS	  = "datasets_inputs"
-	MONGO_COLL_DATASETS_OUTPUTS	  = "datasets_outputs"
-	MONGO_COLL_RECIPES					  = "recipes"
-	MONGO_COLL_CORR_DICTS				  = "corr_dicts"
-	MONGO_COLL_JWT_BLACKLIST			= "jwt_blacklist"
+	MONGO_COLL_USERS						  	= "users"
+	MONGO_COLL_LICENCES					  	= "licences"
+	MONGO_COLL_PROJECTS					  	= "projects"
+	MONGO_COLL_DATAMODELS_TEMPLATES	= "datamodels_templates"
+	MONGO_COLL_DATAMODELS_FIELDS		= "datamodels_fields"
+	# MONGO_COLL_CONNECTORS				  	= "connectors"
+	MONGO_COLL_DATASETS_INPUTS	  	= "datasets_inputs"
+	MONGO_COLL_DATASETS_OUTPUTS	  	= "datasets_outputs"
+	MONGO_COLL_RECIPES					  	= "recipes"
+	# MONGO_COLL_CORR_DICTS				  	= "corr_dicts"
+	MONGO_COLL_JWT_BLACKLIST				= "jwt_blacklist"
 
 	""" EMAILING """
 	# email server

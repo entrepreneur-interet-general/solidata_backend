@@ -99,10 +99,17 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 		# access mongodb collections
 		from solidata_api._core.queries_db import ( db, 
-				mongo_users,mongo_licences,mongo_projects,mongo_datamodels, 
-				mongo_datamodels_fields,mongo_connectors, 
-				mongo_datasets_inputs,mongo_datasets_outputs, 
-				mongo_recipes,mongo_corr_dicts 
+				mongo_users,
+				mongo_projects,
+				mongo_datamodels_templates, 
+				mongo_datamodels_fields,
+				# mongo_connectors, ### all cd are treated as ds_i
+				mongo_datasets_inputs,
+				mongo_datasets_outputs, 
+				mongo_recipes,
+				mongo_jwt_blacklist,
+				# mongo_licences,
+				# mongo_corr_dicts   ### all cd are treated as ds_i
 			) 
 
 		# import token required
@@ -135,9 +142,6 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 	# from solidata_api.api.api_datasets_in 	import blueprint as api_dsi
 	# app.register_blueprint( api_dsi, url_prefix='/api/datasets_input')
-
-	# from solidata_api.api.api_corr_dicts 	import blueprint as api_dc
-	# app.register_blueprint( api_dc, url_prefix='/api/correspondance_dicts')
 
 	# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
 	# app.register_blueprint( api_dso, url_prefix='/api/datasets_output')

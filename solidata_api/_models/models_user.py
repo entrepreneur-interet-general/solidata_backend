@@ -139,88 +139,62 @@ class User_infos :
 		
 
 		### SELF MODULES
-		self.basic_infos		= fields.Nested(
-					ns_.model('User_public_data', user_basics )
-				)
 
-		self.profiles 			= fields.Nested(
-					ns_.model('User_profiles', 					user_profiles)
-				)
+		self.modif_log			= create_model_modif_log(ns_)
+		self.datasets 			= create_model_datasets(ns_, include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec"])
+		self.specs					= create_model_specs(ns_, include_counts=True, counts_name="login_count")
 
-		# self.modifications 	=  fields.List(
-		# 			fields.Nested(
-		# 					ns_.model('Modifications', 			modification )
-		# 			),
-		# 			default			= [] 
-		# )
-		# self.user_log 			= fields.Nested( 
-		# 	ns_.model("User_log", {
-		# 		'created_at'		: created_at,
-		# 		'login_count'		: count,
-		# 		'modified_log'	: self.modifications
-		# 	})
-		# )
-
-		self.user_log = create_model_modif_log(ns_, "User_log", schema=modification, include_counts=True, counts_name='login_count', include_created_by=False)
-
-		### favorites
-		self.fav_ 			= fields.Nested( 
-			ns_.model("User_fav", {
-				'oid'				: oid,
-				'doc_categ'	: doc_categ,
-				'added_at'	: created_at,
-			})
+		### basic infos
+		self.basic_infos 			= create_model_basic_infos(ns_, "User_infos", is_user_infos=True)
+		# self.basic_infos		= fields.Nested(
+		# 			ns_.model('User_public_data', user_basics )
+		# 		)
+				
+		### profile
+		self.profile 			= fields.Nested( 
+			ns_.model("User_profile", usr_profile_ )
 		)
-		self.favorites = fields.List( 
-												self.fav_ , 
-												description = "list of user's favorite documents",
-												attribute		= "favorites",
-												default			= [] 
-										)
+
 
 
 		### IN / complete data to enter in DB
 		self.mod_complete_in  = ns_.model('User_in', {
 
-				'infos' 		: self.basic_infos,
-				'profile' 	: self.profiles,
-				'log' 			: self.user_log , 
-				'favorites'	: self.favorites,
+				'infos' 			: self.basic_infos,
+				'profile' 		: self.profile,
+				'specs' 			: self.specs , 
+				'modif_log' 	: self.modif_log , 
+				"datasets"		: self.datasets ,
 
 				'auth': fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_in  )
 				),
-				'preferences': fields.Nested(
-					ns_.model('User_preferences',  			user_preferences_in  )
-				),
-				'datasets': fields.Nested(
-					ns_.model('User_datasets',  				user_datasets_in  )
-				),
-				'professional' 	: fields.Nested(
-					ns_.model('User_profesional', 			user_professional_in )
-				),
+				# 'preferences'		: fields.Nested(
+				# 	ns_.model('User_preferences',  			user_preferences_in  )
+				# ),
+				# 'professional' 	: fields.Nested(
+				# 	ns_.model('User_profesional', 			user_professional_in )
+				# ),
 		})
 
 		### OUT / complete data to enter in DB
 		self.mod_complete_out  = ns_.model('User_out', {
 
-				'infos' 		: self.basic_infos,
-				'profile' 	: self.profiles,
-				'log' 			: self.user_log , 
-				'favorites'	: self.favorites,
+				'infos' 			: self.basic_infos,
+				'profile' 		: self.profile,
+				'specs' 			: self.specs , 
+				'modif_log' 	: self.modif_log , 
+				"datasets"		: self.datasets ,
 
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
 				),
-				'preferences'		: fields.Nested(
-					ns_.model('User_preferences',  			user_preferences_out  )
-				),
-				'datasets'			: fields.Nested(
-					ns_.model('User_datasets', 					user_datasets_out  )
-				),
-				'professional' 	: fields.Nested(
-					ns_.model('User_profesional', 			user_professional_out )
-				),
+				# 'preferences'		: fields.Nested(
+				# 	ns_.model('User_preferences',  			user_preferences_out  )
+				# ),
+				# 'professional' 	: fields.Nested(
+				# 	ns_.model('User_profesional', 			user_professional_out )
+				# ),
 
 			})
 
@@ -236,9 +210,9 @@ class User_infos :
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
 				),
-				'preferences': fields.Nested(
-					ns_.model('User_preferences',  			user_preferences_out  )
-				),
+				# 'preferences': fields.Nested(
+				# 	ns_.model('User_preferences',  			user_preferences_out  )
+				# ),
 			})
 
 

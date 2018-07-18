@@ -47,6 +47,16 @@ modified_val			= fields.String(
 										attribute		= "modif_val" ,
 										required		= False, 
 									)
+added_at 			= fields.DateTime( 
+										description	= "date of addition", 
+										attribute		= "added_at" ,
+										required		= True, 
+									)
+# added_by		  = fields.String(	 
+# 										description	= "added by an user",
+# 										attribute		= "added_by" ,
+# 										required		= True, 
+# 									)
 
 ### FOR GENERIC MODELS
 modification = {
@@ -58,12 +68,12 @@ modification_by = {
 	"modif_at" 		: modified_at,
 	"modif_for" 	: modified_for,
 	# "modif_by" 		: modified_by
-	"modif_by" 		: oid
+	"modif_by" 		: oid_usr
 }
 
 modification_full = {
 	"modif_at" 		: modified_at,
 	"modif_for" 	: modified_for,
-	"modif_by" 		: oid,
+	"modif_by" 		: oid_usr,
 	"modif_val" 	: modified_val,
 }

@@ -96,7 +96,8 @@ old_refr_tok		= fields.String(
 									)
 edit_auth				= fields.List(
 										fields.String(
-											description = "edit auth of an user"
+											description = "edit auth of an user",
+											enum				= user_actions_proj,
 										),
 										attribute		= "edit_auth", 
 										default			= [] 
@@ -109,103 +110,46 @@ language				= fields.String(
 										attribute		= "lang",	
 										default			= "en",
 									)
-fav_list				= fields.List(
-										fields.String(
-											description = "ids of the favorites projects created by the user"
-										),
-										attribute		= "fav_list", 
-										default			= [] 
+# fav_list				= fields.List(
+# 										fields.String(
+# 											description = "ids of the favorites projects created by the user"
+# 										),
+# 										attribute		= "fav_list", 
+# 										default			= [] 
+# 									)
+is_fav					= fields.Boolean(
+										description	= "is the document a favorite ?",
+										attribute		= "is_fav",
+										example			= False,
+										required		= True,
+										default			= False,
 									)
 
 ### profesional infos
-structures			= fields.List(
-										fields.String(
+structure			= fields.String(
 											description	= "structures / organisations the user"
-										),
-										example			= ["my structure A", "my structure B"],
-										attribute		= "struct",	
-										default			= []
-									)
-struct_profiles	= fields.List(
-										fields.String(
+										)
+										# example			= ["my structure A", "my structure B"],
+										# attribute		= "struct",	
+										# default			= []
+struct_profile	= fields.String(
 											description	= "structures / organisations profile",
 											example			= "public_state",
 											enum				= user_structure,
-										),
-										attribute		= "struct_profiles",	
-										default			= []
-									)
-profiles				= fields.List(
-										fields.String(
+										)
+										# attribute		= "struct_profiles",	
+										# default			= []
+usr_profile				= fields.String(
 											description	= "profiles of the user",
-											enum				= user_structure,
-										),
+											enum				= user_profiles,
+										)
+usr_profiles				= fields.List(
+										usr_profile,
 										# enum				= user_profiles,
 										example			= ["organizer"],
 										attribute		= "profiles",	
 										default			= []
 									)
-
-### datasets infos
-proj_list				= fields.List(
-										oid,
-										description = "ids of the projects created by the user",
-										attribute		= "proj_list", 
-										default			= [] 
-									)
-dm_t_list					= fields.List(
-										oid,
-										description	= "ids of the datamodels templates created by the user",
-										attribute		= "dm_t_list",
-										default			= [] 
-									)
-dm_p_list					= fields.List(
-										oid,
-										description	= "ids of the datamodels parts created by the user",
-										attribute		= "dm_p_list",
-										default			= [] 
-									)
-ds_i_list				= fields.List(
-										oid,
-										description	= "ids of the datasets_in imported by the user",
-										attribute		= "ds_i_list",
-										default			= [] 
-									)
-# dso_list				= fields.List(
-# 										oid,
-# 										description	= "ids of the datasets_out exported by the user", 
-# 										attribute		= "dso_list",
-# 										default			= [] 
-# 									)
-dc_list					= fields.List(
-										oid,
-										attribute		= "dc_list",
-										description	= "ids of the correspondance_dicts created by the user", 
-										default			= [] 
-									)
-rec_list				= fields.List(
-										oid,
-										description	= "ids of the recipes created by the user",
-										attribute		= "rec_list",
-										default			= [] 
-									)
-
-### USER LOG
-# created_at 			= fields.DateTime( 
-# 										description	= "creation date", 
-# 										attribute		= "created_at" ,
-# 										required		= False, 
-# 									)
-# modified_at			= fields.DateTime( 
-# 										description	= "modification date", 
-# 										attribute		= "modif_at" ,
-# 										required		= False, 
-# 									)
-# modified_for		= fields.String(	 
-# 										description	= "modification action",
-# 										attribute		= "modif_for" ,
-# 										required		= False, 
-# 									)
 
 
 ### FOR GENERIC MODELS
@@ -243,15 +187,6 @@ old_refresh_token = {
 	"old_refresh_token" : old_refr_tok,
 }
 
-# user_log 					= {
-# 	"created_at" 		: created_at,
-# 	# "modified_log" 	: modified_log
-# }
-# modification = {
-# 	"modif_at" 		: modified_at,
-# 	"modif_for" 	: modified_for
-# }
-
 
 ### FOR MODELS TO INSERT IN DB
 user_auth_in = {
@@ -263,27 +198,19 @@ user_auth_in = {
 	"blklst_usr"  : blacklisted_usr,
 }
 
-user_datasets_in = {
-	"proj_list"	: proj_list,
-	"dm_t_list"	: dm_t_list,
-	"dm_p_list"	: dm_p_list,
-	"ds_i_list"	: ds_i_list,
-	# "ds_o_list"	: dso_list,
-	"dc_list"	  : dc_list,
-	"rec_list"	: rec_list,
-}
-user_preferences_in = {
-	"lang"  		: language,
-	# "fav_list" 	: fav_list
-}
+# user_preferences_in = {
+# 	"lang"  		: language,
+# 	# "fav_list" 	: fav_list
+# }
 
-user_professional_in = {
-	"struct" 					: structures,
-	"struct_profiles" : struct_profiles,
-}
+# user_professional_in = {
+# 	"struct" 					: structure,
+# 	"struct_profiles" : struct_profile,
+# }
 
-user_profiles = {
-	"profiles" 			: profiles,
+usr_profile_ = {
+	"lang"  				: language,
+	"usr_profiles"  : usr_profiles,
 }
 
 ### FOR MODELS TO EXPORT OUT OF DB
@@ -294,22 +221,12 @@ user_auth_out = {
 	# "acc_tok"			: acc_tok,
 }
 
-user_datasets_out = {
-	"projects"							: proj_list,
-	"datamodels_templates"	: dm_t_list,
-	"datamodels_parts"			: dm_p_list,
-	"datasets_inputs"				: ds_i_list,
-	# "datasets_outputs"			: dso_list,
-	"correspondance_dicts"	: dc_list,
-	"recipes"								: rec_list,
-}
+# user_preferences_out = {
+# 	"language" 	: language,
+# 	# "favorites"	: fav_list
+# }
 
-user_preferences_out = {
-	"language" 	: language,
-	# "favorites"	: fav_list
-}
-
-user_professional_out = {
-	"structures" 					: structures,
-	"structures_profiles" : struct_profiles,
-}
+# user_professional_out = {
+# 	"structures" 					: structures,
+# 	"structures_profiles" : struct_profiles,
+# }

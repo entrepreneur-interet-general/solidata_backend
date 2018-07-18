@@ -19,72 +19,150 @@ from solidata_api._serializers.schema_projects import *
 
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### MODEL / BASIC INFOS 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_basic_infos(ns_,	model_name,
-																	schema=doc_basics, 
+																	schema				= doc_basics,
+																	is_user_infos	= False, 
 														) : 
-				
+	""" 
+	"""
+	
+	schema = doc_basics
+
+	if is_user_infos == True : 
+		schema = user_basics 
+
 	basic_infos		= fields.Nested(
-					ns_.model( model_name , doc_basics )
+					ns_.model( model_name , schema )
 				)
 	return basic_infos
 
 
 
-### MODEL TEAM 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / TEAM 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_team(ns_, model_name="Collaborator"):
-		
+	
+	"""
+	"""
+	
 	collaborator = fields.Nested( 
 			ns_.model( model_name, {
-				'user_oid'	: oid,
-				'auth_edit'	: edit_auth
+				'oid_usr'		: oid_usr,
+				'edit_auth'	: edit_auth,
+				'added_at'  : added_at,
+				'added_by'  : oid_usr,
 			})
 		)
 
 	collaborators = fields.List( 
 		collaborator,
-		description = "List of collaborators on this document", 
+		description = "List of {}s on this document".format(model_name), 
 		default 		= [] 
-		) 
+	) 
 
 	return collaborators
 
 
-### MODIFICATIONS LOG
-def create_model_modif_log(ns_, model_name, 
-																schema							= modification_full, 
-																include_counts			= False, 
-																counts_name					= "counts",
-																include_created_by	= True,
-																include_is_running	=	False,
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / DATASETS
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+def create_model_datasets(ns_,	model_name				= "Datasets" ,
+																include_fav				=	False,
+																display_fullname 	= False ,
+																schema_list				= ["prj", "dmt", "dmf", "dsi", "rec", "dso"], 
+														) : 
+	"""
+	"""
+
+	datasets_dict = {}
+
+	for schema in schema_list : 
+		
+		model_dataset = {
+					'oid_usr'		: oid_dict[schema]["field"],
+					'added_at'  : added_at,
+					'added_by'  : oid_usr,
+				}
+		
+		if include_fav == True : 
+			model_dataset["is_fav"] = is_fav
+		
+		dataset		= fields.Nested(
+				ns_.model( schema.title(), model_dataset )
+			)
+
+		dataset_list = fields.List( 
+			dataset,
+			description = "List of {}s on this document".format(oid_dict[schema]["fullname"]), 
+			default 		= [] 
+		) 
+
+		datasets_dict[schema] = dataset_list
+
+	datasets = fields.Nested( 
+			ns_.model( model_name, datasets_dict )
+		)
+
+	return datasets
+
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / MODIFICATIONS LOG
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+def create_model_modif_log(ns_, model_name = "Modification", 
+																schema			= modification_full, 
 													) :
+
+	""" 
+	"""
 	
 	### create the list of modifications
 	modifications = fields.List(
 										fields.Nested(
-												ns_.model('Modifications', schema )
+												ns_.model( model_name, schema )
 										),
-										description = "List of the modifications on this document", 
+										description = "List of the {}s on this document".format(model_name), 
 										default			= [] 
 							)
+
+	return modifications
+
+
+	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / SPECS 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+def create_model_specs(ns_, model_name 					= "Specs", 
+														include_counts			= False, 
+														counts_name					= "counts",
+														include_created_by	= True,
+														include_is_running	=	False,
+														include_is_loaded		=	False,
+													) :
+	""" 
+	"""
 	
-	log_base = {
+	specs_base = {
 				'created_at'		: created_at,
-				'modified_log'	: modifications
 			}
 	
 	if include_created_by == True : 
-		log_base['created_by']	= oid
+		specs_base['created_by']	= oid_usr
 
 	if include_counts == True :
-		log_base[ counts_name ] = count
+		specs_base[ counts_name ] = count
 
 	if include_is_running == True :
-		log_base[ "is_running" ] = is_running
+		specs_base[ "is_running" ] = is_running
 
 	### compile the document's log
-	doc_log = fields.Nested( 
-			ns_.model( model_name, log_base )
+	doc_specs = fields.Nested( 
+			ns_.model( model_name, specs_base )
 		)
 
-	return doc_log
+	return doc_specs

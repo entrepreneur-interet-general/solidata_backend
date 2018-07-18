@@ -12,7 +12,7 @@ from flask_restplus import fields #, marshal
 
 log.debug("... loading schema_generic.py ...")
 
-
+from ._choices_licences import *
 
 ### generic info for updates
 generic_data 		= fields.String(
@@ -41,19 +41,79 @@ descript 					= fields.String(
 licence 				= fields.String(
 										description	= "licence of the document",
 										attribute		= "licence",
-										example			= "my-licence",
-										default			= 'licence',
+										example			= "MIT",
+										default			= 'MIT',
+										enum				= licences_options,
 										required		= True,
 									)
+
+
+### object ids
 oid 						= fields.String(
 										description = "oid of a document",
 										attribute		= "oid",
 										example			= "5b461ed90a82867e7b114f44",
 										required		= True,
 									)
+oid_usr 				= fields.String(
+										description = "oid of an user",
+										attribute		= "oid_usr",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_prj 				= fields.String(
+										description = "oid of a project",
+										attribute		= "oid_proj",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_dmf 				= fields.String(
+										description = "oid of a datamodel field",
+										attribute		= "oid_dm_f",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_dmt 				= fields.String(
+										description = "oid of a datamodel template",
+										attribute		= "oid_dm_t",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_dsi 				= fields.String(
+										description = "oid of a dataset input",
+										attribute		= "oid_ds_i",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_dso 				= fields.String(
+										description = "oid of a dataset output",
+										attribute		= "oid_ds_o",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+oid_rec 				= fields.String(
+										description = "oid of a recipe",
+										attribute		= "oid_rec",
+										example			= "5b461ed90a82867e7b114f44",
+										required		= True,
+									)
+
+oid_dict = {
+	"oid" : { "field" : oid , 		"fullname" : "oid" } ,
+	"usr" : { "field" : oid_usr ,	"fullname" : "user" } ,
+	"prj" : { "field" : oid_prj , "fullname" : "project" } ,
+	"dmt" : { "field" : oid_dmt , "fullname" : "datamodel_template" } ,
+	"dmf" : { "field" : oid_dmf , "fullname" : "datamodel_field" } ,
+	"dsi" : { "field" : oid_dsi , "fullname" : "dataset_input" } ,
+	"rec" : { "field" : oid_rec , "fullname" : "recipe" } ,
+	"dso" : { "field" : oid_dso , "fullname" : "dataset_output" } ,
+}
+
+doc_categ_list = [ "usr", "prj", "dmt", "dmf", "dsi", "rec", "dso" ]
 doc_categ 			= fields.String(
-										description	= "category of a document : usr, dm_t, dm_p, dsi, cd, rec ...",
+										description	= "category of a document",
 										attribute		= "doc_categ",
+										enum 				= doc_categ_list,
 										example			= "usr",
 										default			= 'usr',
 										required		= True,

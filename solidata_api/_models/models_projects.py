@@ -18,7 +18,7 @@ from solidata_api._serializers.schema_generic import *
 from solidata_api._serializers.schema_projects import *  
 
 ### import generic models functions
-from solidata_api._models.models_generic import *
+from solidata_api._models.models_generic import * 
 
 ### create models from serializers
 # nested models : https://github.com/noirbizarre/flask-restplus/issues/8
@@ -35,50 +35,28 @@ class Project_infos :
 	def __init__(self, ns_) :
 		
 		### SELF MODULES
-		# self.basic_infos		= fields.Nested(
-		# 			ns_.model('Project_infos', doc_basics )
-		# 		)
-		self.basic_infos = create_model_basic_infos(ns_, "Project_infos")
-
-		# self.modifications 	=  fields.List(
-		# 			fields.Nested(
-		# 					ns_.model('Modifications_by', 			modification_full )
-		# 			),
-		# 			default			= [] 
-		# )
-		# self.project_log 			= fields.Nested( 
-		# 	ns_.model('Project_log', {
-		# 		'created_at'		: created_at,
-		# 		'modified_log'	: self.modifications
-		# 	})
-		# )
-
-		self.project_log = create_model_modif_log(ns_, "Project_log", include_is_running=True)
-
-		# self.collaborator = fields.Nested( 
-		# 	ns_.model('Collaborator', {
-		# 		'user_oid'	: oid,
-		# 		'auth_edit'	: edit_auth
-		# 	})
-		# )
-		self.collaborators = create_model_team(ns_)
-
+		self.basic_infos 			= create_model_basic_infos(ns_, "Project_infos")
+		self.modif_log				= create_model_modif_log(ns_, "Project_modif_log")
+		self.specs						= create_model_specs(ns_, include_is_running=True)
+		self.collaborators 		= create_model_team(ns_)
+		self.datasets 				= create_model_datasets(ns_, schema_list=["dmt","dsi","rec","dso"])
 
 		### IN / complete data to enter in DB
-		self.mod_complete_in  = ns_.model('Project_in', {
+		self.mod_complete_in 	= ns_.model('Project_in', {
 
-				'infos' 	: self.basic_infos,
-				'log' 		: self.project_log , 
+				'infos' 		: self.basic_infos,
+				'specs'			: self.specs , 
+				'modif_log'	: self.modif_log , 
 
 				### team and edition levels
-				# 'proj_team'		: fields.List(self.collaborator) ,
-				'proj_team'		: self.collaborators ,
+				'prj_team'		: self.collaborators ,
 
 				### datasets 
-				'dm_t' 		: oid,
-				'ds_i' 		: fields.List(oid),
-				'dc_' 		: fields.List(oid),
-				'rec_' 		: fields.List(oid),
+				"datasets"		: self.datasets ,
+				# 'dmt' 		: oid_dmt,
+				# 'dsi' 		: fields.List(oid_dsi),
+				# 'rec' 		: fields.List(oid_rec),
+				# 'dso' 		: fields.List(oid_dso),
 		})
 
 		### OUT / complete data to enter in DB
@@ -104,8 +82,8 @@ class Project_infos :
 	def model_complete_in(self): 
 		return self.mod_complete_in
 
-	@property
-	def model_complete_out(self): 
-		return self.mod_complete_out
+	# @property
+	# def model_complete_out(self): 
+	# 	return self.mod_complete_out
 
 

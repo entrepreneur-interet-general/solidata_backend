@@ -11,16 +11,14 @@ from log_config import log, pformat
 log.debug("... loading _choices_user.py ...")
 
 
-### TO DO : MULTI LANGUAGE FOR ALL CHOICES 
-
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### CHOICES ONLY FOR ADMIN
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 user_roles = [
 	"admin", 
-	"staff", 
-	"collective", 
+	"staff",   ### can edit all datamodels : dmf + dmt
+	# "collective", 
 	"registred", 
 	"guest",
 	"anonymous"
@@ -32,10 +30,12 @@ bad_passwords = [
 	'12345' 
 ]
 
-user_actions = [
-	"can_edit_dm",
+user_actions_proj = [
+	"can_edit_prj",
+	"can_edit_dmt",
+	"can_edit_dmf",
 	"can_edit_dsi",
-	"can_edit_dc",
+	# "can_edit_dc",
 	"can_edit_rec",
 	"can_only_view"
 ]
