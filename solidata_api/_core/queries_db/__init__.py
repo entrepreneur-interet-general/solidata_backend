@@ -18,6 +18,7 @@ from solidata_api.application import mongo
 
 ### declaring collections as app variables
 
+mongo_tags 								  = mongo.db[ app.config["MONGO_COLL_TAGS"] ]
 mongo_users 								= mongo.db[ app.config["MONGO_COLL_USERS"] ]
 mongo_projects 							= mongo.db[ app.config["MONGO_COLL_PROJECTS"] ]
 mongo_datamodels_templates 	= mongo.db[ app.config["MONGO_COLL_DATAMODELS_TEMPLATES"] ]
@@ -35,6 +36,7 @@ mongo_jwt_blacklist 				= mongo.db[ app.config["MONGO_COLL_JWT_BLACKLIST"] ]
 
 
 db = {
+					"mongo_tags"									: mongo_tags,
 					"mongo_users"									: mongo_users,
 					"mongo_projects"							: mongo_projects,
 					"mongo_datamodels_templates"	: mongo_datamodels_templates,

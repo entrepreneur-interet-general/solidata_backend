@@ -3,12 +3,14 @@
 from log_config import log, pformat
 log.debug("... importing all common vars and libs from solidata.api root")
 
-
+import os
 from	copy import copy, deepcopy
 from  datetime import datetime, timedelta
 from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
+
+import pandas as pd
 
 from flask import Blueprint, current_app as app, url_for, request, render_template
 
@@ -35,15 +37,17 @@ from flask_jwt_extended import (
 from solidata_api._auth.authorizations import authorizations as auth_check
 
 from solidata_api._auth import ( 
-	admin_required, current_user_required, confirm_email_required,
+	admin_required, current_user_required, confirm_email_required, guest_required,
 	anonymous_required, renew_pwd_required, reset_pwd_required 
 	)
 
-from solidata_api._parsers.parser_pagination import pagination_arguments
+from solidata_api._parsers.parser_pagination import * # pagination_arguments
+from solidata_api._parsers.parser_queries import * # query_arguments
+from solidata_api._parsers.parser_files import * # query_arguments
 
-from solidata_api._serializers._choices_user import bad_passwords
+from solidata_api._choices import bad_passwords, authorized_filetypes, authorized_mimetype
 
-from solidata_api._core.utils import create_modif_log
+from solidata_api._core.utils import * # create_modif_log, secure_filename, allowed_file
 
 from solidata_api._core.emailing import send_email
 

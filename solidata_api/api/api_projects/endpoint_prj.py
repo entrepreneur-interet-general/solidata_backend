@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_proj_create.py  
+endpoint_prj.py  
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
 
 from solidata_api.api import *
 
-log.debug(">>> api_projects ... creating api endpoints for PROJ_CREATE")
+log.debug(">>> api_projects ... creating api endpoints for PROJ_LIST")
 
 ### create namespace
-ns = Namespace('create', description='Projects : request and list all projects')
+ns = Namespace('list', description='Projects : request and list all projects')
 
 ### import models 
-from solidata_api._models.models_projects import * 
+from solidata_api._models.models_project import * 
 model_project_in		= Project_infos(ns).mod_complete_in
 # model_project_out		= Project_infos(ns).mod_complete_out
 
@@ -32,8 +32,7 @@ class ProjectsList(Resource):
 
 	# @api.marshal_with(project_model, envelope="projects_list")
 	@jwt_required
-	@ns.expect(model_project_in)
-	def post(self):
+	def get(self):
 		"""
 		list of all projects in db
 		"""

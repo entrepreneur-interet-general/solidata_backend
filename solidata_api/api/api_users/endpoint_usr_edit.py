@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_user_edit.py  
+endpoint_usr_edit.py  
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
@@ -33,7 +33,7 @@ model_data						= UserData(ns).model
 @ns.route("/<string:user_oid>/")
 @ns.response(404, 'user not found')
 @ns.param('user_oid', 'The user unique identifier')
-class User(Resource) :
+class User_edit(Resource) :
 		
 	"""
 	User edition

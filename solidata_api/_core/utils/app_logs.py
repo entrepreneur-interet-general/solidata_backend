@@ -1,14 +1,23 @@
+# -*- encoding: utf-8 -*-
 
+"""
+app_logs.py  
+"""
+
+
+from log_config import log, pformat
+
+log.debug("... loading app_logs.py ...")
 
 
 from datetime import datetime, timedelta
 
 def create_modif_log( doc, 
 											action, 
-											field="log", 
-											nested_field="modified_log", 
-											dt=datetime.utcnow(), 
-											by=None ) :
+											dt						= datetime.utcnow(), 
+											by						= None,
+											val						= None,
+										) :
 	"""
 	Create a simple dict for modif_log
 	and insert it into document
@@ -20,7 +29,10 @@ def create_modif_log( doc,
 	### add author of modif
 	if by != None :
 		modif["modif_by"] = by
+		
+	if val != None :
+  		modif["modif_val"] = val
 
-	doc[field][nested_field].insert(0, modif)
+	doc["modif_log"].insert(0, modif)
 
 	return doc

@@ -22,13 +22,13 @@ from .schema_users import *
 # 	"data" 			: generic_data,
 # }
 
-is_running		= fields.Boolean(
-										description	= "is the project currently running ?",
-										attribute		= "is_running",
-										example			= False,
-										required		= True,
-										default			= False,
-									)
+# is_running		= fields.Boolean(
+# 										description	= "is the project currently running ?",
+# 										attribute		= "is_running",
+# 										example			= False,
+# 										required		= True,
+# 										default			= False,
+# 									)
 
 
 # project_collaborator = {

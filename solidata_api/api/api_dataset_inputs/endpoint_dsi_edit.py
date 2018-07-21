@@ -8,15 +8,14 @@ endpoint_proj_edit.py
 
 from solidata_api.api import *
 
-log.debug(">>> api_projects ... creating api endpoints for PROJ_EDIT")
+log.debug(">>> api_projects ... creating api endpoints for DSI_EDIT")
 
 ### create namespace
-ns = Namespace('edit', description='Edit a project : ... ')
+ns = Namespace('edit', description='Edit a dsi : ... ')
 
 ### import models 
-from solidata_api._models.models_projects import * 
-model_project_in		= Project_infos(ns).mod_complete_in
-# model_project_out		= Project_infos(ns).mod_complete_out
+from solidata_api._models.models_dataset_input import * 
+model_dsi_in		= Dsi_infos(ns).mod_complete_in
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -28,18 +27,25 @@ model_project_in		= Project_infos(ns).mod_complete_in
 
 
 
-@ns.route('/<string:project_oid>')
-@ns.param('project_oid', 'The project unique identifier')
-class Projects(Resource):
+@ns.route('/<string:dsi_oid>')
+@ns.param('dsi_oid', 'The dsi unique identifier')
+class DsiEdit(Resource):
 	"""
 
 	"""
 	
 	@jwt_required
+	@ns.expect(model_dsi_in)
 	def get(self):
 		"""
-		list of all projects in db
+		list of all dsi in db
 		"""
+
+		### DEBUGGING
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
 		return {
 							"msg" : "nananana"
 					}
@@ -48,8 +54,14 @@ class Projects(Resource):
 	@jwt_required
 	def put(self):
 		"""
-		Update a new projects in db
+		Update a new dsi in db
 		"""
+
+		### DEBUGGING
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
 		return {
 							"msg" : "nananana"
 					}
@@ -58,8 +70,14 @@ class Projects(Resource):
 	@jwt_required
 	def delete(self):
 		"""
-		delete a project in db
+		delete a dsi in db
 		"""
+
+		### DEBUGGING
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
 		return {
 							"msg" : "nananana"
 					}

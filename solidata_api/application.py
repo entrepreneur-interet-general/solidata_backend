@@ -99,6 +99,7 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 		# access mongodb collections
 		from solidata_api._core.queries_db import ( db, 
+				mongo_tags,
 				mongo_users,
 				mongo_projects,
 				mongo_datamodels_templates, 
@@ -118,44 +119,53 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		# import emailing functions
 		from solidata_api._core.emailing import send_email, send_async_email 
 
-	## DEBUGGING
-	print()
-	find_one_user = mongo_users.find({'infos.name': "Julien"})
-	# find_one_user = db["mongo_users"].find({'infos.name': "Julien"})
-	log.debug("DEBUG : find_one_user : \n%s", pformat(list(find_one_user)))
+		## DEBUGGING
+		print()
+		find_one_user = mongo_users.find({'infos.name': "Julien"})
+		# find_one_user = db["mongo_users"].find({'infos.name': "Julien"})
+		log.debug("DEBUG : find_one_user : \n%s", pformat(list(find_one_user)))
 
 
-	### registering all blueprints
-	print()
-	log.debug("... registering blueprints ...")
-	from solidata_api.api.api_users 		import blueprint as api_users
-	app.register_blueprint( api_users, url_prefix="/api/users" )
+		### registering all blueprints
+		print()
+		log.debug("... registering blueprints ...")
+		from solidata_api.api.api_users 		import blueprint as api_users
+		app.register_blueprint( api_users, url_prefix="/api/users" )
 
-	from solidata_api.api.api_auth 	import blueprint as api_auth
-	app.register_blueprint( api_auth, url_prefix='/api/auth')
+		from solidata_api.api.api_auth 	import blueprint as api_auth
+		app.register_blueprint( api_auth, url_prefix='/api/auth')
 
-	from solidata_api.api.api_projects 	import blueprint as api_proj
-	app.register_blueprint( api_proj, url_prefix='/api/projects')
+		### TO DO - write endpoints
 
-	# from solidata_api.api.api_datamodels 	import blueprint as api_dm
-	# app.register_blueprint( api_dm, url_prefix='/api/datamodels')
+		from solidata_api.api.api_projects 	import blueprint as api_proj
+		app.register_blueprint( api_proj, url_prefix='/api/projects')
 
-	# from solidata_api.api.api_datasets_in 	import blueprint as api_dsi
-	# app.register_blueprint( api_dsi, url_prefix='/api/datasets_input')
+		from solidata_api.api.api_dataset_inputs 	import blueprint as api_dsi
+		app.register_blueprint( api_dsi, url_prefix='/api/dataset_inputs')
 
-	# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
-	# app.register_blueprint( api_dso, url_prefix='/api/datasets_output')
+		### TO DO - write blueprints
 
-	# from solidata_api.api.api_recipes 	import blueprint as api_rec
-	# app.register_blueprint( api_rec, url_prefix='/api/recipes')
+		# from solidata_api.api.api_datamodel_fields 	import blueprint as api_dmf
+		# app.register_blueprint( api_dmf, url_prefix='/api/datamodel_fields')
+
+		# from solidata_api.api.api_datamodel_templates 	import blueprint as api_dmt
+		# app.register_blueprint( api_dmt, url_prefix='/api/datamodel_templates')
+
+		# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
+		# app.register_blueprint( api_dso, url_prefix='/api/dataset_outputs')
+
+		# from solidata_api.api.api_recipes 	import blueprint as api_rec
+		# app.register_blueprint( api_rec, url_prefix='/api/recipes')
+
+		# from solidata_api.api.api_tags 	import blueprint as api_tag
+		# app.register_blueprint( api_tag, url_prefix='/api/tags')
 
 
-
-	### DEBUG
-	# @app.before_request
-	# def debug_stuff():
-	# 	# pass
-	# 	log.debug ("\n%s", pformat(current_app.__dict__))
+		### DEBUG
+		# @app.before_request
+		# def debug_stuff():
+		# 	# pass
+		# 	log.debug ("\n%s", pformat(current_app.__dict__))
 
 
 	return app

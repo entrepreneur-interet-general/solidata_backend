@@ -35,21 +35,25 @@ class Project_infos :
 	def __init__(self, ns_) :
 		
 		### SELF MODULES
-		self.basic_infos 			= create_model_basic_infos(ns_, "Project_infos")
-		self.modif_log				= create_model_modif_log(ns_, "Project_modif_log")
-		self.specs						= create_model_specs(ns_, include_is_running=True)
-		self.collaborators 		= create_model_team(ns_)
-		self.datasets 				= create_model_datasets(ns_, schema_list=["dmt","dsi","rec","dso"])
-
+		self.basic_infos 			= create_model_basic_infos(ns_, model_name="Project_infos")
+		self.log						 	= create_model_log(ns_, 				model_name="Project_log", include_is_running=True )
+		self.modif_log				= create_model_modif_log(ns_, 	model_name="Project_modif_log")
+		self.specs						= create_model_specs(ns_,				model_name="Project_specs")
+		self.team 						= create_model_team(ns_,				model_name="Project_team")
+		self.datasets 				= create_model_datasets(ns_, 		model_name="Project_datasets", 	schema_list=["dmt","dsi","rec","dso"])
+		self.uses							= create_uses(ns_,							model_name="Project_uses", 			schema_list=["usr"])
+		
 		### IN / complete data to enter in DB
 		self.mod_complete_in 	= ns_.model('Project_in', {
 
 				'infos' 		: self.basic_infos,
 				'specs'			: self.specs , 
+				'log'				: self.log , 
 				'modif_log'	: self.modif_log , 
+				'uses'			: self.uses,
 
 				### team and edition levels
-				'prj_team'		: self.collaborators ,
+				'team'		: self.team ,
 
 				### datasets 
 				"datasets"		: self.datasets ,

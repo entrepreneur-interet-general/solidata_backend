@@ -24,6 +24,10 @@ from solidata_api._models.models_generic import *
 # nested models : https://github.com/noirbizarre/flask-restplus/issues/8
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
+
+
+
+
 class UserData : 
 	"""
 	Simple model to display an user data
@@ -140,61 +144,54 @@ class User_infos :
 
 		### SELF MODULES
 
-		self.modif_log			= create_model_modif_log(ns_)
-		self.datasets 			= create_model_datasets(ns_, include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec"])
-		self.specs					= create_model_specs(ns_, include_counts=True, counts_name="login_count")
-
 		### basic infos
-		self.basic_infos 			= create_model_basic_infos(ns_, "User_infos", is_user_infos=True)
-		# self.basic_infos		= fields.Nested(
-		# 			ns_.model('User_public_data', user_basics )
-		# 		)
-				
+		self.basic_infos 				= create_model_basic_infos(ns_,		model_name="User_infos", is_user_infos=True)
+		self.log						  	= create_model_log(ns_, 					model_name="User_log", include_counts=True, counts_name="login_count")
+		self.modif_log					= create_model_modif_log(ns_,			model_name="User_modif_log")
+		self.datasets 					= create_model_datasets(ns_, 			model_name="User_datasets", include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec"])
+		self.specs							= create_model_specs(ns_, 				model_name="User_specs")
+		self.professional_infos = create_professional_infos(ns_, 	model_name="User_professionnal_infos")
+		self.team 							= create_model_team(ns_,					model_name="User_team")
+
 		### profile
 		self.profile 			= fields.Nested( 
 			ns_.model("User_profile", usr_profile_ )
 		)
 
 
-
 		### IN / complete data to enter in DB
 		self.mod_complete_in  = ns_.model('User_in', {
 
-				'infos' 			: self.basic_infos,
-				'profile' 		: self.profile,
-				'specs' 			: self.specs , 
-				'modif_log' 	: self.modif_log , 
-				"datasets"		: self.datasets ,
+				'infos' 							: self.basic_infos,
+				'profile' 						: self.profile,
+				'log'			          	: self.log , 
+				'specs' 							: self.specs , 
+				'modif_log' 					: self.modif_log , 
+				"datasets"						: self.datasets ,
+				'professional_infos' 	: self.professional_infos,
+				'team'								: self.team ,
 
 				'auth': fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_in  )
 				),
-				# 'preferences'		: fields.Nested(
-				# 	ns_.model('User_preferences',  			user_preferences_in  )
-				# ),
-				# 'professional' 	: fields.Nested(
-				# 	ns_.model('User_profesional', 			user_professional_in )
-				# ),
+
 		})
 
 		### OUT / complete data to enter in DB
 		self.mod_complete_out  = ns_.model('User_out', {
 
-				'infos' 			: self.basic_infos,
-				'profile' 		: self.profile,
-				'specs' 			: self.specs , 
-				'modif_log' 	: self.modif_log , 
-				"datasets"		: self.datasets ,
+				'infos' 							: self.basic_infos,
+				'profile' 						: self.profile,
+				'specs' 							: self.specs , 
+				'log'				          : self.log , 
+				'modif_log' 					: self.modif_log , 
+				"datasets"						: self.datasets ,
+				'professional_infos' 	: self.professional_infos,
+				'team'								: self.team ,
 
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
 				),
-				# 'preferences'		: fields.Nested(
-				# 	ns_.model('User_preferences',  			user_preferences_out  )
-				# ),
-				# 'professional' 	: fields.Nested(
-				# 	ns_.model('User_profesional', 			user_professional_out )
-				# ),
 
 			})
 
@@ -210,9 +207,7 @@ class User_infos :
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
 				),
-				# 'preferences': fields.Nested(
-				# 	ns_.model('User_preferences',  			user_preferences_out  )
-				# ),
+
 			})
 
 

@@ -160,7 +160,7 @@ class Login(Resource):
 				return {	
 									"msg" 							: "user '{}' is logged".format(payload_email),
 									"is_user_confirmed" : user["auth"]["conf_usr"],
-									"preferences"				: user["preferences"],
+									"profile"						: user["profile"],
 									"tokens"						: tokens
 							}, 200
 

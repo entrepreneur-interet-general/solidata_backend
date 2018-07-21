@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_users.py  
+endpoint_usr.py  
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """

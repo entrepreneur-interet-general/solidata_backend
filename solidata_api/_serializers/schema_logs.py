@@ -13,6 +13,7 @@ log.debug("... loading schema_logs.py ...")
 
 from .schema_generic import *
 
+
 ### counts infos
 count 					= fields.Integer( 
 										description	= "count", 
@@ -30,6 +31,11 @@ created_at 			= fields.DateTime(
 modified_at			= fields.DateTime( 
 										description	= "date of a modification", 
 										attribute		= "modif_at" ,
+										required		= True, 
+									)
+used_at 			= fields.DateTime( 
+										description	= "date of use", 
+										attribute		= "used_at" ,
 										required		= True, 
 									)
 modified_for		= fields.String(	 
@@ -59,17 +65,16 @@ added_at 			= fields.DateTime(
 # 									)
 
 ### FOR GENERIC MODELS
-modification = {
-	"modif_at" 		: modified_at,
-	"modif_for" 	: modified_for
-}
+# modification = {
+# 	"modif_at" 		: modified_at,
+# 	"modif_for" 	: modified_for
+# }
 
-modification_by = {
-	"modif_at" 		: modified_at,
-	"modif_for" 	: modified_for,
-	# "modif_by" 		: modified_by
-	"modif_by" 		: oid_usr
-}
+# modification_by = {
+# 	"modif_at" 		: modified_at,
+# 	"modif_for" 	: modified_for,
+# 	"modif_by" 		: oid_usr
+# }
 
 modification_full = {
 	"modif_at" 		: modified_at,
@@ -77,3 +82,8 @@ modification_full = {
 	"modif_by" 		: oid_usr,
 	"modif_val" 	: modified_val,
 }
+
+# doc_uses 		= {
+# 	"used_by" : used_by,
+# 	"used_at"	: used_at,
+# }

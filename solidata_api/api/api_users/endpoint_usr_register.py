@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_login.py  
+endpoint_usr_register.py  
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
@@ -72,6 +72,7 @@ class Register(Resource):
 			new_user 											= marshal( new_user_infos , model_user_complete_in)
 			new_user["auth"]["pwd"] 			= hashpass
 			new_user["log"]["created_at"] = datetime.utcnow()
+			new_user["log"]["created_by"] = payload_email
 
 			### temporary save new user in db 
 			mongo_users.insert( new_user )
@@ -193,7 +194,7 @@ class Confirm_email(Resource):
 
 		### check if user is already confirmed
 		is_confirmed 		= user_to_confirm["auth"]["conf_usr"] 
-		is_blacklisted 	= user_to_confirm["auth"]["blklst_usr"] 
+		is_blacklisted 	= user_to_confirm["auth"]["is_blacklisted"] 
 
 		### user is not confirmed yet
 		if is_confirmed == False and is_blacklisted == False :

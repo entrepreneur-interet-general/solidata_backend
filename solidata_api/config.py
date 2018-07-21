@@ -8,9 +8,13 @@ from datetime import timedelta
 
 class BaseConfig(object):  
 
-	RUN_MODE				= "dev"
-	DEBUG = True
-
+	RUN_MODE					= "dev"
+	DEBUG							= True
+	ROOT_FOLDER       = os.getcwd()
+	UPLOADS_FOLDER 		= ROOT_FOLDER+"/uploads"
+	UPLOADS_IMAGES 		= UPLOADS_FOLDER+"/img"
+	UPLOADS_DATA 			= UPLOADS_FOLDER+"/data_sources"
+	
 	# used for encryption and session management
 
 	""" RESTPLUS CONFIG """
@@ -50,6 +54,7 @@ class BaseConfig(object):
 	MONGO_DBNAME								= 'solidata'
 	MONGO_URI										= 'mongodb://localhost:27017/solidata'
 	# collections
+	MONGO_COLL_TAGS						  	  = "tags"
 	MONGO_COLL_USERS						  	= "users"
 	MONGO_COLL_LICENCES					  	= "licences"
 	MONGO_COLL_PROJECTS					  	= "projects"

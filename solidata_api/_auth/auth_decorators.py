@@ -48,8 +48,7 @@ def add_claims_to_access_token(user):
 		'infos'						: user["infos"],
 		'auth'						: user["auth"],
 		# 'datasets'			: user["datasets"],
-		# 'preferences'			: user["preferences"],
-		# 'profile'		    : user["profile"],
+		# 'profile'				: user["profile"],
 		# 'professional'	: user["professional"],
 	}
 
@@ -173,6 +172,28 @@ def anonymous_or_guest_required(func):
 	
 	return wrapper
 
+
+
+def guest_required(func):
+	"""
+	Check if user is not logged yet in access_token 
+	and has a 'guest' or 'anonymous' role
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- anonymous checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if claims["auth"]["role"] not in  ['admin', 'guest', 'registred', "staff" ] :
+			return { "msg" : "Registred users only !!! " }, 403
+		else:
+			return func(*args, **kwargs)
+	
+	return wrapper
 
 
 def admin_required(func):

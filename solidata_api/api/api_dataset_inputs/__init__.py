@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-api_auth/__init__.py
+api_dataset_inputs/__init__.py
 - provides the API endpoints for consuming and producing
 	REST requests and responses
 """
@@ -9,23 +9,23 @@ api_auth/__init__.py
 from solidata_api.api import *
 
 # from log_config import log, pformat
-log.debug("\n>>> api_auth ... creating api blueprint for AUTH")
+log.debug("\n>>> api_dataset_inputs ... creating api blueprint for DATASET INPUTS")
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-blueprint = Blueprint( 'api_auth', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
-# blueprint = Blueprint( 'api_auth', __name__, template_folder='templates' )
+blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
+# blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder='templates' )
 api = Api( 	blueprint,
-						title						="Solidata API : AUTH SERVER",
+						title						= "Solidata API : DATASET INPUTS",
 						version					= "0.1",
-						description			= "auth server / manages tokens",
+						description			= "create, list, delete, edit... dataset inputs",
 						doc							= '/documentation',
-						default					= 'login',
+						default					= 'create',
 						authorizations	= auth_check,
-						# security='apikey' # globally ask for apikey auth
+						security				='apikey' # globally ask for pikey auth
 )
 
 
@@ -40,22 +40,15 @@ def default_error_handler(e):
 				return {'message': message}, 500
 
 
-# @api.errorhandler(NoResultFound)
-# def database_not_found_error_handler(e):
-#     log.warning(traceback.format_exc())
-#     return {'message': 'A database result was required but none was found.'}, 404
-
-
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### import api namespaces / add namespaces to api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
+from .endpoint_dsi import 		ns as ns_dsi_list
+api.add_namespace(ns_dsi_list)
 
-from .endpoint_user_login import ns as ns_user_login
-api.add_namespace(ns_user_login)
+from .endpoint_dsi_create import 		ns as ns_dsi_create
+api.add_namespace(ns_dsi_create)
 
-from .endpoint_user_tokens import ns as ns_user_refresh
-api.add_namespace(ns_user_refresh)
-
-from .endpoint_user_password import ns as ns_user_password
-api.add_namespace(ns_user_password)
+from .endpoint_dsi_edit import 		ns as ns_dsi_edit
+api.add_namespace(ns_dsi_edit)

@@ -1,12 +1,15 @@
 # -*- encoding: utf-8 -*-
 
 """
-pagination.py  
-- provides the PAGINATION parser for 
-	REST requests
+parser_pagination.py  
 """
 
+from log_config import log, pformat
+
 from flask_restplus import reqparse
+
+log.debug("~ ~ ~ loading parser_pagination.py ...")
+
 
 pagination_arguments = reqparse.RequestParser()
 pagination_arguments.add_argument(

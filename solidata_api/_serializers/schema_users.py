@@ -11,20 +11,10 @@ log.debug("... loading schema_users.py ...")
 
 from flask_restplus import fields 
 
-from ._choices_user import * 
+from solidata_api._choices import * 
 from .schema_generic import *
 from .schema_logs import *
 
-
-
-# ### generic info for update
-# generic_data 		= fields.String(
-# 										description	= "data about the user",
-# 										attribute		= "data",
-# 										example			= "example",
-# 										default			= 'a new data',
-# 										required		= True,
-# 									)
 
 ### basic informations about a user
 name 						= fields.String(
@@ -61,9 +51,9 @@ confirmed_usr		= fields.Boolean(
 										required		= False,
 										default			= False,
 									)
-blacklisted_usr		= fields.Boolean(
+is_blacklisted		= fields.Boolean(
 										description	= "user has confirmed its account from his email",
-										attribute		= "blklst_usr",
+										attribute		= "is_blacklisted",
 										example			= False,
 										required		= False,
 										default			= False,
@@ -74,6 +64,7 @@ role						= fields.String(
 										example			= "guest",
 										enum				= user_roles,
 										default			= "guest",
+										required		= True,
 									)
 acc_tok					= fields.String(
 										description = "access token of user",
@@ -99,24 +90,19 @@ edit_auth				= fields.List(
 											description = "edit auth of an user",
 											enum				= user_actions_proj,
 										),
+										required		= True,
 										attribute		= "edit_auth", 
 										default			= [] 
 									)
 
-### preferences
+### profile
 language				= fields.String(
 										description = "language preference", 
 										example 		= "en",
 										attribute		= "lang",	
 										default			= "en",
+										required		= True,
 									)
-# fav_list				= fields.List(
-# 										fields.String(
-# 											description = "ids of the favorites projects created by the user"
-# 										),
-# 										attribute		= "fav_list", 
-# 										default			= [] 
-# 									)
 is_fav					= fields.Boolean(
 										description	= "is the document a favorite ?",
 										attribute		= "is_fav",
@@ -125,7 +111,7 @@ is_fav					= fields.Boolean(
 										default			= False,
 									)
 
-### profesional infos
+### professional infos
 structure			= fields.String(
 											description	= "structures / organisations the user"
 										)
@@ -190,23 +176,14 @@ old_refresh_token = {
 
 ### FOR MODELS TO INSERT IN DB
 user_auth_in = {
-	"pwd"		      : pwd,
-	"conf_usr"		: confirmed_usr,
-	"role"	      : role,
-	# "acc_tok"			: acc_tok,
-	"refr_tok"		: refr_tok,
-	"blklst_usr"  : blacklisted_usr,
+	"pwd"							: pwd,
+	"conf_usr"				: confirmed_usr,
+	"role"						: role,
+	# "acc_tok"				: acc_tok,
+	"refr_tok"				: refr_tok,
+	"is_blacklisted"  : is_blacklisted,
 }
 
-# user_preferences_in = {
-# 	"lang"  		: language,
-# 	# "fav_list" 	: fav_list
-# }
-
-# user_professional_in = {
-# 	"struct" 					: structure,
-# 	"struct_profiles" : struct_profile,
-# }
 
 usr_profile_ = {
 	"lang"  				: language,
@@ -221,12 +198,9 @@ user_auth_out = {
 	# "acc_tok"			: acc_tok,
 }
 
-# user_preferences_out = {
-# 	"language" 	: language,
-# 	# "favorites"	: fav_list
-# }
 
-# user_professional_out = {
-# 	"structures" 					: structures,
-# 	"structures_profiles" : struct_profiles,
-# }
+user_struct = {
+	"structure" 					: structure,
+	"structure_profile"   : struct_profile,
+	"structure_url"			  : url_link,
+}
