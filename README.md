@@ -4,7 +4,7 @@
 -------
 ## PRESENTATION
 
-part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
+part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur-interet-general/CIS-front) / Solidata / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper) )
 
 #### Building a public service for managing, consolidating, and sharing data 
 
@@ -17,7 +17,7 @@ part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
 - consolidate your data : apply your own datamodel, simplify columns, apply metadatas, ... ; 
 - share the consolidated datas on API endpoints with the level of openness you decide (opendata, commons, collective, private) ;
 - manage all your data and your recipes by projects ;
-- be able to manage projects by teams and share data/recipes/
+- be able to manage projects by teams and share data/recipes/datamodels...
 
 
 ------
@@ -95,5 +95,12 @@ part 2a/3 of the TADATA! sofware suite (ApiViz / Solidata / OpenScraper)
 ![alt text](./screenshots/endpoints_users.png "endpoint users")
 
 -------
-![alt text](./screenshots/endpoints_auth_server.png "endpoint users")
+![alt text](./screenshots/endpoints_auth_server.png "endpoint auth users")
+
+-------
+![alt text](./screenshots/endpoints_projects.png "endpoint projects")
+
+-------
+![alt text](./screenshots/endpoints_dataset_inputs.png "endpoint dataset inputs")
+
 

@@ -144,17 +144,14 @@ class User_infos :
 
 		### SELF MODULES
 
-		### basic infos
 		self.basic_infos 				= create_model_basic_infos(ns_,		model_name="User_infos", is_user_infos=True)
 		self.log						  	= create_model_log(ns_, 					model_name="User_log", include_counts=True, counts_name="login_count")
 		self.modif_log					= create_model_modif_log(ns_,			model_name="User_modif_log")
-		self.datasets 					= create_model_datasets(ns_, 			model_name="User_datasets", include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec"])
+		self.datasets 					= create_model_datasets(ns_, 			model_name="User_datasets", include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
 		self.specs							= create_model_specs(ns_, 				model_name="User_specs")
 		self.professional_infos = create_professional_infos(ns_, 	model_name="User_professionnal_infos")
 		self.team 							= create_model_team(ns_,					model_name="User_team")
-
-		### profile
-		self.profile 			= fields.Nested( 
+		self.profile 						= fields.Nested( 
 			ns_.model("User_profile", usr_profile_ )
 		)
 
@@ -164,13 +161,18 @@ class User_infos :
 
 				'infos' 							: self.basic_infos,
 				'profile' 						: self.profile,
+				'professional_infos' 	: self.professional_infos,
 				'log'			          	: self.log , 
 				'specs' 							: self.specs , 
 				'modif_log' 					: self.modif_log , 
-				"datasets"						: self.datasets ,
-				'professional_infos' 	: self.professional_infos,
+
+				### team (as favorites)
 				'team'								: self.team ,
 
+				### datasets 
+				"datasets"						: self.datasets ,
+
+				### auth level of current user
 				'auth': fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_in  )
 				),
@@ -182,13 +184,19 @@ class User_infos :
 
 				'infos' 							: self.basic_infos,
 				'profile' 						: self.profile,
+				'professional_infos' 	: self.professional_infos,
+
 				'specs' 							: self.specs , 
 				'log'				          : self.log , 
 				'modif_log' 					: self.modif_log , 
-				"datasets"						: self.datasets ,
-				'professional_infos' 	: self.professional_infos,
+
+				### team (as favorites)
 				'team'								: self.team ,
 
+				### datasets 
+				"datasets"						: self.datasets ,
+
+				### auth level of current user
 				'auth'		: fields.Nested(
 					ns_.model('User_authorizations',  	user_auth_out  )
 				),
@@ -218,10 +226,6 @@ class User_infos :
 	@property
 	def model_complete_out(self): 
 		return self.mod_complete_out
-
-	# @property
-	# def model_update(self): 
-	# 	return self.mod_update
 
 	@property
 	def model_access(self): 

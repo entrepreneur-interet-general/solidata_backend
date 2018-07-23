@@ -98,7 +98,7 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		from solidata_api._core.async_tasks import async
 
 		# access mongodb collections
-		from solidata_api._core.queries_db import ( db, 
+		from solidata_api._core.queries_db import ( db_dict, 
 				mongo_tags,
 				mongo_users,
 				mongo_projects,
@@ -106,6 +106,7 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 				mongo_datamodels_fields,
 				# mongo_connectors, ### all cd are treated as ds_i
 				mongo_datasets_inputs,
+				mongo_datasets_raws,
 				mongo_datasets_outputs, 
 				mongo_recipes,
 				mongo_jwt_blacklist,

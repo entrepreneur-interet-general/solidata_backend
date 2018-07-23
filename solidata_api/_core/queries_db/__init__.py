@@ -25,6 +25,7 @@ mongo_datamodels_templates 	= mongo.db[ app.config["MONGO_COLL_DATAMODELS_TEMPLA
 mongo_datamodels_fields 		= mongo.db[ app.config["MONGO_COLL_DATAMODELS_FIELDS"] ]
 # mongo_connectors	 					= mongo.db[ app.config["MONGO_COLL_CONNECTORS"] ]
 mongo_datasets_inputs 			= mongo.db[ app.config["MONGO_COLL_DATASETS_INPUTS"] ]
+mongo_datasets_raws 			  = mongo.db[ app.config["MONGO_COLL_DATASETS_RAWS"] ]
 mongo_recipes 							= mongo.db[ app.config["MONGO_COLL_RECIPES"] ]
 # mongo_corr_dicts 						= mongo.db[ app.config["MONGO_COLL_CORR_DICTS"] ]
 mongo_datasets_outputs 			= mongo.db[ app.config["MONGO_COLL_DATASETS_OUTPUTS"] ]
@@ -35,14 +36,16 @@ mongo_jwt_blacklist 				= mongo.db[ app.config["MONGO_COLL_JWT_BLACKLIST"] ]
 # mongo_licences 							= mongo.db[ app.config["MONGO_COLL_LICENCES"] ]
 
 
-db = {
+db_dict = {
 					"mongo_tags"									: mongo_tags,
+					"mongo_users"									: mongo_users,
 					"mongo_users"									: mongo_users,
 					"mongo_projects"							: mongo_projects,
 					"mongo_datamodels_templates"	: mongo_datamodels_templates,
 					"mongo_datamodels_fields"			: mongo_datamodels_fields,
 					# "mongo_connectors"						: mongo_connectors,
 					"mongo_datasets_inputs"				: mongo_datasets_inputs,
+					"mongo_datasets_raws"			  	: mongo_datasets_raws,
 					"mongo_recipes"								: mongo_recipes,
 					# "mongo_corr_dicts"						: mongo_corr_dicts,
 
@@ -52,7 +55,7 @@ db = {
 			}
 
 def select_collection(coll_name):
-	coll = db[coll_name]
+	coll = db_dict[coll_name]
 	return coll
 
 

@@ -90,7 +90,7 @@ edit_auth				= fields.List(
 											description = "edit auth of an user",
 											enum				= user_actions_proj,
 										),
-										required		= True,
+										required		= False,
 										attribute		= "edit_auth", 
 										default			= [] 
 									)
@@ -112,19 +112,26 @@ is_fav					= fields.Boolean(
 									)
 
 ### professional infos
-structure			= fields.String(
-											description	= "structures / organisations the user"
+struct_name			= fields.String(
+											description	= "name of the user's structure",
+											attribute		= "struct_name",
+											required		= True,
 										)
-										# example			= ["my structure A", "my structure B"],
-										# attribute		= "struct",	
-										# default			= []
 struct_profile	= fields.String(
-											description	= "structures / organisations profile",
+											description	= "profile of the structure",
+											attribute		= "struct_profile",
 											example			= "public_state",
 											enum				= user_structure,
+											required		= False,
 										)
-										# attribute		= "struct_profiles",	
-										# default			= []
+struct_url 				= fields.String(
+										description	= "structure url link",
+										attribute		= "struct_url",
+										example			= "my-url-link",
+										default			= '',
+										required		= False,
+									)
+
 usr_profile				= fields.String(
 											description	= "profiles of the user",
 											enum				= user_profiles,
@@ -200,7 +207,7 @@ user_auth_out = {
 
 
 user_struct = {
-	"structure" 					: structure,
-	"structure_profile"   : struct_profile,
-	"structure_url"			  : url_link,
+	"struct_name" 			: struct_name,
+	"struct_profile"		: struct_profile,
+	"struct_url"				: struct_url,
 }

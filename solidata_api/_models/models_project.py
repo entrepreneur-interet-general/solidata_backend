@@ -15,7 +15,7 @@ from flask_restplus import fields
 ### import data serializers
 from solidata_api._serializers.schema_logs import *  
 from solidata_api._serializers.schema_generic import *  
-from solidata_api._serializers.schema_projects import *  
+# from solidata_api._serializers.schema_projects import *  
 
 ### import generic models functions
 from solidata_api._models.models_generic import * 
@@ -36,58 +36,53 @@ class Project_infos :
 		
 		### SELF MODULES
 		self.basic_infos 			= create_model_basic_infos(ns_, model_name="Project_infos")
-		self.log						 	= create_model_log(ns_, 				model_name="Project_log", include_is_running=True )
+		self.log						 	= create_model_log(ns_, 				model_name="Project_log", 			include_is_running=True )
 		self.modif_log				= create_model_modif_log(ns_, 	model_name="Project_modif_log")
 		self.specs						= create_model_specs(ns_,				model_name="Project_specs")
 		self.team 						= create_model_team(ns_,				model_name="Project_team")
-		self.datasets 				= create_model_datasets(ns_, 		model_name="Project_datasets", 	schema_list=["dmt","dsi","rec","dso"])
+		self.public_auth			= create_model_public_auth(ns_, model_name="Project_public_auth")
+
 		self.uses							= create_uses(ns_,							model_name="Project_uses", 			schema_list=["usr"])
-		
+
+		self.datasets 				= create_model_datasets(ns_, 		model_name="Project_datasets", 	schema_list=["dmt","dsi","rec","dso","tag"])
+		self.mapping					= create_model_mappings(ns_,		model_name="Project_mapping", 	schema_list=[ "dsi_to_dmf", "rec_to_dmf"])
+
 		### IN / complete data to enter in DB
 		self.mod_complete_in 	= ns_.model('Project_in', {
 
-				'infos' 		: self.basic_infos,
-				'specs'			: self.specs , 
-				'log'				: self.log , 
-				'modif_log'	: self.modif_log , 
-				'uses'			: self.uses,
+				'infos' 			: self.basic_infos,
+				'public_auth' : self.public_auth,
+				'specs'				: self.specs , 
+				'log'					: self.log , 
+				'modif_log'		: self.modif_log , 
+
+				### uses of the document
+				'uses'				: self.uses,
 
 				### team and edition levels
-				'team'		: self.team ,
+				'team'				: self.team ,
 
 				### datasets 
 				"datasets"		: self.datasets ,
-				# 'dmt' 		: oid_dmt,
-				# 'dsi' 		: fields.List(oid_dsi),
-				# 'rec' 		: fields.List(oid_rec),
-				# 'dso' 		: fields.List(oid_dso),
+				'mapping'			: self.mapping,
 		})
 
-		### OUT / complete data to enter in DB
-		# self.mod_complete_out  = ns_.model('Project_out', {
 
-		# 		'infos' 	: self.basic_infos,
-		# 		'log' 		: self.project_log , 
-				
-		# 		### team and edition levels
-		# 		# 'project_team'					: fields.List(self.collaborator) ,
-		# 		'proj_team'		: self.collaborators ,
+		### MIN / minimum data to create a project in DB
+		self.mod_minimum 	= ns_.model('Project_minimum', {
 
-		# 		### datasets 
-		# 		'datamodel' 						: oid,
-		# 		'dataset_inputs' 				: fields.List(oid),
-		# 		'correspondance_dicts' 	: fields.List(oid),
-		# 		'recipes' 							: fields.List(oid),
+				'infos' 			: self.basic_infos,
+				'public_auth' : self.public_auth,
 
-		# 	})
+		})
 
-
+	
 	@property
 	def model_complete_in(self): 
 		return self.mod_complete_in
 
-	# @property
-	# def model_complete_out(self): 
-	# 	return self.mod_complete_out
+	@property
+	def model_minimum(self): 
+		return self.mod_minimum
 
 

@@ -11,6 +11,8 @@ from log_config import log, pformat
 log.debug("... loading _choices_user.py ...")
 
 
+from ._choices_docs import * 
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### CHOICES ONLY FOR ADMIN
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -20,13 +22,13 @@ user_roles = [
 	"staff",   ### can edit all datamodels : dmf + dmt
 	# "collective", 
 	"registred", 
-	"guest",
+	"guest", ### not registred yet
 	"anonymous"
 ]
 
 bad_passwords = [ 
 	'test', 
-	'password', 
+	'password', 'Password',
 	'12345' 
 ]
 
@@ -35,7 +37,6 @@ user_actions_proj = [
 	"can_edit_dmt",
 	"can_edit_dmf",
 	"can_edit_dsi",
-	# "can_edit_dc",
 	"can_edit_rec",
 	"can_only_view"
 ]
@@ -49,12 +50,13 @@ user_actions_proj = [
 ### user fields as recorded in DB - most exhaustive
 ### check 'schema_users.py' for coherence and description
 user_fields_admin_can_update = {
-	"infos" 				: ["name", "surname", "email"], 
-	"auth" 					: ["pwd", "conf_usr", "role", "refr_tok", "blklst_usr"],
-	"preferences" 	: ["lang", "fav_list"],
-	"datasets" 			: ["proj_", "dm_", "dsi_", "dso_", "dc_", "rec_"],
-	"profile" 			: ["profiles"],
-	"professional" 	: ["struct", "struct_profiles"]
+	"infos" 							: ["name", "surname", "email"], 
+	"auth" 								: ["pwd", "conf_usr", "role", "refr_tok", "is_blacklisted"],
+	# "preferences" 		: ["lang", "fav_list"],
+	# "datasets" 				: doc_type_list,
+	"datasets"						: [ ds+"_list" for ds in doc_type_list ],
+	"profile" 						: ["lang", "usr_profiles"],
+	"professional_infos"	: ["structure", "struct_profiles", "structure_url"]
 }
 
 
@@ -87,6 +89,7 @@ log.debug("user_fields_client_can_update_list : \n %s", pformat(user_fields_clie
 
 
 
+### choices about user's profiles
 
 user_profiles = [
 	"helper",

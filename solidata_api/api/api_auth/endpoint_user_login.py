@@ -152,7 +152,7 @@ class Login(Resource):
 
 				
 				### update user log in db
-				user = create_modif_log(doc=user, action="login")
+				# user = create_modif_log(doc=user, action="login")
 				user["log"]["login_count"] += 1
 				mongo_users.save(user)
 

@@ -71,28 +71,29 @@ class Register(Resource):
 			new_user_infos 								= {"infos" : ns.payload, "auth" : ns.payload }
 			new_user 											= marshal( new_user_infos , model_user_complete_in)
 			new_user["auth"]["pwd"] 			= hashpass
+			new_user["specs"]["doc_type"] = "usr"
 			new_user["log"]["created_at"] = datetime.utcnow()
 			new_user["log"]["created_by"] = payload_email
 
 			### temporary save new user in db 
-			mongo_users.insert( new_user )
+			_id = mongo_users.insert( new_user )
 			log.info("new user is being created : \n%s", pformat(new_user))
+			log.info("_id : \n%s", pformat(_id))
 
-			### get back user from db to add its 
-			user_created = mongo_users.find_one({"infos.email" : payload_email})
-			new_user["_id"] = str(user_created["_id"])
+
+			new_user["_id"] = str(_id) # str(user_created["_id"])
 			
-			### create access and refresh tokens
+			### create access tokens
 			log.debug("... create_access_token")
 			access_token 	= create_access_token(identity=new_user)
 			
+			### create refresh tokens
 			log.debug("... refresh_token")
-			### just create refresh token once / so it could be blacklisted
-			# refresh_token = create_refresh_token(identity=new_user)
+			### just create a temporary refresh token once / so it could be blacklisted
 			expires 										= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
 			refresh_token 							= create_refresh_token(identity=new_user, expires_delta=expires)
 			
-			### add confirm_email claim
+			### add confirm_email to claims for access_token_confirm_email
 			new_user["confirm_email"]		= True
 			access_token_confirm_email 	= create_access_token(identity=new_user, expires_delta=expires)
 			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
@@ -105,8 +106,8 @@ class Register(Resource):
 			log.info("tokens : \n %s", pformat(tokens))
 
 			### update new user in db		
-			# new_user["auth"]["refr_tok"] 	= refresh_token
-			# new_user["auth"]["refr_tok"] 	= user_created["auth"]["refr_tok"] = refresh_token
+			# user_created = mongo_users.find_one({"infos.email" : payload_email})
+			user_created = mongo_users.find_one({"_id" : _id})
 			user_created["auth"]["refr_tok"] = refresh_token
 			mongo_users.save(user_created)
 			log.info("new user is updated with its tokens : \n%s", pformat(new_user))
