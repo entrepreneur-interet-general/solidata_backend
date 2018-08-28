@@ -46,13 +46,14 @@ class AnonymousUser :
 	Generic class t
 	"""
 	def __init__(	self, 
-								_id					= None, 
-								infos				= {	"email"			: "anonymous"}, 
-								auth 				= {	"conf_usr"	: False, 
-																"role" 			: "anonymous"
-															},
-								preferences = None
-							) :
+					_id			= None, 
+					infos		= {	"email"		: "anonymous"}, 
+					auth 		= {	
+									"conf_usr"	: False, 
+									"role" 		: "anonymous"
+								},
+					preferences = None
+		) :
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		# self.data = {
@@ -61,9 +62,9 @@ class AnonymousUser :
 		# 	"auth"				: {"conf_usr" : False, "role" : "guest"},
 		# 	"preferences"	:	None
 		# }
-		self._id 					= _id
-		self.infos 				= infos
-		self.auth	 				= auth
+		self._id 			= _id
+		self.infos			= infos
+		self.auth			= auth
 		self.preferences 	= preferences
 
 
@@ -141,82 +142,126 @@ class User_infos :
 
 	def __init__(self, ns_) :
 		
+		model_type 					= "Usr"
 
 		### SELF MODULES
+		self._id 					= oid_field
+		self.basic_infos 			= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True)
+		self.public_auth			= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
+		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs")
+		self.log					= create_model_log(			ns_,	model_name=model_type+"_log", 		include_counts=True, counts_name="login_count")
+		self.modif_log				= create_model_modif_log(	ns_,	model_name=model_type+"_modif_log")
+		
+		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
+		self.team 					= create_model_team( 		ns_,	model_name=model_type+"_team")
+		
+		self.profile 				= create_model_profile( 	ns_,	model_name=model_type+"_profile")
+		self.professional_infos 	= create_professional_infos(ns_, 	model_name=model_type+"_professionnal_infos")
 
-		self.basic_infos 				= create_model_basic_infos(ns_,		model_name="User_infos", is_user_infos=True)
-		self.log						  	= create_model_log(ns_, 					model_name="User_log", include_counts=True, counts_name="login_count")
-		self.modif_log					= create_model_modif_log(ns_,			model_name="User_modif_log")
-		self.datasets 					= create_model_datasets(ns_, 			model_name="User_datasets", include_fav=True, schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
-		self.specs							= create_model_specs(ns_, 				model_name="User_specs")
-		self.professional_infos = create_professional_infos(ns_, 	model_name="User_professionnal_infos")
-		self.team 							= create_model_team(ns_,					model_name="User_team")
-		self.profile 						= fields.Nested( 
-			ns_.model("User_profile", usr_profile_ )
-		)
+		self.auth_in				= create_model_auth(		ns_,	model_type+"_authorizations", 	schema=user_auth_in)
+		# self.auth_in				= fields.Nested(
+		# 			ns_.model(model_type+"_authorizations",  	user_auth_in  )
+		# 		)
+		self.auth_out				= create_model_auth(		ns_,	model_type+"_authorizations", 	schema=user_auth_out)
+		# self.auth_out				= fields.Nested(
+		# 			ns_.model(model_type+"_authorizations",  	user_auth_out  )
+		# 		)
+
+
+		self.model_id = {
+			'_id' 					: self._id,
+		}		
+		self.model_infos = {
+			'infos' 				: self.basic_infos,
+		}
+		self.model_in = {
+			'modif_log'				: self.modif_log , 
+			'profile' 				: self.profile,
+			'professional_infos' 	: self.professional_infos,		
+		}
+		self.model_min = { 	**self.model_infos , 
+							**{
+								'public_auth' 			: self.public_auth,
+								'specs'					: self.specs , 
+								'log'					: self.log , 
+							}
+		}
+		self.model_auth_in = {  
+			"auth" 					: self.auth_in 
+		}
+		self.model_auth_out = { 
+			"auth" 					: self.auth_out 
+		}
 
 
 		### IN / complete data to enter in DB
-		self.mod_complete_in  = ns_.model('User_in', {
+		self.mod_complete_in  = ns_.model(model_type+"_in", { **self.model_min, **self.model_in, **self.model_auth_in  } )
+		# self.mod_complete_in  = ns_.model('User_in', {
 
-				'infos' 							: self.basic_infos,
-				'profile' 						: self.profile,
-				'professional_infos' 	: self.professional_infos,
-				'log'			          	: self.log , 
-				'specs' 							: self.specs , 
-				'modif_log' 					: self.modif_log , 
+		# 		'infos' 				: self.basic_infos,
+		# 		'log'					: self.log , 
+		# 		'specs' 				: self.specs , 
+		# 		'modif_log' 			: self.modif_log , 
 
-				### team (as favorites)
-				'team'								: self.team ,
+		# 		"datasets"				: self.datasets ,
+		# 		'team'					: self.team ,
 
-				### datasets 
-				"datasets"						: self.datasets ,
+		# 		'profile' 				: self.profile,
+		# 		'professional_infos' 	: self.professional_infos,
 
-				### auth level of current user
-				'auth': fields.Nested(
-					ns_.model('User_authorizations',  	user_auth_in  )
-				),
+		# 		### auth level of current user
+		# 		'auth': fields.Nested(
+		# 			ns_.model('User_authorizations',  	user_auth_in  )
+		# 		),
 
-		})
+		# })
+
+		### MIN / minimum data to marshall out 
+		self.mod_minimum 		= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
 
 		### OUT / complete data to enter in DB
-		self.mod_complete_out  = ns_.model('User_out', {
+		self.mod_complete_out	= ns_.model(model_type+"_out", { **self.model_min, **self.model_in } )
+		# self.mod_complete_out  = ns_.model('User_out', {
 
-				'infos' 							: self.basic_infos,
-				'profile' 						: self.profile,
-				'professional_infos' 	: self.professional_infos,
+		# 		'_id' 					: self._id,
+		# 		'infos' 				: self.basic_infos,
+		# 		'specs' 				: self.specs , 
+		# 		'log'					: self.log , 
+		# 		'modif_log' 			: self.modif_log , 
 
-				'specs' 							: self.specs , 
-				'log'				          : self.log , 
-				'modif_log' 					: self.modif_log , 
+		# 		"datasets"				: self.datasets ,
+		# 		'team'					: self.team ,
 
-				### team (as favorites)
-				'team'								: self.team ,
+		# 		'profile' 				: self.profile,
+		# 		'professional_infos' 	: self.professional_infos,
 
-				### datasets 
-				"datasets"						: self.datasets ,
+		# 		### auth level of current user
+		# 		'auth'					: fields.Nested(
+		# 			ns_.model('User_authorizations',  	user_auth_out  )
+		# 		),
 
-				### auth level of current user
-				'auth'		: fields.Nested(
-					ns_.model('User_authorizations',  	user_auth_out  )
-				),
-
-			})
+		# 	})
 
 
 		### OUT / for access tokens
-		self.mod_access  = ns_.model('User_access', {
+		self.mod_access  = ns_.model(model_type+"_access", { **self.model_infos, **self.model_id, **self.model_auth_out } )
+		# self.mod_access  = ns_.model('User_access', {
 
-				'infos' 			: self.basic_infos,
-				# 'log' 			: self.user_log, 
-				# 'profile' 	: self.profiles,
-				# 'favorites'	: self.favorites,
+		# 		'_id' 					: self._id,
+		# 		'infos' 				: self.basic_infos,
+		# 		# 'log' 				: self.user_log, 
+		# 		# 'profile' 			: self.profiles,
+		# 		# 'favorites'			: self.favorites,
 
-				'auth'		: fields.Nested(
-					ns_.model('User_authorizations',  	user_auth_out  )
-				),
+		# 		'auth'					: fields.Nested(
+		# 			ns_.model('User_authorizations',  	user_auth_out  )
+		# 		),
 
-			})
+		# 	})
+
+
+
+
 
 
 	@property

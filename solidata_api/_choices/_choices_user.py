@@ -32,13 +32,16 @@ bad_passwords = [
 	'12345' 
 ]
 
-user_actions_proj = [
-	"can_edit_prj",
-	"can_edit_dmt",
-	"can_edit_dmf",
-	"can_edit_dsi",
-	"can_edit_rec",
-	"can_only_view"
+user_edit_auth = [
+	"owner",
+	"can_edit",
+	# "can_edit_all",
+	# "can_edit_prj",
+	# "can_edit_dmt",
+	# "can_edit_dmf",
+	# "can_edit_dsi",
+	# "can_edit_rec",
+	"can_view",
 ]
 
 
@@ -50,12 +53,12 @@ user_actions_proj = [
 ### user fields as recorded in DB - most exhaustive
 ### check 'schema_users.py' for coherence and description
 user_fields_admin_can_update = {
-	"infos" 							: ["name", "surname", "email"], 
-	"auth" 								: ["pwd", "conf_usr", "role", "refr_tok", "is_blacklisted"],
+	"infos" 				: ["name", "surname", "email"], 
+	"auth" 					: ["pwd", "conf_usr", "role", "refr_tok", "is_blacklisted"],
 	# "preferences" 		: ["lang", "fav_list"],
-	# "datasets" 				: doc_type_list,
-	"datasets"						: [ ds+"_list" for ds in doc_type_list ],
-	"profile" 						: ["lang", "usr_profiles"],
+	# "datasets" 			: doc_type_list,
+	"datasets"				: [ ds+"_list" for ds in doc_type_list ],
+	"profile" 				: ["lang", "usr_profiles"],
 	"professional_infos"	: ["structure", "struct_profiles", "structure_url"]
 }
 
@@ -65,7 +68,7 @@ user_fields_dict 									= { }
 for k,v in user_fields_admin_can_update.items() : 
 	for i in v :
 		user_fields_admin_can_update_list.append(i)
-		user_fields_dict[i] = {"field" : k}
+		user_fields_dict[i] = { "field" : k }
 
 
 user_fields_client_can_update 				= deepcopy(user_fields_admin_can_update)

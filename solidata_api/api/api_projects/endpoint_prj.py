@@ -37,5 +37,5 @@ class ProjectsList(Resource):
 		list of all projects in db
 		"""
 		return {
-							"msg" : "nananana"
-					}
+					"msg" : "nananana"
+				}

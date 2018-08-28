@@ -39,6 +39,12 @@ log.debug("... jwt_manager() ...")
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### FLASK-CORS IMPORTS
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+from flask_cors import CORS, cross_origin
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FLASK-PYMONGO IMPORTS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 from flask_pymongo import PyMongo
@@ -79,6 +85,7 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 	log.debug("... app.config :\n %s", pformat(app.config))
 	print()
 
+
 	### init JWT manager
 	log.debug("... init jwt_manager ...")
 	jwt_manager.init_app(app)
@@ -94,23 +101,25 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 	with app.app_context() :
 
+
 		# import async functions and decorators
 		from solidata_api._core.async_tasks import async
 
 		# access mongodb collections
 		from solidata_api._core.queries_db import ( db_dict, 
-				mongo_tags,
 				mongo_users,
+				mongo_tags,
 				mongo_projects,
 				mongo_datamodels_templates, 
 				mongo_datamodels_fields,
-				# mongo_connectors, ### all cd are treated as ds_i
 				mongo_datasets_inputs,
 				mongo_datasets_raws,
 				mongo_datasets_outputs, 
 				mongo_recipes,
+				# mongo_connectors, ### all cd are treated as ds_i
+
 				mongo_jwt_blacklist,
-				# mongo_licences,
+				mongo_licences,
 				# mongo_corr_dicts   ### all cd are treated as ds_i
 			) 
 
@@ -136,21 +145,24 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		from solidata_api.api.api_auth 	import blueprint as api_auth
 		app.register_blueprint( api_auth, url_prefix='/api/auth')
 
-		### TO DO - write endpoints
-
 		from solidata_api.api.api_projects 	import blueprint as api_proj
 		app.register_blueprint( api_proj, url_prefix='/api/projects')
 
 		from solidata_api.api.api_dataset_inputs 	import blueprint as api_dsi
 		app.register_blueprint( api_dsi, url_prefix='/api/dataset_inputs')
 
-		### TO DO - write blueprints
+		from solidata_api.api.api_datamodel_templates 	import blueprint as api_dmt
+		app.register_blueprint( api_dmt, url_prefix='/api/datamodel_templates')
 
-		# from solidata_api.api.api_datamodel_fields 	import blueprint as api_dmf
-		# app.register_blueprint( api_dmf, url_prefix='/api/datamodel_fields')
+		from solidata_api.api.api_datamodel_fields 	import blueprint as api_dmf
+		app.register_blueprint( api_dmf, url_prefix='/api/datamodel_fields')
 
-		# from solidata_api.api.api_datamodel_templates 	import blueprint as api_dmt
-		# app.register_blueprint( api_dmt, url_prefix='/api/datamodel_templates')
+		from solidata_api.api.api_tags 	import blueprint as api_tag
+		app.register_blueprint( api_tag, url_prefix='/api/tags')
+
+
+
+		### TO DO - write missing endpoints
 
 		# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
 		# app.register_blueprint( api_dso, url_prefix='/api/dataset_outputs')
@@ -158,9 +170,10 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		# from solidata_api.api.api_recipes 	import blueprint as api_rec
 		# app.register_blueprint( api_rec, url_prefix='/api/recipes')
 
-		# from solidata_api.api.api_tags 	import blueprint as api_tag
-		# app.register_blueprint( api_tag, url_prefix='/api/tags')
 
+
+		### init CORS 
+		from solidata_api._core.cors import CORS
 
 		### DEBUG
 		# @app.before_request

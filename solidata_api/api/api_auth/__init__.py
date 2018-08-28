@@ -18,13 +18,18 @@ log.debug("\n>>> api_auth ... creating api blueprint for AUTH")
 
 blueprint = Blueprint( 'api_auth', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
 # blueprint = Blueprint( 'api_auth', __name__, template_folder='templates' )
+
+### enable CORS on blueprint
+# CORS(blueprint)
+
+### create API
 api = Api( 	blueprint,
-						title						="Solidata API : AUTH SERVER",
-						version					= "0.1",
+						title				= "Solidata API : AUTH SERVER",
+						version				= "0.1",
 						description			= "auth server / manages tokens",
-						doc							= '/documentation',
-						default					= 'login',
-						authorizations	= auth_check,
+						doc					= '/documentation',
+						default				= 'login',
+						authorizations		= auth_check,
 						# security='apikey' # globally ask for apikey auth
 )
 
@@ -51,10 +56,10 @@ def default_error_handler(e):
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 
-from .endpoint_user_login import ns as ns_user_login
+from .endpoint_user_login import 	ns as ns_user_login
 api.add_namespace(ns_user_login)
 
-from .endpoint_user_tokens import ns as ns_user_refresh
+from .endpoint_user_tokens import 	ns as ns_user_refresh
 api.add_namespace(ns_user_refresh)
 
 from .endpoint_user_password import ns as ns_user_password

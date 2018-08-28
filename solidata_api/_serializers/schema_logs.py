@@ -14,63 +14,92 @@ log.debug("... loading schema_logs.py ...")
 from .schema_generic import *
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### counts infos
-count 					= fields.Integer( 
-										description	= "count", 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+count 				= fields.Integer( 
+										description		= "count", 
 										# attribute		= "count" ,
 										required		= False, 
 										default			= 0,
 									)
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### datetime infos
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 created_at 			= fields.DateTime( 
-										description	= "date of creation", 
+										description		= "date of creation", 
 										attribute		= "created_at" ,
 										required		= True, 
+										# dt_format		= "rfc822"
 									)
 modified_at			= fields.DateTime( 
-										description	= "date of a modification", 
+										description		= "date of a modification", 
 										attribute		= "modif_at" ,
 										required		= True, 
+										# dt_format		= "rfc822"
 									)
 used_at 			= fields.DateTime( 
-										description	= "date of use", 
+										description		= "date of use", 
 										attribute		= "used_at" ,
 										required		= True, 
+										# dt_format		= "rfc822"
 									)
+at 					= fields.DateTime( 
+										description		= "date", 
+										# attribute		= "at" ,
+										required		= True, 
+										# dt_format		= "rfc822"
+									)
+added_at 			= fields.DateTime( 
+										description		= "date of addition", 
+										attribute		= "added_at" ,
+										required		= True, 
+										# dt_format		= "rfc822"
+									)
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### modified values
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 modified_for		= fields.String(	 
-										description	= "action corresponding to a modification",
+										description		= "action corresponding to a modification",
 										attribute		= "modif_for" ,
 										required		= True, 
 									)
-# modified_by			= fields.String(	 
-# 										description	= "user doing the modification",
-# 										attribute		= "modif_by" ,
-# 										required		= False, 
-# 									)
-modified_val			= fields.String(	 
-										description	= "value of the modification",
+
+modified_val		= fields.String(	 
+										description		= "value of the modification",
 										attribute		= "modif_val" ,
 										required		= False, 
 									)
-added_at 			= fields.DateTime( 
-										description	= "date of addition", 
-										attribute		= "added_at" ,
-										required		= True, 
-									)
-# added_by		  = fields.String(	 
-# 										description	= "added by an user",
-# 										attribute		= "added_by" ,
-# 										required		= True, 
+
+# used_by 			= fields.String(
+# 										description 	= "oid of a document",
+# 										attribute		= "used_by",
+# 										example			= "5b461ed90a82867e7b114f44",
+# 										required		= True,
+# 									)
+# modified_by 		= fields.String(
+# 										description 	= "oid of an user",
+# 										attribute		= "modified_by",
+# 										example			= "5b461ed90a82867e7b114f44",
+# 										required		= True,
+# 									)
+# added_by 			= fields.String(
+# 										description 	= "oid of an user",
+# 										attribute		= "added_by",
+# 										example			= "5b461ed90a82867e7b114f44",
+# 										required		= True,
 # 									)
 
+
 ### FOR GENERIC MODELS
-# modification = {
+# modification 		= {
 # 	"modif_at" 		: modified_at,
 # 	"modif_for" 	: modified_for
 # }
 
-# modification_by = {
+# modification_by 	= {
 # 	"modif_at" 		: modified_at,
 # 	"modif_for" 	: modified_for,
 # 	"modif_by" 		: oid_usr

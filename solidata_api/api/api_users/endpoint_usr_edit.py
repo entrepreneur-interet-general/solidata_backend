@@ -19,8 +19,8 @@ ns = Namespace('edit', description="Users : user's info edition related endpoint
 from solidata_api._models.models_user import *  
 model_new_user				= NewUser(ns).model
 model_user_out				= User_infos(ns).model_complete_out
-model_user_out_admin	= User_infos(ns).mod_complete_in
-model_data						= UserData(ns).model
+model_user_out_admin		= User_infos(ns).mod_complete_in
+model_data					= UserData(ns).model
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -84,9 +84,9 @@ class User_edit(Resource) :
 
 
 			return {
-								"msg"		  : "infos for user with oid {}".format(user_oid),
-								"data"		: user_out
-						}, 200
+						"msg"		: "infos for user with oid {}".format(user_oid),
+						"data"		: user_out
+					}, 200
 
 		else : 
 			return {
@@ -125,14 +125,14 @@ class User_edit(Resource) :
 			### TO DO - OR choice to keep at least email / or / delete all data
 
 			return {
-								"msg"		: "user deleted (oid) : {} ".format(user_oid),
-						}, 204
+						"msg"		: "user deleted (oid) : {} ".format(user_oid),
+					}, 204
 		
 		except : 
 
 			return {
-								"msg"		: "error trying to delete oid : {} ".format(user_oid),
-						}, 401
+						"msg"		: "error trying to delete oid : {} ".format(user_oid),
+					}, 401
 
 
 
@@ -223,7 +223,7 @@ class User_update(Resource) :
 					if user_updated_data != original_data : 
 
 						### marshall user in order to make tokens
-						user_light 					= marshal( user, model_user_out )
+						user_light 			= marshal( user, model_user_out )
 						user_light["_id"] 	= str(user["_id"])
 
 						### special function for user's email update
@@ -275,25 +275,25 @@ class User_update(Resource) :
 
 
 						return { 
-											"msg" 					: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
-											"field_updated"	: field_to_update,
-											# "new_tokens"			: user_updated_data
-									}, 200
+									"msg" 				: "updating user {} ".format(user_oid), # DAO.update(id, api.payload)
+									"field_updated"		: field_to_update,
+									# "new_tokens"		: user_updated_data
+								}, 200
 
 
 					else : {
-									"msg"		  : "no difference between previous and sent data for field '{}'".format(field_to_update),
+								"msg"	: "no difference between previous and sent data for field '{}'".format(field_to_update),
 							}, 201
 	
 			else : 
 				return {
-						"msg"		  : "impossible to update the field '{}'".format(field_to_update),
-				}, 401
+							"msg"	: "impossible to update the field '{}'".format(field_to_update),
+						}, 401
 
 
 		else : 
 			return {
-					"msg"		  : "user oid '{}' not found".format(user_oid),
+					"msg"	: "user oid '{}' not found".format(user_oid),
 			}, 401
 
 

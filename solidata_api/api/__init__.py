@@ -3,20 +3,20 @@
 from log_config import log, pformat
 log.debug("... importing all common vars and libs from solidata.api root")
 
-import os
+import 	os
 from	copy import copy, deepcopy
-from  datetime import datetime, timedelta
+from  	datetime import datetime, timedelta
 from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 
-import pandas as pd
+import 	pandas as pd
 
-from flask import Blueprint, current_app as app, url_for, request, render_template
+from 	flask import Blueprint, current_app as app, url_for, request, render_template
 
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
-from flask_restplus import Api, Namespace, Resource, fields, marshal, reqparse
+from 	flask_restplus import Api, Namespace, Resource, fields, marshal, reqparse
 
 import jwt
 from flask_jwt_extended import (
@@ -30,6 +30,9 @@ from flask_jwt_extended import (
 # from solidata_api._auth import generate_confirmation_token
 
 # from solidata_api.application import mongo
+
+### import CORS settings
+from solidata_api._core.cors import CORS, cross_origin
 
 # ### import data serializers
 # from solidata_api._serializers.schema_users import *  

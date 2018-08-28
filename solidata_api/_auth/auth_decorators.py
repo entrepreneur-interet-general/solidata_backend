@@ -44,11 +44,11 @@ def add_claims_to_access_token(user):
 
 	### common claims
 	claims_to_store_into_jwt =  {
-		'_id'							: user["_id"],
-		'infos'						: user["infos"],
-		'auth'						: user["auth"],
-		# 'datasets'			: user["datasets"],
-		# 'profile'				: user["profile"],
+		'_id'				: user["_id"],
+		'infos'				: user["infos"],
+		'auth'				: user["auth"],
+		# 'datasets'		: user["datasets"],
+		# 'profile'			: user["profile"],
 		# 'professional'	: user["professional"],
 	}
 
@@ -87,10 +87,12 @@ def user_identity_lookup(user):
 	log.debug("-@- identity loader")
 	log.debug("user : \n %s", pformat(user))
 	
-	### load email as identity in the jwt
 	try : 
-		identity = user["infos"]["email"]
+		### load email as identity in the jwt
+		# identity = user["infos"]["email"]
+		### load _id as identity in the jwt
 		# identity = str(user["_id"])
+		identity = user["_id"]
 	except : 
 		identity = None
 		
@@ -117,8 +119,8 @@ def my_expired_token_callback():
 	### otherwise return a link to refresh refresh_token
 
 	return jsonify({
-			'msg'				: 'The token has expired',
-			'status'		: 401,
+			'msg'		: 'The token has expired',
+			'status'	: 401,
 			'sub_status': 42,
 	}), 401
 
@@ -285,7 +287,7 @@ def confirm_email_required(func):
 ### cf : https://stackoverflow.com/questions/13931633/how-can-a-flask-decorator-have-arguments/13932942#13932942
 def current_user_required(func):
 	"""
-	Check in access_token + user_oidif user eihter : 
+	Check in access_token + user_oid if user eihter : 
 	- is who he claims to be 
 	- if he has admin level 
 	"""

@@ -2,8 +2,6 @@
 
 """
 endpoint_dsi_create.py  
-- provides the API endpoints for consuming and producing
-	REST requests and responses
 """
 
 from solidata_api.api import *
@@ -11,13 +9,16 @@ from solidata_api.api import *
 log.debug(">>> api_dataset_inputs ... creating api endpoints for DSI_CREATE")
 
 ### create namespace
-ns = Namespace('create', description='Projects : create a new dataset_input')
+ns = Namespace('create', description='Dsi : create a new dataset_input')
 
 ### import models 
 from solidata_api._models.models_dataset_input import * 
 from solidata_api._models.models_dataset_raw import * 
-model_dsi_in		= Dsi_infos(ns).mod_complete_in
-model_dsr_in		= Dsr_infos(ns).mod_complete_in
+model_new_dsi  	= NewDsi(ns).model
+model_dsi		= Dsi_infos(ns)
+model_dsr		= Dsr_infos(ns)
+model_dsi_in	= model_dsi.mod_complete_in
+model_dsr_in	= model_dsr.mod_complete_in
 # model_dsi_ref		= create_model_dataset(ns, model_name="Dsi_ref", include_fav=True,schema="dsi")
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -36,6 +37,7 @@ class DsiCreate(Resource):
 	# @current_user_required
 	@guest_required 
 	@ns.expect(file_parser)
+	# @ns.marshal_with(model_dsi_in) #, envelope="new_user", code=201)
 	def post(self):
 		"""
 		upload a file and create a new dsi in db
@@ -100,7 +102,7 @@ class DsiCreate(Resource):
 				### create new empty dsi object
 				new_dsi_infos = {
 					"infos" : {
-						"title" 			: filename,
+						"title" 		: filename,
 					},
 					"log" : {
 						"created_at" 	: datetime.utcnow(),
@@ -133,8 +135,8 @@ class DsiCreate(Resource):
 					### create new empty dsr object
 					new_dsr_infos = {
 						"infos" : {
-							"title" 			: col_key,
-							"licence"			: "private_use_only",
+							"title" 		: col_key,
+							"licence"		: "private_use_only",
 							"description"	: "column '{}' of '{}' file".format(col_key,filename)
 						},
 						"public_auth" : {
@@ -156,25 +158,25 @@ class DsiCreate(Resource):
 						}
 					}
 					### fill new_dsi_info with the data
-					new_dsr 						= marshal( new_dsr_infos , model_dsr_in)
+					new_dsr 			= marshal( new_dsr_infos , model_dsr_in)
 					new_dsr["data_raw"] = col_values
 
 					### save dsr object to db 
-					new_dsr_doc = mongo_datasets_raws.insert(new_dsr)
+					new_dsr_doc 		= mongo_datasets_raws.insert(new_dsr)
 
 					### keep track of new_dsr_doc oid 
-					oid_dsr_		= str(new_dsr_doc)
+					oid_dsr_			= str(new_dsr_doc)
 					
 					log.info("new_dsr '{}' is saved in db... / oid_dsr_ : {} ".format(col_key, oid_dsr_) )
 
 
 					### add dsr ref to dsi 
-					add_to_datasets(	coll						= "mongo_datasets_inputs", 
-														target_doc_oid	= oid_dsi_, 
-														doc_type				= "dsr", 
-														oid_by					= oid_usr_, 
-														oid_to_add			= oid_dsr_, 
-													)
+					add_to_datasets(	coll 			= "mongo_datasets_inputs", 
+										target_doc_oid	= oid_dsi_, 
+										doc_type		= "dsr", 
+										oid_by			= oid_usr_, 
+										oid_to_add		= oid_dsr_, 
+									)
 
 				# args = file_parser.parse_args()
 				# if args['data_file'].mimetype in authorized_mimetype :
@@ -189,25 +191,25 @@ class DsiCreate(Resource):
 
 
 				### add dsi ref to user 
-				add_to_datasets(	coll						= "mongo_users", 
-													target_doc_oid	= oid_usr_, 
-													doc_type				= "dsi", 
-													oid_by					= oid_usr_, 
-													oid_to_add			= oid_dsi_, 
-													include_is_fav	= True
-												)
+				add_to_datasets(	coll			= "mongo_users", 
+									target_doc_oid	= oid_usr_, 
+									doc_type		= "dsi", 
+									oid_by			= oid_usr_, 
+									oid_to_add		= oid_dsi_, 
+									include_is_fav	= True
+								)
 
 
 				return {
-										"msg"				: "your file '{}' has been correctly uploaded...".format(filename),
-										"filename" 	: filename,
-										"oid_dsi" 	: str(oid_dsi_)
-									}, 200
+							"msg"				: "your file '{}' has been correctly uploaded...".format(filename),
+							"filename" 	: filename,
+							"oid_dsi" 	: str(oid_dsi_)
+						}, 200
 			
 			else : 
 				existing_dsi_oid = existing_dsi["_id"]
 				return {
-										"msg"				: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
-										"filename" 	: filename,
-										"oid_dsi" 	: str(existing_dsi_oid)
-									}, 401
+							"msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
+							"filename" 	: filename,
+							"oid_dsi" 	: str(existing_dsi_oid)
+						}, 401

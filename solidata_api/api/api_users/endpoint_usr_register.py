@@ -2,8 +2,6 @@
 
 """
 endpoint_usr_register.py  
-- provides the API endpoints for consuming and producing
-	REST requests and responses
 """
 
 from solidata_api.api import *
@@ -17,10 +15,11 @@ ns = Namespace('register', description='Users : register related endpoints')
 
 ### import models 
 from solidata_api._models.models_user import *  
-model_register_user			= NewUser(ns).model
-model_register_user_out	= User_infos(ns).model_complete_out
-model_user_complete_in	= User_infos(ns).model_complete_in
-model_user_access				= User_infos(ns).model_access
+model_register_user		= NewUser(ns).model
+model_user				= User_infos(ns)
+model_register_user_out	= model_user.model_complete_out
+model_user_complete_in	= model_user.model_complete_in
+model_user_access		= model_user.model_access
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -52,7 +51,7 @@ class Register(Resource):
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		### retrieve infos from form 
-		payload_email = ns.payload["email"]
+		payload_email 	= ns.payload["email"]
 		payload_pwd 	= ns.payload["pwd"]
 		log.debug("email : %s", payload_email )
 		log.debug("password : %s", payload_pwd )
@@ -68,19 +67,23 @@ class Register(Resource):
 			log.debug("hashpass : %s", hashpass)
 
 			### create user dict from form's data
-			new_user_infos 								= {"infos" : ns.payload, "auth" : ns.payload }
-			new_user 											= marshal( new_user_infos , model_user_complete_in)
-			new_user["auth"]["pwd"] 			= hashpass
-			new_user["specs"]["doc_type"] = "usr"
-			new_user["log"]["created_at"] = datetime.utcnow()
-			new_user["log"]["created_by"] = payload_email
+			new_user_infos 	= {
+				"infos" : ns.payload, 
+				# "auth" 	: ns.payload 
+				"log"	: {"created_at" : datetime.utcnow() } 
+			}
+			new_user 						= marshal( new_user_infos , model_user_complete_in)
+			new_user["auth"]["pwd"] 		= hashpass
+			new_dmt["infos"]["open_level"] 	= "private"
+			new_user["specs"]["doc_type"] 	= "usr"
+			new_user["log"]["created_by"] 	= payload_email
 
 			### temporary save new user in db 
 			_id = mongo_users.insert( new_user )
 			log.info("new user is being created : \n%s", pformat(new_user))
 			log.info("_id : \n%s", pformat(_id))
 
-
+			### add _id as string to data
 			new_user["_id"] = str(_id) # str(user_created["_id"])
 			
 			### create access tokens
@@ -90,17 +93,17 @@ class Register(Resource):
 			### create refresh tokens
 			log.debug("... refresh_token")
 			### just create a temporary refresh token once / so it could be blacklisted
-			expires 										= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
-			refresh_token 							= create_refresh_token(identity=new_user, expires_delta=expires)
+			expires 		= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
+			refresh_token 	= create_refresh_token(identity=new_user, expires_delta=expires)
 			
 			### add confirm_email to claims for access_token_confirm_email
-			new_user["confirm_email"]		= True
+			new_user["confirm_email"]	= True
 			access_token_confirm_email 	= create_access_token(identity=new_user, expires_delta=expires)
 			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
 
 			tokens = {
-					'access_token'								: access_token,
-					'refresh_token'								: refresh_token,
+					'access_token'		: access_token,
+					'refresh_token'		: refresh_token,
 					# 'access_token_confirm_email' 	: access_token_confirm_email
 			}
 			log.info("tokens : \n %s", pformat(tokens))
@@ -119,29 +122,34 @@ class Register(Resource):
 			### send a confirmation email if not RUN_MODE not 'dev'
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
 				
-				# create url for confirmation to send in the mail
-				confirm_url = app.config["DOMAIN_NAME"] + api.url_for(Confirm_email, token=access_token_confirm_email, external=True)
-				log.info("confirm_url : \n %s", confirm_url)
+				try : 
+					# create url for confirmation to send in the mail
+					confirm_url = app.config["DOMAIN_NAME"] + api.url_for(Confirm_email, token=access_token_confirm_email, external=True)
+					log.info("confirm_url : \n %s", confirm_url)
 
-				# generate html body of the email
-				html = render_template('emails/confirm_email.html', confirm_url=confirm_url)
-				
-				# send the mail
-				send_email( "Confirm your email", payload_email, template=html )
+					# generate html body of the email
+					html = render_template('emails/confirm_email.html', confirm_url=confirm_url)
+					
+					# send the mail
+					send_email( "Confirm your email", payload_email, template=html )
 
+				except : 
+					pass
 
 			return { 
-								"msg"			: "new user has been created and a confirmation link has been sent, you have {} days to confirm your email, otherwise this account will be erased...".format(expires),
-								"expires"	: str(expires), 
-								"tokens"	: tokens,
-								"data"		: new_user_out,
-							}, 200
+						"msg"		: "new user has been created and a confirmation link has been sent, you have {} days to confirm your email, otherwise this account will be erased...".format(expires),
+						"expires"	: str(expires), 
+						"tokens"	: tokens,
+						"_id"		: str(user_created["_id"]),
+						"infos"		: user_created["infos"],
+						"data"		: new_user_out,
+					}, 200
 
 		else :
 			
 			return {
-								"msg" : "email '{}' is already taken ".format(payload_email)
-							}, 401
+						"msg" : "email '{}' is already taken ".format(payload_email)
+					}, 401
 
 
 
@@ -221,9 +229,9 @@ class Confirm_email(Resource):
 			log.info("tokens : \n%s", pformat(tokens))
 
 			return { 
-								"msg"     : "email '{}' confirmed, new refresh token created...".format(user_email),
-								"tokens"	: tokens
-							}, 200
+						"msg"     : "email '{}' confirmed, new refresh token created...".format(user_email),
+						"tokens"	: tokens
+					}, 200
 		
 		### user is already confirmed
 		else : 
@@ -238,6 +246,6 @@ class Confirm_email(Resource):
 			}
 			log.info("tokens : \n%s", pformat(tokens))
 			return { 
-								"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),
-								"tokens"	: tokens
-							}, 401
+						"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),
+						"tokens"	: tokens
+					}, 401

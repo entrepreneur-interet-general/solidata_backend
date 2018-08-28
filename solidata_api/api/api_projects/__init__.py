@@ -18,6 +18,11 @@ log.debug("\n>>> api_projects ... creating api blueprint for PROJECTS")
 
 blueprint = Blueprint( 'api_projects', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
 # blueprint = Blueprint( 'api_projects', __name__, template_folder='templates' )
+
+### enable CORS on blueprint
+CORS(blueprint)
+
+### create API
 api = Api( 	blueprint,
 						title						= "Solidata API : PROJECTS",
 						version					= "0.1",
@@ -44,11 +49,11 @@ def default_error_handler(e):
 ### import api namespaces / add namespaces to api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-from .endpoint_prj import 		ns as ns_prj_list
-api.add_namespace(ns_prj_list)
-
-from .endpoint_prj_create import 		ns as ns_prj_create
+from .endpoint_prj_create import 	ns as ns_prj_create
 api.add_namespace(ns_prj_create)
 
-from .endpoint_prj_edit import 		ns as ns_prj_edit
-api.add_namespace(ns_prj_edit)
+# from .endpoint_prj import 			ns as ns_prj_list
+# api.add_namespace(ns_prj_list)
+
+# from .endpoint_prj_edit import 		ns as ns_prj_edit
+# api.add_namespace(ns_prj_edit)

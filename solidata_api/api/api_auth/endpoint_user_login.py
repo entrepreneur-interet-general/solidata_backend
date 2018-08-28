@@ -2,8 +2,6 @@
 
 """
 endpoint_user_login.py  
-- provides the API endpoints for consuming and producing
-	REST requests and responses
 """
 
 from solidata_api.api import *
@@ -19,7 +17,7 @@ ns = Namespace('login', description='User : login related endpoints')
 ### import models 
 from solidata_api._models.models_user import LoginUser, User_infos, AnonymousUser
 model_login_user  	= LoginUser(ns).model
-model_user_access		= User_infos(ns).model_access
+model_user_access	= User_infos(ns).model_access
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -27,7 +25,7 @@ model_user_access		= User_infos(ns).model_access
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-
+# @cross_origin()
 @ns.route('/anonymous/')
 class AnonymousLogin(Resource):
 
@@ -38,7 +36,7 @@ class AnonymousLogin(Resource):
 		Login as anonymous user
 
 		>
-			--- needs   : nothing particular
+			--- needs   : nothing in particular
 			>>> returns : msg, anonymous access_token + anonymous refresh_token with a short expiration date
 		"""
 
@@ -55,7 +53,7 @@ class AnonymousLogin(Resource):
 		anonymous_access_token		= create_access_token(identity=anonymous_user) #, expires_delta=expires)
 
 		### create corresponding refresh token
-		expires 									= app.config["JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES"]
+		expires 					= app.config["JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES"]
 		anonymous_refresh_token		= create_refresh_token(identity=anonymous_user, expires_delta=expires)
 
 		log.debug("anonymous_access_token 	: \n %s", anonymous_access_token )
@@ -68,9 +66,9 @@ class AnonymousLogin(Resource):
 		}
 
 		return {	
-							"msg" 		: "anonymous user - an anonymous access_token has been created + a valid refresh_token for {} hours".format(expires) , 
-							"tokens"	:  tokens
-					}, 200
+				"msg" 		: "anonymous user - an anonymous access_token has been created + a valid refresh_token for {} hours".format(expires) , 
+				"tokens"	:  tokens
+				}, 200
 
 
 
@@ -158,18 +156,20 @@ class Login(Resource):
 
 
 				return {	
-									"msg" 							: "user '{}' is logged".format(payload_email),
-									"is_user_confirmed" : user["auth"]["conf_usr"],
-									"profile"						: user["profile"],
-									"tokens"						: tokens
-							}, 200
+						"msg"				: "user '{}' is logged".format(payload_email),
+						"is_user_confirmed" : user["auth"]["conf_usr"],
+						"_id"				: str(user["_id"]),
+						"infos"				: user["infos"],
+						"profile"			: user["profile"],
+						"tokens"			: tokens
+						}, 200
 
 			else : 
 
 				error_message = "wrong password"
 				return { 
-									"msg" : "incorrect login / {}".format(error_message) 
-							}, 401
+						"msg" : "incorrect login / {}".format(error_message) 
+						}, 401
 
 
 

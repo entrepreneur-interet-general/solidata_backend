@@ -18,14 +18,19 @@ log.debug("\n>>> api_dataset_inputs ... creating api blueprint for DATASET INPUT
 
 blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
 # blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder='templates' )
+
+### enable CORS on blueprint
+# CORS(blueprint)
+
+### create API
 api = Api( 	blueprint,
-						title						= "Solidata API : DATASET INPUTS",
-						version					= "0.1",
+						title				= "Solidata API : DATASET INPUTS",
+						version				= "0.1",
 						description			= "create, list, delete, edit... dataset inputs",
-						doc							= '/documentation',
-						default					= 'create',
-						authorizations	= auth_check,
-						security				='apikey' # globally ask for pikey auth
+						doc					= '/documentation',
+						default				= 'create',
+						authorizations		= auth_check,
+						security			='apikey' # globally ask for apikey auth
 )
 
 
@@ -44,10 +49,10 @@ def default_error_handler(e):
 ### import api namespaces / add namespaces to api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-from .endpoint_dsi import 		ns as ns_dsi_list
+from .endpoint_dsi import 			ns as ns_dsi_list
 api.add_namespace(ns_dsi_list)
 
-from .endpoint_dsi_create import 		ns as ns_dsi_create
+from .endpoint_dsi_create import 	ns as ns_dsi_create
 api.add_namespace(ns_dsi_create)
 
 from .endpoint_dsi_edit import 		ns as ns_dsi_edit
