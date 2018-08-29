@@ -30,14 +30,14 @@ class NewPrj :
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "Prj_basics", doc_basics_licence_openlevel )
+		self.mod = ns_.model( "Prj_basics", {**doc_basics_licence, **open_level_edit_show} )
 	
 	@property
 	def model(self): 
 		return self.mod
 
 
-class Project_infos : 
+class Prj_infos : 
 	"""
 	Model to display / marshal 
 	project
@@ -87,6 +87,9 @@ class Project_infos :
 		### IN / complete data to enter in DB
 		self.mod_complete_in 	= ns_.model(model_type+"_in", { **self.model_min, **self.model_in } )
 
+		### OUT / complete data to get out of DB
+		self.mod_complete_out 	= ns_.model(model_type+"_out", { **self.model_min, **self.model_in, **self.model_id } )
+
 		### MIN / minimum data to marshall out 
 		self.mod_minimum 	= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
 
@@ -95,7 +98,10 @@ class Project_infos :
 	def model_complete_in(self): 
 		return self.mod_complete_in
 
-
+	@property
+	def model_complete_out(self): 
+		return self.mod_complete_out
+	
 	@property
 	def model_minimum(self): 
 		return self.mod_minimum

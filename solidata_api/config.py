@@ -27,12 +27,13 @@ class BaseConfig(object):
 	SECRET_KEY						= "app_very_secret_key"
 
 	""" SHARED JWT SECRET KEY : this key must be shared with openscraper and solidata """
-	JWT_SECRET_KEY				= "a_key_shared_with_front_and_openscraper_and_solidata"
-	JWT_HEADER_NAME				= "Authorization" #"X-API-KEY"
-	JWT_TOKEN_LOCATION			= ["headers", "query_string"]
-	JWT_QUERY_STRING_NAME 		= "token"
-	JWT_ACCESS_TOKEN_EXPIRES 	= timedelta(minutes=15) # minutes=15
-	JWT_REFRESH_TOKEN_EXPIRES 	= timedelta(days=5*365)  
+	JWT_SECRET_KEY								= "a_key_shared_with_front_and_openscraper_and_solidata"
+	JWT_HEADER_NAME								= "Authorization" #"X-API-KEY"
+	JWT_TOKEN_LOCATION							= ["headers", "query_string"]
+	JWT_QUERY_STRING_NAME 						= "token"
+	JWT_ACCESS_TOKEN_EXPIRES 					= timedelta(minutes=15) # minutes=15
+	JWT_REFRESH_TOKEN_EXPIRES 					= timedelta(days=5*365)  
+	# JWT_IDENTITY_CLAIM							= "_id"
 	### custom JWT expirations
 	JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES			= timedelta(minutes=15)  
 	JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES 	= timedelta(days=7)  
@@ -40,7 +41,7 @@ class BaseConfig(object):
 	# beware not putting anything in JWT_HEADER_TYPE like 'Bearer', 
 	# otherwise @jwt_required will look for an Authorization : Bearer <JWT> / 
 	# not very comptatible with Flask-RestPlus authorization schemas described in _auth.authorizations.py
-	JWT_HEADER_TYPE				= "" 
+	JWT_HEADER_TYPE								= "" 
 
 
 	""" HOST """
@@ -70,12 +71,12 @@ class BaseConfig(object):
 
 	""" EMAILING """
 	# email server
-	MAIL_SERVER			= 'smtp.googlemail.com'
-	MAIL_PORT 			= 465
-	MAIL_USE_TLS 		= False
-	MAIL_USE_SSL 		= True
-	MAIL_USERNAME 		= os.environ.get('MAIL_USERNAME')
-	MAIL_PASSWORD 		= os.environ.get('MAIL_PASSWORD')
+	MAIL_SERVER					= 'smtp.googlemail.com'
+	MAIL_PORT 					= 465
+	MAIL_USE_TLS 				= False
+	MAIL_USE_SSL 				= True
+	MAIL_USERNAME 				= os.environ.get('MAIL_USERNAME')
+	MAIL_PASSWORD 				= os.environ.get('MAIL_PASSWORD')
 	# administrator list
 	ADMINS						= ['your-gmail-username@gmail.com']
 	MAIL_DEFAULT_SENDER			= 'your-gmail-username@gmail.com'

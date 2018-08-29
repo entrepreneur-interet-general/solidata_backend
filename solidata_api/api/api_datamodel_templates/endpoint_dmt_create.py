@@ -8,6 +8,8 @@ from solidata_api.api import *
 
 log.debug(">>> api_datamodel_templates ... creating api endpoints for DMT_CREATE")
 
+
+
 ### create namespace
 ns = Namespace('create', description='Dmt : create a new datamodel_template ')
 
@@ -16,6 +18,8 @@ from solidata_api._models.models_datamodel_template import *
 model_new_dmt  	= NewDmt(ns).model
 model_dmt		= Dmt_infos(ns)
 model_dmt_in	= model_dmt.model_complete_in
+
+
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -28,6 +32,7 @@ model_dmt_in	= model_dmt.model_complete_in
 @ns.route('/')
 class DmtCreate(Resource):
 
+	@ns.doc('dmt_create')
 	@guest_required 
 	@ns.expect(model_new_dmt, validate=True)
 	# @ns.marshal_with(model_dmt_in) #, envelope="new_dmt", code=201)
@@ -49,19 +54,18 @@ class DmtCreate(Resource):
 
 		### check client identity and claims
 		claims 			= get_jwt_claims() 
-		user_id 		= get_jwt_identity() ### get the oid as str
-		log.debug('user_identity from jwt : \n%s', user_identity )  
-		# user_id 		= claims["_id"]
-		user_oid		= ObjectId(user_id)
 		log.debug("claims : \n %s", pformat(claims) )
+
+		# user_id 		= get_jwt_identity() ### get the oid as str
+		# log.debug('user_identity from jwt : \n%s', user_identity )  
+		user_id 		= claims["_id"]
+		user_oid		= ObjectId(user_id)
 		# user_role 		= claims["auth"]["role"]
 
 		### get data from form and preload for marshalling
 		new_dmt_infos = { 
 			"infos" 		: ns.payload,
-			"public_auth" 	: {
-				"open_level" : "open_data"
-			},
+			"public_auth" 	: ns.payload,
 			"specs"			: {
 				"doc_type" : "dmt"
 			},
@@ -75,12 +79,12 @@ class DmtCreate(Resource):
 		new_dmt_auto_fields = { 
 			"log"			: { 
 				"created_at"	: datetime.utcnow(),
-				"created_by"	: ObjectId(user_id),
+				"created_by"	: user_oid,
 			},
 			"uses"			: {
 				"by_usr"		: [ 
 					{
-						"used_by" : ObjectId(user_id),
+						"used_by" : user_oid,
 						"used_at" : [ 
 							# { "at" : datetime.utcnow() } 
 							datetime.utcnow() 
@@ -90,10 +94,10 @@ class DmtCreate(Resource):
 			},
 			"team"			: [ 
 				{
-					'oid_usr'	: ObjectId(user_id),
+					'oid_usr'	: user_oid,
 					'edit_auth'	: "owner",
 					'added_at'  : datetime.utcnow(),
-					'added_by'  : user_id,
+					'added_by'  : user_oid,
 				}
 			],
 		}

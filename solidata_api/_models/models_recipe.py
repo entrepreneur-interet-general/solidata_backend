@@ -24,7 +24,7 @@ from solidata_api._models.models_generic import *
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
 
-class NewDmt : 
+class NewRec : 
 	"""
 	Model to display / marshal rec basic form
 	"""
@@ -37,7 +37,7 @@ class NewDmt :
 		return self.mod
 
 
-class Dmt_infos : 
+class Rec_infos : 
 	"""
 	Model to display / marshal 
 	recipe
@@ -60,7 +60,7 @@ class Dmt_infos :
 		self.translations			= create_model_translations(ns_, 	model_name=model_type+"_translations")
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 
-		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "dsi_to_dmf", "rec_to_dmf" ])
+		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "rec_to_func" ])
 
 
 		self.model_id = {
@@ -69,7 +69,7 @@ class Dmt_infos :
 		self.model_in = {
 			'modif_log'		: self.modif_log , 
 			"datasets"		: self.datasets ,
-		
+			'mapping'		: self.mapping,		
 		}
 		self.model_min = {
 			'infos' 		: self.basic_infos,

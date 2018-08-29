@@ -160,6 +160,8 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		from solidata_api.api.api_tags 	import blueprint as api_tag
 		app.register_blueprint( api_tag, url_prefix='/api/tags')
 
+		from solidata_api.api.api_recipes 	import blueprint as api_rec
+		app.register_blueprint( api_rec, url_prefix='/api/recipes')
 
 
 		### TO DO - write missing endpoints
@@ -167,8 +169,6 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		# from solidata_api.api.api_datasets_out 	import blueprint as api_dso
 		# app.register_blueprint( api_dso, url_prefix='/api/dataset_outputs')
 
-		# from solidata_api.api.api_recipes 	import blueprint as api_rec
-		# app.register_blueprint( api_rec, url_prefix='/api/recipes')
 
 
 

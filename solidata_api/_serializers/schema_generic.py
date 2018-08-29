@@ -73,7 +73,22 @@ open_level 			= fields.String(
 										enum			= open_level_choices,
 										required		= False,
 									)
-
+open_level_edit 	= fields.String(
+										description		= "open level of the document for edit",
+										attribute		= "open_level_edit",
+										example			= "collective",
+										default			= 'collective',
+										enum			= open_level_choices,
+										required		= True,
+									)
+open_level_show 	= fields.String(
+										description		= "open level of the document for show",
+										attribute		= "open_level_show",
+										example			= "commons",
+										default			= 'open_data',
+										enum			= open_level_choices,
+										required		= True,
+									)
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### multilanguage
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -265,17 +280,18 @@ oid_func 			= IdField(
 
 ### store a correspondance dict of oids...
 oid_dict = {
-	"oid" : { "field" : oid , 	  "fullname" : "oid" } ,
-	"usr" : { "field" : oid_usr , "fullname" : "user" } ,
-	"prj" : { "field" : oid_prj , "fullname" : "project" } ,
-	"dmt" : { "field" : oid_dmt , "fullname" : "datamodel_template" } ,
-	"dmf" : { "field" : oid_dmf , "fullname" : "datamodel_field" } ,
-	"dsi" : { "field" : oid_dsi , "fullname" : "dataset_input" } ,
-	"dsr" : { "field" : oid_dsr , "fullname" : "dataset_raw" } ,
-	"rec" : { "field" : oid_rec , "fullname" : "recipe" } ,
-	"dso" : { "field" : oid_dso , "fullname" : "dataset_output" } ,
-	"fld" : { "field" : oid_fld , "fullname" : "field" } ,
-	"tag" : { "field" : oid_tag , "fullname" : "tag" } ,
+	"oid"	: { "field" : oid , 	"fullname" : "oid" } ,
+	"usr" 	: { "field" : oid_usr , "fullname" : "user" } ,
+	"prj"	: { "field" : oid_prj , "fullname" : "project" } ,
+	"dmt" 	: { "field" : oid_dmt , "fullname" : "datamodel_template" } ,
+	"dmf"	: { "field" : oid_dmf , "fullname" : "datamodel_field" } ,
+	"dsi" 	: { "field" : oid_dsi , "fullname" : "dataset_input" } ,
+	"dsr" 	: { "field" : oid_dsr , "fullname" : "dataset_raw" } ,
+	"rec" 	: { "field" : oid_rec , "fullname" : "recipe" } ,
+	"func" 	: { "field" : oid_func ,"fullname" : "function" } ,
+	"dso" 	: { "field" : oid_dso , "fullname" : "dataset_output" } ,
+	"fld"	: { "field" : oid_fld , "fullname" : "field" } ,
+	"tag" 	: { "field" : oid_tag , "fullname" : "tag" } ,
 }
 
 
@@ -333,10 +349,14 @@ guests_can_edit		= fields.Boolean(
 										default			= False,
 									)
 									
+# public_auth 		= {
+# 	"open_level"		: open_level,
+# 	"guests_can_see" 	: guests_can_see,
+# 	"guests_can_edit"	: guests_can_edit
+# }
 public_auth 		= {
-	"open_level"		: open_level,
-	"guests_can_see" 	: guests_can_see,
-	"guests_can_edit"	: guests_can_edit
+	"open_level_edit"	: open_level_edit,
+	"open_level_show" 	: open_level_show,
 }
 
 
@@ -450,15 +470,23 @@ doc_basics_licence				= {
 	"description"	: descript,
 }
 
-doc_basics_openlevel 			= {
-	"title" 		: title,
-	"open_level" 	: open_level,
-	"description"	: descript,
-}
+# doc_basics_openlevel 			= {
+# 	"title" 		: title,
+# 	"open_level" 	: open_level,
+# 	"description"	: descript,
+# }
 
-doc_basics_licence_openlevel 	= {
-	"title" 		: title,
-	"licence"		: licence,
-	"open_level" 	: open_level,
-	"description"	: descript,
+# doc_basics_licence_openlevel 	= {
+# 	"title" 		: title,
+# 	"licence"		: licence,
+# 	"open_level" 	: open_level,
+# 	"description"	: descript,
+# }
+
+open_level_edit_show 		= {
+	"open_level_edit"	: open_level_edit,
+	"open_level_show" 	: open_level_show,
+}
+open_level_edit 			= {
+	"open_level_edit"	: open_level_edit,
 }

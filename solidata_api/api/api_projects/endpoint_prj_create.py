@@ -8,14 +8,18 @@ from solidata_api.api import *
 
 log.debug(">>> api_projects ... creating api endpoints for PROJ_CREATE")
 
+
+
 ### create namespace
 ns = Namespace('create', description='Projects : create a new project')
 
 ### import models 
 from solidata_api._models.models_project import * 
 model_form_new_prj  	= NewPrj(ns).model
-mod_prj					= Project_infos(ns)
+mod_prj					= Prj_infos(ns)
 model_project_in		= mod_prj.mod_complete_in
+
+
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -26,16 +30,20 @@ model_project_in		= mod_prj.mod_complete_in
 
 @ns.doc(security='apikey')
 @ns.route('/')
-class ProjectCreate(Resource):
+class PrjCreate(Resource):
 
+	@ns.doc('prj_create')
 	@guest_required
 	@ns.expect(model_form_new_prj, validate=True)
 	# @ns.marshal_with(model_prj_in) #, envelope="new_prj", code=201)
 	def post(self):
 		"""
 		Create a new project in db
-		"""
 
+		>
+			--- needs   : a valid access_token in the header
+			>>> returns : msg, prj data 
+		"""
 		### DEBUGGING
 		print()
 		print("-+- "*40)
@@ -46,12 +54,14 @@ class ProjectCreate(Resource):
 
 		### check client identity and claims
 		claims 			= get_jwt_claims() 
-		user_id 		= get_jwt_identity() ### get the oid as str
-		log.debug('user_identity from jwt : \n%s', user_identity )  
-		# user_id 		= claims["_id"]
-		user_oid		= ObjectId(user_id)
 		log.debug("claims : \n %s", pformat(claims) )
+		
+		# user_id 		= get_jwt_identity() ### get the oid as str
+		# log.debug('user_identity from jwt : \n%s', user_identity )  
+		user_id 		= claims["_id"]
+		user_oid		= ObjectId(user_id)
 		# user_role 		= claims["auth"]["role"]
+		log.debug('user_oid : %s', user_oid )  
 
 		### get data from form and preload for marshalling
 		new_prj_infos = { 

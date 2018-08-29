@@ -38,6 +38,7 @@ def add_claims_to_access_token(user):
 	> needs a 'model_user_out' or 'model_access' as 'user'
 	"""
 	log.debug("-@- claims loader")
+	log.debug("user : \n %s", pformat(user))
 
 	sent_token = get_raw_jwt()
 	log.debug("sent_token : \n %s", pformat(sent_token))
@@ -54,16 +55,16 @@ def add_claims_to_access_token(user):
 
 	### specific claims
 	if "renew_pwd" in user : 
-		claims_to_store_into_jwt["renew_pwd"] = user["renew_pwd"]
+		claims_to_store_into_jwt["renew_pwd"] 			= user["renew_pwd"]
 
 	if "reset_pwd" in user : 
-		claims_to_store_into_jwt["reset_pwd"] = user["reset_pwd"]
+		claims_to_store_into_jwt["reset_pwd"] 			= user["reset_pwd"]
 
 	if "confirm_email" in user : 
-		claims_to_store_into_jwt["confirm_email"] = user["confirm_email"]
+		claims_to_store_into_jwt["confirm_email"] 		= user["confirm_email"]
 
 	if user["infos"]["email"] == "anonymous" : 
-		claims_to_store_into_jwt["is_anonymous"] = True
+		claims_to_store_into_jwt["is_anonymous"] 		= True
 
 	if "renew_refresh_token" in user : 
 		claims_to_store_into_jwt["renew_refresh_token"] = True

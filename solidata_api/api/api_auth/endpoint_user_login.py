@@ -61,13 +61,13 @@ class AnonymousLogin(Resource):
 
 		### store tokens in dict
 		tokens = {
-				'access_token' 	: anonymous_access_token,
-				'refresh_token' : anonymous_refresh_token,
-		}
+					'access_token' 	: anonymous_access_token,
+					'refresh_token' : anonymous_refresh_token,
+				}
 
 		return {	
-				"msg" 		: "anonymous user - an anonymous access_token has been created + a valid refresh_token for {} hours".format(expires) , 
-				"tokens"	:  tokens
+					"msg" 		: "anonymous user - an anonymous access_token has been created + a valid refresh_token for {} hours".format(expires) , 
+					"tokens"	:  tokens
 				}, 200
 
 
@@ -112,8 +112,8 @@ class Login(Resource):
 
 			error_message = "no such user in db"
 			return {	
-								"msg" : "incorrect login / {}".format(error_message) 
-							}, 401
+						"msg" : "incorrect login / {}".format(error_message) 
+					}, 401
 
 		if user : 
 			
@@ -123,7 +123,7 @@ class Login(Resource):
 
 				### marshal user's info 
 				user_light 				= marshal( user , model_user_access)
-				user_light["_id"] = str(user["_id"])
+				# user_light["_id"] 		= str(user["_id"])
 				log.debug("user_light : \n %s", pformat(user_light) )
 
 				### Use create_access_token() to create user's new access token 
@@ -168,7 +168,7 @@ class Login(Resource):
 
 				error_message = "wrong password"
 				return { 
-						"msg" : "incorrect login / {}".format(error_message) 
+							"msg" 			: "incorrect login / {}".format(error_message) 
 						}, 401
 
 

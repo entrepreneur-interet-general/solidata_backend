@@ -10,12 +10,29 @@ from flask_restplus import reqparse
 
 log.debug("~ ~ ~ loading parser_queries.py ...")
 
+### cf : https://flask-restplus.readthedocs.io/en/stable/parsing.html 
 
 query_arguments = reqparse.RequestParser()
 query_arguments.add_argument(
 	'q', 
-	type=int, 
+	action='append',
+	type=str, 
 	required=False, 
-	default=1, 
-	help='raw query string'
+	help='raw query string to find'
 )
+query_arguments.add_argument(
+	'tags', 
+	action='split',
+	type=str, 
+	required=False, 
+	help='tags to find'
+)
+query_arguments.add_argument(
+	'oid', 
+	action='split',
+	type=str, 
+	required=False, 
+	help='documents oid to find'
+)
+
+

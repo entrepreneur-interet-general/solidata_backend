@@ -24,13 +24,13 @@ CORS(blueprint)
 
 ### create API
 api = Api( 	blueprint,
-						title						= "Solidata API : PROJECTS",
-						version					= "0.1",
-						description			= "create, list, delete, edit... projects",
-						doc							= '/documentation',
-						default					= 'create',
+						title			= "Solidata API : PROJECTS",
+						version			= "0.1",
+						description		= "create, list, delete, edit... projects",
+						doc				= '/documentation',
+						default			= 'create',
 						authorizations	= auth_check,
-						security				='apikey' # globally ask for pikey auth
+						security		='apikey' # globally ask for pikey auth
 )
 
 
@@ -52,8 +52,8 @@ def default_error_handler(e):
 from .endpoint_prj_create import 	ns as ns_prj_create
 api.add_namespace(ns_prj_create)
 
-# from .endpoint_prj import 			ns as ns_prj_list
-# api.add_namespace(ns_prj_list)
+from .endpoint_prj import 			ns as ns_prj_list
+api.add_namespace(ns_prj_list)
 
 # from .endpoint_prj_edit import 		ns as ns_prj_edit
 # api.add_namespace(ns_prj_edit)

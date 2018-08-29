@@ -14,7 +14,7 @@ log.debug("\n>>> api_datamodel_recipes ... creating api blueprint for DATAMODEL 
 ### create blueprint and api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-blueprint = Blueprint( 'api_datamodel_templates', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
+blueprint = Blueprint( 'api_recipes', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
 # blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder='templates' )
 
 ### enable CORS on blueprint

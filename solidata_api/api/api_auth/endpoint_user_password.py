@@ -18,8 +18,8 @@ ns = Namespace('password', description='User : password related endpoints')
 ### import models 
 from solidata_api._models.models_user import EmailUser, PasswordUser, User_infos
 model_email_user  	= EmailUser(ns).model
-model_pwd_user			= PasswordUser(ns).model
-model_access_user		= User_infos(ns).model_access
+model_pwd_user		= PasswordUser(ns).model
+model_access_user	= User_infos(ns).model_access
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -63,19 +63,19 @@ class PasswordForgotten(Resource):
 		if user is None and payload_email != "anonymous" : 
 
 			return { 	
-								"msg" : "email {} doesn't exists in db".format(payload_email) 
-							}, 401
+						"msg" : "email {} doesn't exists in db".format(payload_email) 
+					}, 401
 
 		if user :  
 			
 			### marshal user's info 
-			user_light							= marshal( user , model_access_user)
-			user_light["_id"]				= str(user["_id"])
+			user_light				= marshal( user , model_access_user)
+			user_light["_id"]		= str(user["_id"])
 			user_light["renew_pwd"] = True
 			log.debug("user_light : \n %s", pformat(user_light)) 
 
 			# Use create_refresh_token() to create user's new access token for n days
-			expires 								= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
+			expires 				= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
 			renew_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
 			# new_refresh_token = create_refresh_token(identity=user_light, expires_delta=expires)
 			log.debug("renew_pwd_access_token : \n %s", renew_pwd_access_token)
@@ -88,15 +88,15 @@ class PasswordForgotten(Resource):
 				log.info("confirm_url : \n %s", confirm_url)
 
 				# generate html body of the email
-				html = render_template('emails/reset_your_password.html', confirm_url=confirm_url)
+				html 		= render_template('emails/reset_your_password.html', confirm_url=confirm_url)
 				
 				# send the mail
 				send_email( "Reset your password", payload_email, template=html )
 			
 			return { 
-								"msg" 		: "email sent to {} with a link containing the renew_pwd_access_token to refresh your password".format(payload_email),
-								"expires" : str(expires),
-							}, 200
+						"msg" 		: "email sent to {} with a link containing the renew_pwd_access_token to refresh your password".format(payload_email),
+						"expires" : str(expires),
+					}, 200
 
 
 
@@ -132,23 +132,23 @@ class ResetPassword(Resource):
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		### retrieve user's email from jwt
-		user_email 	= get_jwt_identity()
+		user_email 				= get_jwt_identity()
 		log.info( "...'{}' is renewing its password...".format(user_email) ) 
 
 		### retrieve sent token 
-		sent_token = get_raw_jwt()
+		sent_token 				= get_raw_jwt()
 		log.debug( "sent_token : \n %s", pformat(sent_token) ) 
 
 		### find user in DB
 		user = mongo_users.find_one({"infos.email" : user_email })
 		
 		### marshall infos
-		user_light							= marshal( user , model_access_user)
-		user_light["_id"] 			= str(user["_id"])
+		user_light				= marshal( user , model_access_user)
+		user_light["_id"] 		= str(user["_id"])
 		user_light["reset_pwd"] = True
 
 		### create a new and temporary refresh_token 
-		expires 								= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
+		expires 				= app.config["JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES"]
 		reset_pwd_access_token 	= create_access_token(identity=user_light, expires_delta=expires, fresh=True)
 		# refresh_token	= user["auth"]["refr_tok"]
 		# refresh_token = create_refresh_token(identity=user_light, expires_delta=expires) # sent_token
@@ -162,10 +162,10 @@ class ResetPassword(Resource):
 		log.info("tokens : \n %s", pformat(tokens))
 
 		return { 
-							"msg" 		: "you are now allowed to enter/POST your new password with the reset_pwd_access_token sent, you have {} to renew your password".format(expires), 
-							"expires"	: str(expires),
-							"tokens" 	: tokens
-						}, 200
+					"msg" 		: "you are now allowed to enter/POST your new password with the reset_pwd_access_token sent, you have {} to renew your password".format(expires), 
+					"expires"	: str(expires),
+					"tokens" 	: tokens
+				}, 200
 
 	
 	@fresh_jwt_required
@@ -186,7 +186,7 @@ class ResetPassword(Resource):
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
 		### retrieve user's email
-		user_email 	= get_jwt_identity()
+		user_email 		= get_jwt_identity()
 		log.info( "...'{}' has posted its new password...".format(user_email) ) 
 
 		### retrieve infos from form 
@@ -219,19 +219,19 @@ class ResetPassword(Resource):
 			### generate and store tokens as if it were a login
 			access_token 	= create_access_token(identity=user_light)
 			# refresh_token = create_refresh_token(identity=user_light)
-			refresh_token = user["auth"]["refr_tok"]
+			refresh_token 	= user["auth"]["refr_tok"]
 			tokens = {
-					'access_token'	: access_token,
-					'refresh_token'	: refresh_token
-			}
+						'access_token'	: access_token,
+						'refresh_token'	: refresh_token
+					}
 
 			return {
-								"msg" 		: "your password is now updated with your new one", 
-								"tokens" 	: tokens
-						}, 200
+						"msg" 		: "your password is now updated with your new one", 
+						"tokens" 	: tokens
+					}, 200
 
 		### password is very bad
 		else :
 			return {
-								"msg" 		: "your password is very bad mate !!!", 
-						}, 401
+						"msg" 		: "your password is very bad mate !!!", 
+					}, 401

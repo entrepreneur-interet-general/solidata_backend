@@ -1,23 +1,23 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_dmf_create.py  
+endpoint_rec_create.py  
 """
 
 from solidata_api.api import *
 
-log.debug(">>> api_datamodel_fields ... creating api endpoints for DMF_CREATE")
+log.debug(">>> api_recipes ... creating api endpoints for REC_CREATE")
 
 
 
 ### create namespace
-ns = Namespace('create', description='dmf : create a new datamodel_field ')
+ns = Namespace('create', description='Recipes : create a new recipe')
 
 ### import models 
-from solidata_api._models.models_datamodel_field import *  
-model_new_dmf  	= NewDmf(ns).model
-model_dmf		= Dmf_infos(ns)
-model_dmf_in	= model_dmf.model_complete_in
+from solidata_api._models.models_recipe import * 
+model_form_new_rec  	= NewRec(ns).model
+mod_rec					= Rec_infos(ns)
+model_recipe_in			= mod_rec.mod_complete_in
 
 
 
@@ -30,19 +30,19 @@ model_dmf_in	= model_dmf.model_complete_in
 
 @ns.doc(security='apikey')
 @ns.route('/')
-class DmfCreate(Resource):
+class RecCreate(Resource):
 
-	@ns.doc('dmf_create')
-	@guest_required 
-	@ns.expect(model_new_dmf, validate=True)
-	# @ns.marshal_with(model_dmf_in) #, envelope="new_dmf", code=201)
+	@ns.doc('rec_create')
+	@guest_required
+	@ns.expect(model_form_new_rec, validate=True)
+	# @ns.marshal_with(model_rec_in) #, envelope="new_rec", code=201)
 	def post(self):
 		"""
-		Create a new dmf in db
+		Create a new recipe in db
 
 		>
 			--- needs   : a valid access_token in the header
-			>>> returns : msg, dmf data 
+			>>> returns : msg, rec data 
 		"""
 		### DEBUGGING
 		print()
@@ -55,7 +55,7 @@ class DmfCreate(Resource):
 		### check client identity and claims
 		claims 			= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
-
+		
 		# user_id 		= get_jwt_identity() ### get the oid as str
 		# log.debug('user_identity from jwt : \n%s', user_identity )  
 		user_id 		= claims["_id"]
@@ -63,25 +63,23 @@ class DmfCreate(Resource):
 		# user_role 		= claims["auth"]["role"]
 
 		### get data from form and preload for marshalling
-		new_dmf_infos = { 
+		new_rec_infos = { 
 			"infos" 		: ns.payload,
 			"public_auth" 	: ns.payload,
 			"specs"			: {
-				"doc_type" : "dmf"
+				"doc_type" : "rec"
 			},
-			"data_raw" 		: ns.payload,
 		}
-		log.debug('new_dmf_infos : \n%s', pformat(new_dmf_infos) )  
+		### pre-marshall infos with prj complete model
+		new_rec 	= marshal( new_rec_infos , model_recipe_in)
+		log.debug('new_rec : \n%s', pformat(new_rec) )  
 
-		### marshall infos with dmf complete model
-		new_dmf 		= marshal( new_dmf_infos , model_dmf_in)
-		log.debug('new_dmf : \n%s', pformat(new_dmf) )  
-		
 		### complete missing default fields
-		new_dmf_auto_fields = { 
+		new_rec_auto_fields = { 
 			"log"			: { 
 				"created_at"	: datetime.utcnow(),
 				"created_by"	: user_oid,
+				"is_running"	: False
 			},
 			"uses"			: {
 				"by_usr"		: [ 
@@ -103,32 +101,26 @@ class DmfCreate(Resource):
 				}
 			],
 		}
-		log.debug('new_dmf_infos : \n%s', pformat(new_dmf_infos) )  
+		log.debug('new_rec_infos : \n%s', pformat(new_rec_infos) )  
 
 		### update marshalled infos by concatenating with auto fields
-		new_dmf 	= { **new_dmf, **new_dmf_auto_fields }
-		log.debug('new_dmf : \n%s', pformat(new_dmf) )  
+		new_rec 	= { **new_rec, **new_rec_auto_fields }
+		log.debug('new_rec : \n%s', pformat(new_rec) )  
 
-		### save new_dmf in db 
-		_id = mongo_datamodels_fields.insert( new_dmf )
-		log.info("new_dmf has being created and stored in DB ...")
+		### save new_rec in db
+		_id = mongo_recipes.insert( new_rec )
+		log.info("new_rec has being created and stored in DB ...")
 		log.info("_id : \n%s", pformat(_id) )
-
-		### add _id as string to data
-		new_dmf["_id"] = str(_id)
-		log.debug('new_dmf : \n%s', pformat(new_dmf) )  
+		
+		### add _id as string to data to mrashall out
+		new_rec["_id"] = _id
+		log.debug('new_rec : \n%s', pformat(new_rec) )  
 
 		### marshall out the saved item as complete data
-		new_dmf_out = marshal( new_dmf , model_dmf_in)
+		new_rec_out = marshal( new_rec , model_recipe_in )
 
-		return { 
-					"msg"	: "dear user, there is the dmf you just created... ", 
-					"data" 	: new_dmf_out
+
+		return {
+					"msg"	: "dear user, there is the rec you just created... ", 
+					"data" 	: new_rec_out,
 				}, 200
-
-
-
-
-
-
-

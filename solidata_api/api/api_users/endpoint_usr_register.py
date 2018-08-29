@@ -32,7 +32,7 @@ model_user_access		= model_user.model_access
 @ns.route('/')
 class Register(Resource):
 	
-	@ns.doc('create_user')
+	@ns.doc('usr_register')
 	@ns.doc(security='apikey')
 	@ns.expect(model_register_user, validate=True)
 	@anonymous_required
@@ -194,15 +194,15 @@ class Confirm_email(Resource):
 		user_to_confirm 	= mongo_users.find_one({"infos.email" : user_email })
 
 		### marshal user infos to create token
-		user_light 				= marshal( user_to_confirm , model_user_access)
-		user_light["_id"] = str(user_to_confirm["_id"])
+		user_light 			= marshal( user_to_confirm , model_user_access)
+		user_light["_id"] 	= str(user_to_confirm["_id"])
 		log.debug( "user_light : \n %s", pformat(user_light) ) 
 
 		### create a new access token
 		access_token = create_access_token(identity=user_light)
 
 		### check if user is already confirmed
-		is_confirmed 		= user_to_confirm["auth"]["conf_usr"] 
+		is_confirmed 	= user_to_confirm["auth"]["conf_usr"] 
 		is_blacklisted 	= user_to_confirm["auth"]["is_blacklisted"] 
 
 		### user is not confirmed yet
@@ -213,23 +213,24 @@ class Confirm_email(Resource):
 			
 			### confirm user's email and create a real refresh_token
 			user_to_confirm["auth"]["refr_tok"] = refresh_token
-			user_to_confirm["auth"]["role"] 		= "registred"
+			user_to_confirm["auth"]["role"] 	= "registred"
 			user_to_confirm["auth"]["conf_usr"] = True
 
 			### update modfication in user data
 			user_to_confirm = create_modif_log(doc=user_to_confirm, action="confirm_email" )
 
+			### save data
 			mongo_users.save(user_to_confirm)
 
 			### store tokens
 			tokens = {
-					'access_token'	: access_token,
-					'refresh_token'	: refresh_token
-			}
+						'access_token'	: access_token,
+						'refresh_token'	: refresh_token
+					}
 			log.info("tokens : \n%s", pformat(tokens))
 
 			return { 
-						"msg"     : "email '{}' confirmed, new refresh token created...".format(user_email),
+						"msg"		: "email '{}' confirmed, new refresh token created...".format(user_email),
 						"tokens"	: tokens
 					}, 200
 		
@@ -241,9 +242,9 @@ class Confirm_email(Resource):
 
 			### store tokens
 			tokens = {
-					'access_token'	: access_token,
-					'refresh_token'	: refresh_token
-			}
+						'access_token'	: access_token,
+						'refresh_token'	: refresh_token
+					}
 			log.info("tokens : \n%s", pformat(tokens))
 			return { 
 						"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),

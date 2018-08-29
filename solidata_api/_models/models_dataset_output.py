@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 """
-_models/models_tags.py  
+_models/models_dataset_outputs.py  
 """
 
 from log_config import log, pformat
 
-log.debug("... loading models_tag.py ...")
+log.debug("... loading models_dataset_outputs.py ...")
 
 
 from flask_restplus import fields
 
 ### import data serializers
-from solidata_api._serializers.schema_logs import *  
-from solidata_api._serializers.schema_generic import *  
-# from solidata_api._serializers.schema_projects import *  
+from solidata_api._serializers.schema_logs			import *  
+from solidata_api._serializers.schema_generic		import *  
+# from solidata_api._serializers.schema_projects	import *  
 
 ### import generic models functions
 from solidata_api._models.models_generic import * 
@@ -24,44 +24,44 @@ from solidata_api._models.models_generic import *
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
 
-class NewTag : 
+class NewDso : 
 	"""
-	Model to display / marshal tag basic form
+	Model to display / marshal dso basic form
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "Tag_basics", { **doc_basics, **f_basics_tag, **open_level_edit } )
+		self.mod = ns_.model( "Dso_basics", doc_basics_licence )
 	
 	@property
 	def model(self): 
 		return self.mod
 
 
-class Tag_infos : 
+class Dso_infos : 
 	"""
 	Model to display / marshal 
-	tag
+	dataset output
 	"""
 
 	def __init__(self, ns_) :
-    		
-		model_type 					= "Tag"
+		
+		model_type 					= "Dso"
 
 		### SELF MODULES
 		self._id 					= oid_field
-		self.basic_infos 			= create_model_basic_infos(	ns_,	model_name=model_type+"_infos")
-		self.public_auth			= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
-		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs")
-		self.log					= create_model_log(			ns_,	model_name=model_type+"_log" )
+		self.basic_infos 			= create_model_basic_infos(	ns_, 	model_name=model_type+"_infos")
+		self.public_auth			= create_model_public_auth(	ns_, 	model_name=model_type+"_public_auth")
+		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs" )
+		self.log					= create_model_log(			ns_, 	model_name=model_type+"_log",			include_is_running=True )
 		self.modif_log				= create_model_modif_log(	ns_, 	model_name=model_type+"_modif_log")
 		
-		self.uses					= create_model_uses(		ns_,	model_name=model_type+"_uses", 		schema_list=[ "usr","dmt","dsi","prj" ])
-		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag" ])
+		self.uses					= create_model_uses(		ns_,	model_name=model_type+"_uses", 			schema_list=[ "usr","prj" ])
+		self.datasets 				= create_model_datasets(	ns_,	model_name=model_type+"_datasets", 		schema_list=[ "dsr","tag" ])
 		self.translations			= create_model_translations(ns_, 	model_name=model_type+"_translations")
-		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
+		# self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 		
 
-		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="tag")
+		
 
 		self.model_id = {
 			'_id' 			: self._id,
@@ -79,24 +79,24 @@ class Tag_infos :
 			
 			'uses'			: self.uses,
 			'translations' 	: self.translations,
-			'team'			: self.team ,
-			
-			'data_raw'		: self.data_raw,
+			# 'team'			: self.team ,
+
+
 		}
 
 		### IN / complete data to enter in DB
 		self.mod_complete_in 	= ns_.model(model_type+"_in", { **self.model_min, **self.model_in } )
 
 		### MIN / minimum data to marshall out 
-		self.mod_minimum 		= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
+		self.mod_minimum 	= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
 
 
 	@property
 	def model_complete_in(self): 
 		return self.mod_complete_in
 
+
 	@property
 	def model_minimum(self): 
 		return self.mod_minimum
-
 

@@ -12,11 +12,11 @@ from	bson.json_util import dumps
 
 import 	pandas as pd
 
-from 	flask import Blueprint, current_app as app, url_for, request, render_template
+from 	flask 				import Blueprint, current_app as app, url_for, request, render_template
 
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
-from 	flask_restplus import Api, Namespace, Resource, fields, marshal, reqparse
+from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
 import jwt
 from flask_jwt_extended import (
@@ -32,27 +32,27 @@ from flask_jwt_extended import (
 # from solidata_api.application import mongo
 
 ### import CORS settings
-from solidata_api._core.cors import CORS, cross_origin
+from solidata_api._core.cors 			import CORS, cross_origin
 
 # ### import data serializers
 # from solidata_api._serializers.schema_users import *  
 
-from solidata_api._auth.authorizations import authorizations as auth_check
+from solidata_api._auth.authorizations 	import authorizations as auth_check
 
-from solidata_api._auth import ( 
+from solidata_api._auth 				import ( 
 	admin_required, current_user_required, confirm_email_required, guest_required,
 	anonymous_required, renew_pwd_required, reset_pwd_required 
 	)
 
-from solidata_api._parsers.parser_pagination import * # pagination_arguments
-from solidata_api._parsers.parser_queries import * # query_arguments
-from solidata_api._parsers.parser_files import * # query_arguments
+from solidata_api._parsers.parser_pagination 	import * # pagination_arguments
+from solidata_api._parsers.parser_queries 		import * # query_arguments
+from solidata_api._parsers.parser_files 		import * # files_arguments
 
-from solidata_api._choices import bad_passwords, authorized_filetypes, authorized_mimetype
+from solidata_api._choices 			import bad_passwords, authorized_filetypes, authorized_mimetype
 
-from solidata_api._core.utils import * # create_modif_log, secure_filename, allowed_file
-from solidata_api._core.pandas_ops import * # create_modif_log, secure_filename, allowed_file
-from solidata_api._core.emailing import send_email
+from solidata_api._core.utils 		import * # create_modif_log, secure_filename, allowed_file
+from solidata_api._core.pandas_ops 	import * # create_modif_log, secure_filename, allowed_file
+from solidata_api._core.emailing 	import send_email
 
 ### import mongo utils
-from solidata_api._core.queries_db import *
+from solidata_api._core.queries_db 	import *

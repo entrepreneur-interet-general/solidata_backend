@@ -26,11 +26,11 @@ from solidata_api._models.models_generic import *
 
 class NewDsi : 
 	"""
-	Model to display / marshal rec basic form
+	Model to display / marshal dsi basic form
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "Dsi_basics", doc_basics_licence )
+		self.mod = ns_.model( "Dsi_basics", {**doc_basics_licence, **open_level_edit_show} )
 	
 	@property
 	def model(self): 
