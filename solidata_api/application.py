@@ -106,7 +106,12 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		from solidata_api._core.async_tasks import async
 
 		# access mongodb collections
-		from solidata_api._core.queries_db import ( db_dict, 
+		from solidata_api._core.queries_db import ( 
+				
+				db_dict, db_dict_by_type,
+				Query_db_list,
+				# Query_db_doc,
+
 				mongo_users,
 				mongo_tags,
 				mongo_projects,
@@ -140,28 +145,28 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		print()
 		log.debug("... registering blueprints ...")
 		from solidata_api.api.api_users 		import blueprint as api_users
-		app.register_blueprint( api_users, url_prefix="/api/users" )
+		app.register_blueprint( api_users, url_prefix="/api/usr" )
 
 		from solidata_api.api.api_auth 	import blueprint as api_auth
 		app.register_blueprint( api_auth, url_prefix='/api/auth')
 
 		from solidata_api.api.api_projects 	import blueprint as api_proj
-		app.register_blueprint( api_proj, url_prefix='/api/projects')
+		app.register_blueprint( api_proj, url_prefix='/api/prj')
 
 		from solidata_api.api.api_dataset_inputs 	import blueprint as api_dsi
-		app.register_blueprint( api_dsi, url_prefix='/api/dataset_inputs')
+		app.register_blueprint( api_dsi, url_prefix='/api/dsi')
 
 		from solidata_api.api.api_datamodel_templates 	import blueprint as api_dmt
-		app.register_blueprint( api_dmt, url_prefix='/api/datamodel_templates')
+		app.register_blueprint( api_dmt, url_prefix='/api/dmt')
 
 		from solidata_api.api.api_datamodel_fields 	import blueprint as api_dmf
-		app.register_blueprint( api_dmf, url_prefix='/api/datamodel_fields')
+		app.register_blueprint( api_dmf, url_prefix='/api/dmf')
 
 		from solidata_api.api.api_tags 	import blueprint as api_tag
-		app.register_blueprint( api_tag, url_prefix='/api/tags')
+		app.register_blueprint( api_tag, url_prefix='/api/tag')
 
 		from solidata_api.api.api_recipes 	import blueprint as api_rec
-		app.register_blueprint( api_rec, url_prefix='/api/recipes')
+		app.register_blueprint( api_rec, url_prefix='/api/rec')
 
 
 		### TO DO - write missing endpoints

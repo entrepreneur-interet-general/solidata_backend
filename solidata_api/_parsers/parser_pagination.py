@@ -19,13 +19,13 @@ pagination_arguments.add_argument(
   default=1, 
   help='Page number'
 )
-pagination_arguments.add_argument(
-  'bool', 
-  type=bool, 
-  required=False, 
-  default=True, 
-  help='Page number'
-)
+# pagination_arguments.add_argument(
+#   'bool', 
+#   type=bool, 
+#   required=False, 
+#   default=True, 
+#   help='Page number'
+# )
 pagination_arguments.add_argument(
   'per_page', 
   type=int, 

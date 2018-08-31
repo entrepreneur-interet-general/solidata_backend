@@ -97,21 +97,30 @@ def create_model_translations(	ns_,
 ### MODEL / TEAM 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_team(	ns_, 
-						model_name = "Collaborator"
+						model_name 	= "Collaborator",
+						is_light	= False
 					):
 	
 	"""
 	Team model
 	"""
 	
-	collaborator = fields.Nested( 
-		ns_.model( model_name, {
+	team_oids = {
 			'oid_usr'	: oid_usr,
-			# 'email'		: email,
+		}
+	team_infos = {
 			'edit_auth'	: edit_auth,
 			'added_at'  : added_at,
 			'added_by'  : added_by,
-		})
+		}
+	if is_light : 
+		team_dict = team_oids
+	else : 
+		team_dict = {**team_oids, **team_infos}
+
+
+	collaborator = fields.Nested( 
+		ns_.model( model_name, team_dict )
 	)
 
 	collaborators = fields.List( 
@@ -240,17 +249,26 @@ def create_model_dataset(	ns_,
 							include_dmf_open_level 	= False ,
 							display_fullname 		= False ,
 							schema					= "prj", 
+							is_light				= False,
 						) : 
 	"""
 	Dataset model (one)
 	"""
 	
-	model_dataset = {
-					"oid_"+schema 	: oid_dict[schema]["field"],
-					'added_at'		: added_at,
-					'added_by'		: added_by,
-					}
-		
+
+	if is_light	: 
+		model_dataset = {
+						"oid_"+schema 	: oid_dict[schema]["field"],
+						# 'added_at'		: added_at,
+						# 'added_by'		: added_by,
+						}
+	else : 
+		model_dataset = {
+				"oid_"+schema 	: oid_dict[schema]["field"],
+				'added_at'		: added_at,
+				'added_by'		: added_by,
+				}
+
 	if include_fav == True : 
 		model_dataset["is_fav"] = is_fav
 
@@ -270,6 +288,7 @@ def create_model_datasets(	ns_,
 							include_dmf_open_level 	= False ,
 							display_fullname 		= False ,
 							schema_list				= ["prj","dmt","dmf","dsi","dsr","rec","dso","tag","func"], 
+							is_light				= False,
 					) : 
 	"""
 	Datasets model (nested)
@@ -284,7 +303,8 @@ def create_model_datasets(	ns_,
 										include_fav				= include_fav, 
 										include_dmf_open_level	= include_dmf_open_level,
 										display_fullname		= display_fullname,
-										schema					= schema
+										schema					= schema,
+										is_light 				= is_light
 									)
 
 		dataset_list = fields.List( 

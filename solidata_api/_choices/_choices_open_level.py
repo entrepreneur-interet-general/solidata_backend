@@ -12,8 +12,15 @@ log.debug("... loading _choices_open_level.py ...")
 
 
 open_level_choices = [
-  "open_data",
-  "collective",
-  "commons",
-  "private"
+	"open_data",
+	"commons",
+	"collective",
+	"private"
 ]
+
+# open_level_rights = {
+# 	"open_data"		: ["open_data"],
+# 	"commons"			: ["open_data", "commons"] ,
+# 	"collective"	: ["open_data", "commons", "collective"] ,
+# 	"private"			: [""]
+# }

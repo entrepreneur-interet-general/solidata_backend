@@ -50,8 +50,8 @@ def default_error_handler(e):
 from .endpoint_rec_create import 	ns as ns_rec_create
 api.add_namespace(ns_rec_create)
 
-# from .endpoint_rec import 			ns as ns_rec_list
-# api.add_namespace(ns_rec_list)
+from .endpoint_rec import 			ns as ns_rec_list
+api.add_namespace(ns_rec_list)
 
 # from .endpoint_rec_edit import 		ns as ns_rec_edit
 # api.add_namespace(ns_rec_edit)

@@ -50,8 +50,8 @@ def default_error_handler(e):
 from .endpoint_tag_create import 	ns as ns_tag_create
 api.add_namespace(ns_tag_create)
 
-# from .endpoint_tag import 			ns as ns_tag_list
-# api.add_namespace(ns_tag_list)
+from .endpoint_tag import 			ns as ns_tag_list
+api.add_namespace(ns_tag_list)
 
 # from .endpoint_tag_edit import 		ns as ns_tag_edit
 # api.add_namespace(ns_tag_edit)

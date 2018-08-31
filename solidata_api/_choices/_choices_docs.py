@@ -16,3 +16,18 @@ log.debug("... loading _choices_docs.py ...")
 doc_src_type_list 	= ["api","xls","xlsx","xml","csv"]
 
 doc_type_list		= ["usr","prj","dmt","dmf","dsi","dsr","rec","dso","tag","lic"]
+
+doc_type_dict		= {
+
+	"usr" : "user",
+	"prj" : "project",
+	"dmt" : "datamodel_template",
+	"dmf" : "datamodel_field",
+	"dsi" : "dataset_input",
+	"dsr" : "dataset_raw",
+	"rec" : "recipe",
+	"dso" : "dataset_output",
+	"tag" : "tag",
+	"lic" : "licence",
+	
+}

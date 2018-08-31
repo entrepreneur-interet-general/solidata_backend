@@ -50,8 +50,8 @@ def default_error_handler(e):
 from .endpoint_dmt_create import 	ns as ns_dmt_create
 api.add_namespace(ns_dmt_create)
 
-# from .endpoint_dmt import 			ns as ns_dmt_list
-# api.add_namespace(ns_dmt_list)
+from .endpoint_dmt import 			ns as ns_dmt_list
+api.add_namespace(ns_dmt_list)
 
 # from .endpoint_dmt_edit import 		ns as ns_dmt_edit
 # api.add_namespace(ns_dmt_edit)

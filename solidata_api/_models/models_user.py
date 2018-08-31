@@ -137,7 +137,7 @@ class LoginUser :
 class User_infos : 
 	"""
 	Model to display / marshal 
-	specific user's infos
+	user's infos
 	"""
 
 	def __init__(self, ns_) :
@@ -153,7 +153,10 @@ class User_infos :
 		self.modif_log				= create_model_modif_log(	ns_,	model_name=model_type+"_modif_log")
 		
 		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
+		self.datasets_light			= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"], is_light=True )
+		
 		self.team 					= create_model_team( 		ns_,	model_name=model_type+"_team")
+		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", 		is_light=True)
 		
 		self.profile 				= create_model_profile( 	ns_,	model_name=model_type+"_profile")
 		self.professional_infos 	= create_professional_infos(ns_, 	model_name=model_type+"_professionnal_infos")
@@ -176,6 +179,7 @@ class User_infos :
 		}
 		self.model_in = {
 			'modif_log'				: self.modif_log , 
+			"datasets"				: self.datasets ,
 			'profile' 				: self.profile,
 			'professional_infos' 	: self.professional_infos,		
 		}
@@ -187,79 +191,68 @@ class User_infos :
 							}
 		}
 		self.model_auth_in = {  
-			"auth" 					: self.auth_in 
+			"auth" 				: self.auth_in 
 		}
 		self.model_auth_out = { 
-			"auth" 					: self.auth_out 
+			"auth" 				: self.auth_out 
+		}
+		self.model_team_full = {
+			'team'				: self.team ,
+		}
+		self.model_team_light = {
+			'team'				: self.team_light,
+		}
+		self.model_datasets_light = {
+			'datasets'			: self.datasets_light,
 		}
 
-
 		### IN / complete data to enter in DB
-		self.mod_complete_in  = ns_.model(model_type+"_in", { **self.model_min, **self.model_in, **self.model_auth_in  } )
-		# self.mod_complete_in  = ns_.model('User_in', {
-
-		# 		'infos' 				: self.basic_infos,
-		# 		'log'					: self.log , 
-		# 		'specs' 				: self.specs , 
-		# 		'modif_log' 			: self.modif_log , 
-
-		# 		"datasets"				: self.datasets ,
-		# 		'team'					: self.team ,
-
-		# 		'profile' 				: self.profile,
-		# 		'professional_infos' 	: self.professional_infos,
-
-		# 		### auth level of current user
-		# 		'auth': fields.Nested(
-		# 			ns_.model('User_authorizations',  	user_auth_in  )
-		# 		),
-
-		# })
-
-		### MIN / minimum data to marshall out 
-		self.mod_minimum 		= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
+		self.mod_complete_in  	= ns_.model(model_type+"_in", 
+			{ 	
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_auth_in  
+			} 
+		)
 
 		### OUT / complete data to enter in DB
-		self.mod_complete_out	= ns_.model(model_type+"_out", { **self.model_min, **self.model_in } )
-		# self.mod_complete_out  = ns_.model('User_out', {
+		self.mod_complete_out	= ns_.model(model_type+"_out", 
+			{ 
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_id 
+			} 
+		)
 
-		# 		'_id' 					: self._id,
-		# 		'infos' 				: self.basic_infos,
-		# 		'specs' 				: self.specs , 
-		# 		'log'					: self.log , 
-		# 		'modif_log' 			: self.modif_log , 
+		### OUT GUEST / complete data to get out of DB
+		self.mod_guest_out 		= ns_.model(model_type+"_guest_out",
+			{ 
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_id, 
+				**self.model_team_light 
+			} 
+		)
 
-		# 		"datasets"				: self.datasets ,
-		# 		'team'					: self.team ,
+		### MIN / minimum data to marshall out 
+		self.mod_minimum 		= ns_.model(model_type+"_minimum",
+			{ 
+				**self.model_min, 
+				**self.model_id, 
+				**self.model_datasets_light 
+			}
 
-		# 		'profile' 				: self.profile,
-		# 		'professional_infos' 	: self.professional_infos,
-
-		# 		### auth level of current user
-		# 		'auth'					: fields.Nested(
-		# 			ns_.model('User_authorizations',  	user_auth_out  )
-		# 		),
-
-		# 	})
-
-
-		### OUT / for access tokens
-		self.mod_access  = ns_.model(model_type+"_access", { **self.model_infos, **self.model_id, **self.model_auth_out } )
-		# self.mod_access  = ns_.model('User_access', {
-
-		# 		'_id' 					: self._id,
-		# 		'infos' 				: self.basic_infos,
-		# 		# 'log' 				: self.user_log, 
-		# 		# 'profile' 			: self.profiles,
-		# 		# 'favorites'			: self.favorites,
-
-		# 		'auth'					: fields.Nested(
-		# 			ns_.model('User_authorizations',  	user_auth_out  )
-		# 		),
-
-		# 	})
+		)
 
 
+		### OUT ACCESS / for access tokens
+		self.mod_access  		= ns_.model(model_type+"_access", 
+			{ 
+				**self.model_infos, 
+				**self.model_id, 
+				**self.model_auth_out
+			}
+		)
 
 
 
@@ -272,6 +265,14 @@ class User_infos :
 	def model_complete_out(self): 
 		return self.mod_complete_out
 
+	@property
+	def model_guest_out(self): 
+		return self.mod_guest_out
+
+	@property
+	def model_minimum(self): 
+		return self.mod_minimum
+		
 	@property
 	def model_access(self): 
 		return self.mod_access

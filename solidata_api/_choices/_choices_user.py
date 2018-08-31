@@ -19,9 +19,11 @@ from ._choices_docs import *
 
 user_roles = [
 	"admin", 
+
 	"staff",   ### can edit all datamodels : dmf + dmt
 	# "collective", 
 	"registred", 
+	
 	"guest", ### not registred yet
 	"anonymous"
 ]
@@ -84,9 +86,9 @@ for k,v in user_fields_client_can_update.items() :
 
 
 
-log.debug("user_fields_admin_can_update_list : \n %s", pformat(user_fields_admin_can_update_list))
-log.debug("user_fields_dict : \n %s", pformat(user_fields_dict))
-log.debug("user_fields_client_can_update_list : \n %s", pformat(user_fields_client_can_update_list))
+log.debug("user_fields_admin_can_update_list : \n %s\n...", pformat(user_fields_admin_can_update_list[:5]))
+# log.debug("user_fields_dict : \n %s", pformat(user_fields_dict))
+log.debug("user_fields_client_can_update_list : \n %s\n...", pformat(user_fields_client_can_update_list[:5]))
 # log.debug("user_fields_client_can_update_dict : \n %s", pformat(user_fields_client_can_update_dict))
 
 

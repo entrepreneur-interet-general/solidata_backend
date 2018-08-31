@@ -49,11 +49,11 @@ def default_error_handler(e):
 ### import api namespaces / add namespaces to api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-from .endpoint_dsi import 			ns as ns_dsi_list
-api.add_namespace(ns_dsi_list)
-
 from .endpoint_dsi_create import 	ns as ns_dsi_create
 api.add_namespace(ns_dsi_create)
+
+from .endpoint_dsi import 			ns as ns_dsi_list
+api.add_namespace(ns_dsi_list)
 
 from .endpoint_dsi_edit import 		ns as ns_dsi_edit
 api.add_namespace(ns_dsi_edit)

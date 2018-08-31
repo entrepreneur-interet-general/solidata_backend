@@ -18,8 +18,9 @@ ns = Namespace('edit', description="Users : user's info edition related endpoint
 ### import models 
 from solidata_api._models.models_user import *  
 model_new_user				= NewUser(ns).model
-model_user_out				= User_infos(ns).model_complete_out
-model_user_out_admin		= User_infos(ns).mod_complete_in
+model_user 					= User_infos(ns)
+model_user_out				= model_user.model_complete_out
+model_user_out_admin		= model_user.model_complete_in
 model_data					= UserData(ns).model
 
 

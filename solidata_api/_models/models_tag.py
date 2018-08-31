@@ -56,10 +56,15 @@ class Tag_infos :
 		self.modif_log				= create_model_modif_log(	ns_, 	model_name=model_type+"_modif_log")
 		
 		self.uses					= create_model_uses(		ns_,	model_name=model_type+"_uses", 		schema_list=[ "usr","dmt","dsi","prj" ])
+		self.uses_light				= create_model_uses(		ns_,	model_name=model_type+"_uses", 		schema_list=[ "dmt","dsi","prj" ])
+		
 		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag" ])
+		self.datasets_light			= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag" ], is_light=True )
+
 		self.translations			= create_model_translations(ns_, 	model_name=model_type+"_translations")
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
-		
+		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
+
 
 		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="tag")
 
@@ -77,23 +82,81 @@ class Tag_infos :
 			'specs'			: self.specs , 
 			'log'			: self.log , 
 			
-			'uses'			: self.uses,
 			'translations' 	: self.translations,
-			'team'			: self.team ,
 			
 			'data_raw'		: self.data_raw,
 		}
+		self.model_uses = {
+			'uses'			: self.uses,
+		}
+		self.model_uses_light = {
+			'uses'			: self.uses_light,
+		}
+
+		self.model_team_full = {
+			'team'			: self.team ,
+		}
+		self.model_team_light = {
+			'team'			: self.team_light,
+		}
+		self.model_datasets_light = {
+			'datasets'			: self.datasets_light,
+		}
 
 		### IN / complete data to enter in DB
-		self.mod_complete_in 	= ns_.model(model_type+"_in", { **self.model_min, **self.model_in } )
+		self.mod_complete_in 	= ns_.model(model_type+"_in", 
+			{ 
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_team_full, 
+				**self.model_uses 
+			} 
+		)
+
+		### OUT COMPLETE / complete data to get out of DB
+		self.mod_complete_out 	= ns_.model(model_type+"_out", 
+			{ 
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_id, 
+				**self.model_team_full, 
+				**self.model_uses 
+			}
+		)
+
+		### OUT GUEST / complete data to get out of DB
+		self.mod_guest_out 		= ns_.model(model_type+"_guest_out", 
+			{ 
+				**self.model_min, 
+				**self.model_in, 
+				**self.model_id, 
+				**self.model_team_light, 
+				**self.model_uses_light 
+			} 
+		)
 
 		### MIN / minimum data to marshall out 
-		self.mod_minimum 		= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
+		self.mod_minimum	 	= ns_.model(model_type+"_minimum", 
+			{ 
+				**self.model_min, 
+				**self.model_id, 
+				**self.model_uses_light, 
+				**self.model_datasets_light 
+			}
+		)
 
-
+	
 	@property
 	def model_complete_in(self): 
 		return self.mod_complete_in
+
+	@property
+	def model_complete_out(self): 
+		return self.mod_complete_out
+
+	@property
+	def model_guest_out(self): 
+		return self.mod_guest_out
 
 	@property
 	def model_minimum(self): 

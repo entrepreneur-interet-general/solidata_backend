@@ -2,8 +2,6 @@
 
 """
 _core/queries_db/__init__.py  
-- provides the MONGO QUERIES for 
-	REST requests
 """
 
 from log_config import log, pformat
@@ -38,7 +36,6 @@ mongo_jwt_blacklist 		= mongo.db[ app.config["MONGO_COLL_JWT_BLACKLIST"] ]
 db_dict = {
 					"mongo_tags"					: mongo_tags,
 					"mongo_users"					: mongo_users,
-					"mongo_users"					: mongo_users,
 					"mongo_projects"				: mongo_projects,
 					"mongo_datamodels_templates"	: mongo_datamodels_templates,
 					"mongo_datamodels_fields"		: mongo_datamodels_fields,
@@ -53,9 +50,81 @@ db_dict = {
 					"mongo_licences"				: mongo_licences,
 					"mongo_jwt_blacklist"			: mongo_jwt_blacklist,
 			}
+db_dict_by_type = {
+					"tag"				: mongo_tags,
+					"usr"				: mongo_users,
+					"prj"				: mongo_projects,
+					"dmt"				: mongo_datamodels_templates,
+					"dmf"				: mongo_datamodels_fields,
+					"dsi"				: mongo_datasets_inputs,
+					"dsr"				: mongo_datasets_raws,
+					"rec"				: mongo_recipes,
+
+					"dso"				: mongo_datasets_outputs,
+
+					"lic"				: mongo_licences,
+					"jwt_blacklist"		: mongo_jwt_blacklist,
+			}
 
 def select_collection(coll_name):
 	coll = db_dict[coll_name]
 	return coll
 
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### SERIALIZERS
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+class Marshaller :
+
+	def __init__( self, ns, models ):
+    	
+		self.ns 					= ns
+		self.model_doc_out 			= models["model_doc_out"]
+		self.model_doc_guest_out 	= models["model_doc_guest_out"]
+		self.model_doc_min		 	= models["model_doc_min"]
+
+		self.results_list			= None 
+
+	def marshal_as_complete (self, results_list ) :
+
+		ns 					= self.ns
+		self.results_list 	= results_list
+		log.debug('results_list : \n%s', pformat(results_list) )  
+		
+		@ns.marshal_with(self.model_doc_out)
+		def get_results():
+			return results_list
+		return get_results()
+
+	def marshal_as_guest (self, results_list ) :
+    
+		ns 					= self.ns
+		self.results_list 	= results_list
+		log.debug('results_list : \n%s', pformat(results_list) )  
+		
+		@ns.marshal_with(self.model_doc_guest_out)
+		def get_results():
+			return results_list
+		return get_results()
+
+	def marshal_as_min (self, results_list ) :
+    
+		ns 					= self.ns
+		self.results_list 	= results_list
+		log.debug('results_list : \n%s', pformat(results_list) )  
+		
+		@ns.marshal_with(self.model_doc_min)
+		def get_results():
+			return results_list
+		return get_results()
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### FINAL IMPORTS FOR QUERIES
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+from .query_doc import *
+from .query_list import *
+
+print()
 

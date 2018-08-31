@@ -70,35 +70,35 @@ class Register(Resource):
 			new_user_infos 	= {
 				"infos" : ns.payload, 
 				# "auth" 	: ns.payload 
-				"log"	: {"created_at" : datetime.utcnow() } 
+				"log"	: { "created_at" : datetime.utcnow() } 
 			}
-			new_user 						= marshal( new_user_infos , model_user_complete_in)
-			new_user["auth"]["pwd"] 		= hashpass
-			new_dmt["infos"]["open_level"] 	= "private"
-			new_user["specs"]["doc_type"] 	= "usr"
-			new_user["log"]["created_by"] 	= payload_email
+			new_user 								= marshal( new_user_infos , model_user_complete_in )
+			new_user["auth"]["pwd"] 				= hashpass
+			new_user["infos"]["open_level_edit"]	= "private"
+			new_user["infos"]["open_level_show"]	= "commons"
+			new_user["specs"]["doc_type"] 			= "usr"
 
 			### temporary save new user in db 
 			_id = mongo_users.insert( new_user )
 			log.info("new user is being created : \n%s", pformat(new_user))
 			log.info("_id : \n%s", pformat(_id))
 
-			### add _id as string to data
-			new_user["_id"] = str(_id) # str(user_created["_id"])
+			### add _id to data
+			new_user["_id"] 				= str(_id) # str(user_created["_id"])
 			
 			### create access tokens
 			log.debug("... create_access_token")
-			access_token 	= create_access_token(identity=new_user)
+			access_token 	= create_access_token( identity=new_user )
 			
 			### create refresh tokens
 			log.debug("... refresh_token")
 			### just create a temporary refresh token once / so it could be blacklisted
 			expires 		= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
-			refresh_token 	= create_refresh_token(identity=new_user, expires_delta=expires)
+			refresh_token 	= create_refresh_token( identity=new_user, expires_delta=expires )
 			
 			### add confirm_email to claims for access_token_confirm_email
 			new_user["confirm_email"]	= True
-			access_token_confirm_email 	= create_access_token(identity=new_user, expires_delta=expires)
+			access_token_confirm_email 	= create_access_token( identity=new_user, expires_delta=expires )
 			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
 
 			tokens = {
@@ -111,12 +111,13 @@ class Register(Resource):
 			### update new user in db		
 			# user_created = mongo_users.find_one({"infos.email" : payload_email})
 			user_created = mongo_users.find_one({"_id" : _id})
-			user_created["auth"]["refr_tok"] = refresh_token
+			user_created["log"]["created_by"] 	= _id
+			user_created["auth"]["refr_tok"] 	= refresh_token
 			mongo_users.save(user_created)
 			log.info("new user is updated with its tokens : \n%s", pformat(new_user))
 
 			### marshall output
-			new_user_out = marshal(new_user, model_register_user_out)
+			new_user_out = marshal( new_user, model_register_user_out )
 
 
 			### send a confirmation email if not RUN_MODE not 'dev'

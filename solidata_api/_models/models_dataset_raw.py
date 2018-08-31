@@ -85,10 +85,12 @@ class Dsr_infos :
 		}
 
 		### IN / complete data to enter in DB
-		self.mod_complete_in 	= ns_.model(model_type+"_in", { **self.model_min, **self.model_in } )
-
-		### MIN / minimum data to marshall out 
-		self.mod_minimum 		= ns_.model(model_type+"_minimum", { **self.model_min, **self.model_id })
+		self.mod_complete_in 	= ns_.model(model_type+"_in", 
+			{ 
+				**self.model_min, 
+				**self.model_in 
+			} 
+		)
 
 
 	@property
