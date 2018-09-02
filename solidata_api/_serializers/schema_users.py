@@ -26,6 +26,13 @@ name 				= fields.String(
 										default			= 'Anonymous User',
 										required		= False,
 									)
+pseudo 				= fields.String(
+										description		= "pseudo of the user",
+										attribute		= "pseudo",
+										example			= "Coco",
+										default			= 'Anonymous User',
+										required		= False,
+									)
 surname 			= fields.String(
 										description 	= "surname of the user",
 										attribute		= "surname",
@@ -185,6 +192,10 @@ user_basics = {
 	"name" 				: name,
 	"surname" 			: surname,
 	"email" 			: email,
+	"pseudo"			: name,
+}
+user_basics_light = {
+	"pseudo"			: name,
 }
 
 user_register = {

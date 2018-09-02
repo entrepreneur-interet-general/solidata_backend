@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_datamodel_templates ... creating api endpoints for DMT_CREATE")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('create', description='Dmt : create a new datamodel_template ')
@@ -22,10 +22,20 @@ model_dmt_in	= model_dmt.model_complete_in
 
 
 
+
+
+
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
+
+
+
 
 
 @ns.doc(security='apikey')

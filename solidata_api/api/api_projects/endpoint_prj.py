@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_projects ... creating api endpoints for PRJ")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('infos', description='Projects : request and list all prj infos')
@@ -27,22 +27,6 @@ models 				= {
 } 
 
 
-### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-### SERIALIZERS
-### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-
-@ns.marshal_with(model_doc_out)
-def marshal_as_complete(results_list):
-	return results_list
-
-@ns.marshal_with(model_doc_guest_out)
-def marshal_as_guest(results_list):
-	return results_list
-
-@ns.marshal_with(model_doc_min)
-def marshal_as_min(results_list):
-	return results_list
-
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
@@ -50,9 +34,19 @@ def marshal_as_min(results_list):
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
 
+
+
+
+
+
 @ns.route("/get_one/<string:doc_id>/")
 class Prj_infos(Resource):
 	
+	"""
+	PRJ infos
+	GET    - Shows a document's infos 
+	"""
+
 	@ns.doc('prj_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
@@ -78,105 +72,27 @@ class Prj_infos(Resource):
 		claims 				= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 
+		### query db from generic function 		
+		results, response_code	= Query_db_doc (
+			ns, 
+			models,
+			document_type,
+			doc_id,
+			claims,
+			roles_for_complete = ["admin"],
+		)
+
+		log.debug("results : \n%s ", pformat(results) )
 
 
-		### FACTORIZE THIS !!!
-		### default values
-		db_collection		= db_dict_by_type[document_type]
-		document_type_full 	= doc_type_dict[document_type]
-		user_id = user_oid	= None
-		user_role			= "anonymous"
-		document_out		= None
-		message 			= None
-		dft_open_level_show = ["open_data"]
-
-		
-		# user_id 	= get_jwt_identity() ### get the oid as str
-		if claims or claims!={}  :
-			user_role 		= claims["auth"]["role"]
-			user_id	 		= claims["_id"] ### get the oid as str
-			if user_role != "anonymous" : 
-				user_oid 		= ObjectId(user_id)
-				log.debug("user_oid : %s", user_oid )
-				dft_open_level_show += ["commons"]
-
-		### retrieve from db
-		if ObjectId.is_valid(doc_id) : 
-			document 		= db_collection.find_one( {"_id": ObjectId(doc_id) })
-			log.debug( "document : \n%s", pformat(document) )
-		else :
-			document		= None
-
-		query_resume = {
-			"document_type"		: document_type,	
-			"doc_id" 			: doc_id,
-			"user_id" 			: user_id,
-			"user_role"			: user_role,
-			"is_member_of_team" : False
-		}
-
-		if document : 
-
-			### check doc's specs : public_auth, team...
-			doc_open_level_show = document["public_auth"]["open_level_show"]
-			log.debug( "doc_open_level_show : %s", doc_open_level_show )
-			
-			### get doc's team infos
-			if "team" in document : 
-				team_oids = [ t["oid_usr"] for t in document["team"] ]
-				log.debug( "team_oids : \n%s", pformat(team_oids) )
-
-
-			### marshal out results given user's claims / doc's public_auth / doc's team ... 
-			# for admin or members of the team --> complete infos model
-			if user_role in ["admin"] or user_oid in team_oids : 
-				
-				document_out = marshal( document, model_doc_out )
-
-				# flag as member of doc's team
-				if user_oid in team_oids :
-					query_resume["is_member_of_team"] = True
-			
-				message = "dear user, there is the complete {} you requested ".format(document_type_full)
-
-			# for other users
-			else :
-
-				if doc_open_level_show in ["commons", "open_data"] : 
-				
-					# for anonymous users --> minimum infos model
-					if user_id == None or user_role == "anonymous" : 
-						document_out = marshal( document, model_doc_min )
-					
-					# for registred users (guests) --> guest infos model
-					else :
-						document_out = marshal( document, model_doc_guest_out )
-
-					log.debug( "document_out : \n %s", pformat(document_out) )
-					message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
-
-				else : 
-					### unvalid credentials / empty response
-					message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
-
-		else : 
-			### no document / empty response
-			message = "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
-
-		### return response
-		return {
-					"msg" 	: message ,
-					"data"	: document_out,
-					"query"	: query_resume,
-				}, 200
+		return results, response_code
 
 
 @ns.route('/list')
 class Prj_List(Resource):
 
 	@ns.doc('prj_list')
-	@ns.expect(pagination_arguments)
-	@ns.expect(query_arguments)
+	@ns.expect(query_pag_args)
 	@jwt_optional
 	# @anonymous_required
 	def get(self):
@@ -204,9 +120,9 @@ class Prj_List(Resource):
 
 
 		### query db from generic function 		
-		query_args		= query_arguments.parse_args(request)
-		page_args		= pagination_arguments.parse_args(request)
-		results 		= Query_db_list (
+		query_args				= query_arguments.parse_args(request)
+		page_args				= pagination_arguments.parse_args(request)
+		results, response_code	= Query_db_list (
 			ns, 
 			models,
 			document_type,
@@ -218,6 +134,6 @@ class Prj_List(Resource):
 
 		log.debug("results : \n%s ", pformat(results) )
 		
-		return results, 200
+		return results, response_code
 
 

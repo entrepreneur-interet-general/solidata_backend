@@ -44,9 +44,10 @@ from solidata_api._auth 				import (
 	anonymous_required, renew_pwd_required, reset_pwd_required 
 	)
 
-from solidata_api._parsers.parser_pagination 	import * # pagination_arguments
-from solidata_api._parsers.parser_queries 		import * # query_arguments
-from solidata_api._parsers.parser_files 		import * # files_arguments
+from solidata_api._parsers 	import * # pagination_arguments
+# from solidata_api._parsers.parser_pagination 	import * # pagination_arguments
+# from solidata_api._parsers.parser_queries 		import * # query_arguments
+# from solidata_api._parsers.parser_files 		import * # files_arguments
 
 from solidata_api._choices 			import bad_passwords, authorized_filetypes, authorized_mimetype
 

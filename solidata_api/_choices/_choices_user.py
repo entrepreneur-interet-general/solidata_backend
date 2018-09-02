@@ -35,16 +35,29 @@ bad_passwords = [
 ]
 
 user_edit_auth = [
-	"owner",
-	"can_edit",
-	# "can_edit_all",
-	# "can_edit_prj",
-	# "can_edit_dmt",
-	# "can_edit_dmf",
-	# "can_edit_dsi",
-	# "can_edit_rec",
-	"can_view",
+
+	"owner",		
+	# update 		: infos, public_auth
+	# add/update 	: (dsi, data_raw, tag, dmt, dmf, team, dso, rec, mapping 	)
+	# delete		: True
+	
+	"manager",		
+	# update 		: infos, public_auth
+	# add/update 	: (dsi, data_raw, tag, dmt, dmf, team, dso, rec, mapping 	)
+	# delete		: False
+	
+	"editor",		
+	# update 		: infos, 	
+	# add/update 	: (dsi, data_raw, tag, dmt, dmf,	)
+	# delete		: False
+	
+	"contributor",	
+	# update		: None
+	# add/update 	: (dsi, data_raw, 	)
+	# delete		: False
+
 ]
+
 
 
 

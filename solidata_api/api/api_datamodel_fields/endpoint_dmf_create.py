@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_datamodel_fields ... creating api endpoints for DMF_CREATE")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('create', description='dmf : create a new datamodel_field ')
@@ -22,10 +22,20 @@ model_dmf_in	= model_dmf.model_complete_in
 
 
 
+
+
+
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
+
+
+
 
 
 @ns.doc(security='apikey')

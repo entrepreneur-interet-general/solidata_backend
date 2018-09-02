@@ -13,6 +13,9 @@ from flask import current_app as app
 
 from solidata_api.application import mongo
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### GLOBAL VARIABLES
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 ### declaring collections as app variables
 
@@ -77,7 +80,7 @@ def select_collection(coll_name):
 class Marshaller :
 
 	def __init__( self, ns, models ):
-    	
+		
 		self.ns 					= ns
 		self.model_doc_out 			= models["model_doc_out"]
 		self.model_doc_guest_out 	= models["model_doc_guest_out"]
@@ -97,7 +100,7 @@ class Marshaller :
 		return get_results()
 
 	def marshal_as_guest (self, results_list ) :
-    
+	
 		ns 					= self.ns
 		self.results_list 	= results_list
 		log.debug('results_list : \n%s', pformat(results_list) )  
@@ -108,7 +111,7 @@ class Marshaller :
 		return get_results()
 
 	def marshal_as_min (self, results_list ) :
-    
+	
 		ns 					= self.ns
 		self.results_list 	= results_list
 		log.debug('results_list : \n%s', pformat(results_list) )  
@@ -125,6 +128,35 @@ class Marshaller :
 
 from .query_doc import *
 from .query_list import *
+from .query_delete import *
 
 print()
 
+
+
+
+"""
+RESPONSE CODES 
+cf : https://restfulapi.net/http-status-codes/
+
+	200 (OK)
+	201 (Created)
+	202 (Accepted)
+	204 (No Content)
+	301 (Moved Permanently)
+	302 (Found)
+	303 (See Other)
+	304 (Not Modified)
+	307 (Temporary Redirect)
+	400 (Bad Request)
+	401 (Unauthorized)
+	403 (Forbidden)
+	404 (Not Found)
+	405 (Method Not Allowed)
+	406 (Not Acceptable)
+	412 (Precondition Failed)
+	415 (Unsupported Media Type)
+	500 (Internal Server Error)
+	501 (Not Implemented)
+
+"""

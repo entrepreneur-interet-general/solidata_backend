@@ -9,6 +9,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_datamodel_fields ... creating api blueprint for DATAMODEL FIELDS")
 
+document_type		= "dmf"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
@@ -28,7 +29,7 @@ api = Api( 	blueprint,
 						doc					= '/documentation',
 						default				= 'create',
 						authorizations		= auth_check,
-						security			='apikey' # globally ask for pikey auth
+						# security			='apikey' # globally ask for pikey auth
 )
 
 
@@ -53,5 +54,5 @@ api.add_namespace(ns_dmf_create)
 from .endpoint_dmf import 			ns as ns_dmf_list
 api.add_namespace(ns_dmf_list)
 
-# from .endpoint_dmf_edit import 		ns as ns_dmf_edit
-# api.add_namespace(ns_dmf_edit)
+from .endpoint_dmf_edit import 		ns as ns_dmf_edit
+api.add_namespace(ns_dmf_edit)

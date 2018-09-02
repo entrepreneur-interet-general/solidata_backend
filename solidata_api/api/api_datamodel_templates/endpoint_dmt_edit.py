@@ -1,22 +1,22 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_dsi_edit.py  
+endpoint_dmt_edit.py  
 """
 
 from solidata_api.api import *
 
-log.debug(">>> api_dsi ... creating api endpoints for DSI_EDIT")
+log.debug(">>> api_dmt ... creating api endpoints for DMT_EDIT")
 
 from . import api, document_type
 
 ### create namespace
-ns = Namespace('edit', description='Edit a dsi : ... ')
+ns = Namespace('edit', description='Edit a dmt : ... ')
 
 ### import models 
 from solidata_api._models.models_updates import * 
-from solidata_api._models.models_dataset_input import * 
-mod_doc				= Dsi_infos(ns)
+from solidata_api._models.models_datamodel_template import * 
+mod_doc				= Dmt_infos(ns)
 model_doc_out		= mod_doc.mod_complete_out
 model_doc_guest_out	= mod_doc.model_guest_out
 model_doc_min		= mod_doc.model_minimum
@@ -40,32 +40,36 @@ model_update	= Update_infos(ns, document_type).model_update_generic
 @ns.route('/<string:doc_id>')
 @ns.response(404, 'document not found')
 @ns.param('doc_id', 'The document unique identifier')
-class Dsi_edit(Resource):
+class Dmt_edit(Resource):
 	"""
-	dsi edition :
+	dmt edition :
 	PUT    - Updates document's infos
 	DELETE - Let you delete document
 	"""
 
 
-	@ns.doc('update_dsi')
+	@ns.doc('update_dmt')
 	@guest_required 
 	@ns.expect(model_update)
 	def put(self):
 		"""
-		Update a dsi in db
+		Update a  dmt in db
+
+		>
+			--- needs   : a valid access_token in the header, field_to_update, field_value
+			>>> returns : msg, doc data 
 		"""
 		return {
 					"msg" : "nananana"
 				}
 
 
-	@ns.doc('delete_dsi')
+	@ns.doc('delete_dmt')
 	@ns.response(204, 'document deleted')
 	@guest_required 
 	def delete(self):
 		"""
-		delete a dsi in db
+		delete a dmt in db
 
 		> 
 			--- needs   : a valid access_token (as admin or current user) in the header, an oid of the document in the request

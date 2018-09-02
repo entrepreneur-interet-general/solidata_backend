@@ -110,7 +110,8 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 				
 				db_dict, db_dict_by_type,
 				Query_db_list,
-				# Query_db_doc,
+				Query_db_doc,
+				Query_db_delete,
 
 				mongo_users,
 				mongo_tags,

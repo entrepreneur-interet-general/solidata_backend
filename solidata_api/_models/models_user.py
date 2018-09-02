@@ -2,7 +2,6 @@
 
 """
 _models/models_users.py  
-- provides the models for all api routes
 """
 
 from log_config import log, pformat
@@ -23,9 +22,6 @@ from solidata_api._models.models_generic import *
 ### create models from serializers
 # nested models : https://github.com/noirbizarre/flask-restplus/issues/8
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
-
-
-
 
 
 class UserData : 
@@ -147,6 +143,7 @@ class User_infos :
 		### SELF MODULES
 		self._id 					= oid_field
 		self.basic_infos 			= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True)
+		self.basic_infos_light		= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True, is_user_light=True)
 		self.public_auth			= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
 		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs")
 		self.log					= create_model_log(			ns_,	model_name=model_type+"_log", 		include_counts=True, counts_name="login_count")
@@ -177,18 +174,27 @@ class User_infos :
 		self.model_infos = {
 			'infos' 				: self.basic_infos,
 		}
+		self.model_infos_light = {
+			'infos' 				: self.basic_infos_light,
+		}
 		self.model_in = {
 			'modif_log'				: self.modif_log , 
 			"datasets"				: self.datasets ,
 			'profile' 				: self.profile,
 			'professional_infos' 	: self.professional_infos,		
 		}
-		self.model_min = { 	**self.model_infos , 
-							**{
-								'public_auth' 			: self.public_auth,
-								'specs'					: self.specs , 
-								'log'					: self.log , 
-							}
+		self.spec_auth_log = {
+			'public_auth' 			: self.public_auth,
+			'specs'					: self.specs , 
+			'log'					: self.log , 
+		}
+		self.model_min = { 
+				**self.model_infos , 
+				**self.spec_auth_log
+		}
+		self.model_min_light = { 
+				**self.model_infos_light , 
+				# **self.spec_auth_log
 		}
 		self.model_auth_in = {  
 			"auth" 				: self.auth_in 
@@ -237,11 +243,10 @@ class User_infos :
 		### MIN / minimum data to marshall out 
 		self.mod_minimum 		= ns_.model(model_type+"_minimum",
 			{ 
-				**self.model_min, 
+				**self.model_min_light, 
 				**self.model_id, 
 				**self.model_datasets_light 
 			}
-
 		)
 
 

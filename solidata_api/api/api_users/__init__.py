@@ -2,8 +2,6 @@
 
 """
 api_users/__init__.py
-- provides the API endpoints for consuming and producing
-	REST requests and responses
 """
 
 from solidata_api.api import *
@@ -11,6 +9,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_users ... creating api blueprint for USERS")
 
+document_type		= "usr"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper

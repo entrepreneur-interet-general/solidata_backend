@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_users ... creating api endpoints for USER_REGISTER")
 
-from . import api
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('register', description='Users : register related endpoints')
@@ -29,6 +29,7 @@ model_user_access		= model_user.model_access
 
 
 
+@ns.doc(security='apikey')
 @ns.route('/')
 class Register(Resource):
 	
@@ -154,6 +155,7 @@ class Register(Resource):
 
 
 
+@ns.doc(security='apikey')
 @ns.route("/confirm_email")
 @ns.response(404, 'error in the redirection to confirm email')
 @ns.param('token', 'The token sent by email when registering to confirm your email')

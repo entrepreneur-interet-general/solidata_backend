@@ -9,6 +9,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_tags ... creating api blueprint for DATAMODEL TAGS")
 
+document_type		= "tag"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
@@ -28,7 +29,7 @@ api = Api( 	blueprint,
 						doc					= '/documentation',
 						default				= 'create',
 						authorizations		= auth_check,
-						security			='apikey' # globally ask for pikey auth
+						# security			='apikey' # globally ask for pikey auth
 )
 
 
@@ -53,5 +54,5 @@ api.add_namespace(ns_tag_create)
 from .endpoint_tag import 			ns as ns_tag_list
 api.add_namespace(ns_tag_list)
 
-# from .endpoint_tag_edit import 		ns as ns_tag_edit
-# api.add_namespace(ns_tag_edit)
+from .endpoint_tag_edit import 		ns as ns_tag_edit
+api.add_namespace(ns_tag_edit)

@@ -39,6 +39,24 @@ url_link			= fields.String(
 										required		= False,
 									)
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### for document updates
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+field_value 		= fields.Raw(
+										description		= "data about a document",
+										attribute		= "data",
+										example			= "new data",
+										default			= 'a new data',
+										required		= True,
+									)
+field_to_update		= fields.String(
+										description		= "data about a document",
+										attribute		= "field_to_update",
+										example			= "infos.title",
+										default			= 'a new data',
+										required		= True,
+									)
+
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### basic informations about a document : project / licence / oid ...
@@ -161,6 +179,12 @@ oid 				= IdField(
 										description 	= "oid of a document",
 										attribute		= "oid",
 										example			= "ObjectId('5b841ac70a82863ff21fd4d7')",
+										required		= True,
+									)
+doc_id 				= fields.String(
+										description 	= "oid of a document as string",
+										attribute		= "doc_id",
+										example			= "5b841ac70a82863ff21fd4d7",
 										required		= True,
 									)
 oid_usr 			= IdField(
@@ -292,6 +316,16 @@ oid_dict = {
 	"dso" 	: { "field" : oid_dso , "fullname" : "dataset_output" } ,
 	"fld"	: { "field" : oid_fld , "fullname" : "field" } ,
 	"tag" 	: { "field" : oid_tag , "fullname" : "tag" } ,
+}
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### preformat some generic fields
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+update_field		= {
+	# "doc_id"			: doc_id,
+	"field_to_update"	: field_to_update,
+	"field_value" 		: field_value,
 }
 
 

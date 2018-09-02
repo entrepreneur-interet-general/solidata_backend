@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_tags ... creating api endpoints for TAG_CREATE")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('create', description='Tag : create a new tag ')
@@ -22,10 +22,20 @@ model_tag_in	= model_tag.model_complete_in
 
 
 
+
+
+
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
+
+
+
 
 
 @ns.doc(security='apikey')

@@ -1,47 +1,46 @@
 # -*- encoding: utf-8 -*-
 
 """
-_core/queries_db/query_doc.py  
+_core/queries_db/query_delete.py  
 """
 
 from log_config import log, pformat
-log.debug("... _core.queries_db.query_doc.py ..." )
+log.debug("... _core.queries_db.query_delete.py ..." )
 
-from	bson.objectid 	import ObjectId
-from 	flask_restplus 	import  marshal
+from	bson.objectid import ObjectId
+# from 	flask_restplus 	import  marshal
 
-from 	. 	import db_dict_by_type, Marshaller
+from 	. 	import db_dict_by_type #, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
+### GLOBAL FUNCTION TO QUERY LIST FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-def Query_db_doc (
+def Query_db_delete (
 		ns, 
 		models,
 		document_type,
 		doc_id,
 		claims,
-		roles_for_complete 	= ["admin"],
+		roles_for_delete 	= ["admin"],
+		auth_can_delete 	= ["owner"],
 	):
-
-
 
 	### prepare marshaller 
 	# marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection		= db_dict_by_type[document_type]
-	document_type_full 	= doc_type_dict[document_type]
-	user_id = user_oid	= None
-	user_role			= "anonymous"
-	document_out		= None
-	message 			= None
-	dft_open_level_show = ["open_data"]
-	response_code		= 200
+	db_collection			= db_dict_by_type[document_type]
+	document_type_full 		= doc_type_dict[document_type]
+	user_id = user_oid		= None
+	user_role				= "anonymous"
+	document_out			= None
+	response_code			= 401
+	user_allowed_to_delete 	= False
+	message 				= "dear user, you don't have the credentials to delete this {} with this oid : {}".format(document_type_full, doc_id) 
 
 	if claims or claims!={}  :
 		user_role 		= claims["auth"]["role"]
@@ -49,7 +48,6 @@ def Query_db_doc (
 		if user_role != "anonymous" : 
 			user_oid 		= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
-			dft_open_level_show += ["commons"]
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
@@ -76,51 +74,37 @@ def Query_db_doc (
 		
 		### get doc's team infos
 		if "team" in document : 
-			team_oids = [ t["oid_usr"] for t in document["team"] ]
+			team_oids = { t["oid_usr"] : t["edit_auth"] for t in document["team"] }
 			log.debug( "team_oids : \n%s", pformat(team_oids) )
-
 
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
-		if user_role in roles_for_complete or user_oid in team_oids : 
-			
-			document_out = marshal( document, models["model_doc_out"] )
+		if user_role in roles_for_delete or user_oid in team_oids : 
 
 			# flag as member of doc's team
 			if user_oid in team_oids :
 				query_resume["is_member_of_team"] = True
-		
-			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
-		# for other users
-		else :
+			### check user's role in team
+			if user_role in roles_for_delete or team_oids[user_id] in auth_can_delete : 
+				user_allowed_to_delete = True
 
-			if doc_open_level_show in ["commons", "open_data"] : 
-			
-				# for anonymous users --> minimum infos model
-				if user_id == None or user_role == "anonymous" : 
-					document_out = marshal( document, models["model_doc_min"] )
-				
-				# for registred users (guests) --> guest infos model
-				else :
-					document_out = marshal( document, models["model_doc_guest_out"] )
+			if user_allowed_to_delete : 
+				### delete doc from db
+				db_collection.delete_one({"_id" : ObjectId(doc_id) })
 
-				log.debug( "document_out : \n %s", pformat(document_out) )
-				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
+				### TO DO - delete user info from all projects and other datasets 
+				### TO DO - OR choice to keep at least email / or / delete all data
 
-			else : 
-				response_code	= 401
-				### unvalid credentials / empty response
-				message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
+				message 		= "dear user, you just deleted the following {} with oid : {}".format(document_type_full, doc_id)
+				response_code 	= 204
 
 	else : 
-		### no document / empty response
-		response_code	= 404
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
+		response_code 	= 404
 
 	### return response
 	return {
 				"msg" 	: message ,
-				"data"	: document_out,
 				"query"	: query_resume,
 			}, response_code

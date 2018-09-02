@@ -139,7 +139,7 @@ class Dmt_infos :
 			{ 
 				**self.model_min, 
 				**self.model_id, 
-				**self.model_uses, 
+				**self.model_uses_light, 
 				**self.model_datasets_light 
 			}
 		)

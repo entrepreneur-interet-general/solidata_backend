@@ -11,6 +11,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_dataset_inputs ... creating api blueprint for DATASET INPUTS")
 
+document_type		= "dsi"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
@@ -30,7 +31,7 @@ api = Api( 	blueprint,
 						doc					= '/documentation',
 						default				= 'create',
 						authorizations		= auth_check,
-						security			='apikey' # globally ask for apikey auth
+						# security			='apikey' # globally ask for apikey auth
 )
 
 
@@ -43,6 +44,7 @@ def default_error_handler(e):
 
 		if not app.config["FLASK_DEBUG"]:
 				return {'message': message}, 500
+
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

@@ -25,6 +25,7 @@ def create_model_basic_infos( 	ns_,
 								model_name 		= "Basic_infos",
 								schema			= doc_basics,
 								is_user_infos	= False, 
+								is_user_light	= False, 
 								need_licence	= False,
 							) : 
 	""" 
@@ -35,6 +36,8 @@ def create_model_basic_infos( 	ns_,
 
 	if is_user_infos == True : 
 		schema = user_basics 
+		if is_user_light : 
+			schema = user_basics_light 
 	
 	if need_licence == True : 
 		schema = doc_basics_licence 
@@ -44,6 +47,27 @@ def create_model_basic_infos( 	ns_,
 		description = "basic infos about the document"
 	)
 	return basic_infos
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / PUBLIC AUTH 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+def create_model_field_update(	ns_, 
+								model_name = "Field_updtae" 
+							):
+	
+	"""
+	Field update
+	"""
+	
+	# field_update = fields.Nested( 
+	# 	ns_.model( model_name, update_field ),
+	# 	description = "update a field of a document"
+	# )
+
+	field_update = ns_.model(model_name, update_field )
+	
+	return field_update
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

@@ -9,6 +9,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_dataset_inputs ... creating api blueprint for DATAMODEL TEMPLATES")
 
+document_type		= "dmt"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
@@ -28,7 +29,7 @@ api = Api( 	blueprint,
 						doc				= '/documentation',
 						default			= 'create',
 						authorizations	= auth_check,
-						security		='apikey' # globally ask for pikey auth
+						# security		='apikey' # globally ask for pikey auth
 )
 
 
@@ -53,5 +54,5 @@ api.add_namespace(ns_dmt_create)
 from .endpoint_dmt import 			ns as ns_dmt_list
 api.add_namespace(ns_dmt_list)
 
-# from .endpoint_dmt_edit import 		ns as ns_dmt_edit
-# api.add_namespace(ns_dmt_edit)
+from .endpoint_dmt_edit import 		ns as ns_dmt_edit
+api.add_namespace(ns_dmt_edit)

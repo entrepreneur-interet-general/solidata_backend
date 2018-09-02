@@ -11,6 +11,7 @@ from solidata_api.api import *
 # from log_config import log, pformat
 log.debug("\n>>> api_projects ... creating api blueprint for PROJECTS")
 
+document_type		= "prj"
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
@@ -30,7 +31,7 @@ api = Api( 	blueprint,
 						doc				= '/documentation',
 						default			= 'create',
 						authorizations	= auth_check,
-						security		='apikey' # globally ask for pikey auth
+						# security		='apikey' # globally ask for pikey auth
 )
 
 
@@ -55,5 +56,5 @@ api.add_namespace(ns_prj_create)
 from .endpoint_prj import 			ns as ns_prj_list
 api.add_namespace(ns_prj_list)
 
-# from .endpoint_prj_edit import 		ns as ns_prj_edit
-# api.add_namespace(ns_prj_edit)
+from .endpoint_prj_edit import 		ns as ns_prj_edit
+api.add_namespace(ns_prj_edit)

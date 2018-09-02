@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_projects ... creating api endpoints for PROJ_CREATE")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('create', description='Projects : create a new project')
@@ -22,10 +22,20 @@ model_project_in		= mod_prj.mod_complete_in
 
 
 
+
+
+
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
+
+
+
 
 
 @ns.doc(security='apikey')

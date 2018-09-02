@@ -8,7 +8,7 @@ from solidata_api.api import *
 
 log.debug(">>> api_recipes ... creating api endpoints for REC_CREATE")
 
-
+from . import api, document_type
 
 ### create namespace
 ns = Namespace('create', description='Recipes : create a new recipe')
@@ -22,10 +22,20 @@ model_recipe_in			= mod_rec.mod_complete_in
 
 
 
+
+
+
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
+
+
+
+
 
 
 @ns.doc(security='apikey')
