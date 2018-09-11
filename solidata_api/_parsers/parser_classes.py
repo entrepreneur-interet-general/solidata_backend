@@ -13,6 +13,12 @@ from werkzeug.datastructures import FileStorage
 
 log.debug("~ ~ ~ loading parser_classes.py ...")
 
+"""
+### cf : https://flask-restful.readthedocs.io/en/0.3.6/reqparse.html
+default location for parsers 
+
+	location : ('json', 'values'),
+"""
 
 class RequestParserBuilder :
 
@@ -31,15 +37,17 @@ class RequestParserBuilder :
 				type=int, 
 				required=False, 
 				default=1, 
-				help='Page number'
+				help='Page number',
+				location = 'values'
 			)
 			self.baseParser.add_argument(
 				'per_page', 
 				type=int, 
 				required=False, 
-				choices=[2, 10, 20, 30, 40, 50],
+				choices=[2, 5, 10, 20, 30, 40, 50, 100],
 				default=10, 
-				help='Results per page'
+				help='Results per page',
+				location = 'values'
 			)
 
 		if add_queries : 
@@ -49,35 +57,40 @@ class RequestParserBuilder :
 				action='append',
 				type=str, 
 				required=False, 
-				help='find documents matching this string in the title'
+				help='find documents matching this string in the title',
+				location = 'values'
 			)
 			self.baseParser.add_argument(
 				'q_description', 
 				action='append',
 				type=str, 
 				required=False, 
-				help='find documents matching this string in the description'
+				help='find documents matching this string in the description',
+				location = 'values'
 			)
 			self.baseParser.add_argument(
 				'tags', 
 				action='split',
 				type=str, 
 				required=False, 
-				help='find documents matching this list of tags oid (separated by commas)'
+				help='find documents matching this list of tags oid (separated by commas)',
+				location = 'values'
 			)
 			self.baseParser.add_argument(
 				'oids', 
 				action='split',
 				type=str, 
 				required=False, 
-				help='find documents matching this list of oid to find (separated by commas)'
+				help='find documents matching this list of oid to find (separated by commas)',
+				location = 'values'
 			)
 			self.baseParser.add_argument(
 				'only_stats', 
 				type=inputs.boolean, 
 				required=False, 
 				default=False, 
-				help='just retrieve the stats of the result'
+				help='just retrieve the stats of the result',
+				location = 'values'
 			)
 
 		if add_files : 
@@ -87,35 +100,35 @@ class RequestParserBuilder :
 				type=FileStorage, 
 				location='files', 
 				required=True, 
-				help='any data file : tsv, csv, xml, xls, xlsx'
+				help='any data file : tsv, csv, xml, xls, xlsx',
 			)
 			# self.baseParser.add_argument(
 				# 'xls_file',  
 				# type=FileStorage, 
 				# location='files', 
 				# required=False, 
-				# help='XLS file'
+				# help='XLS file',
 			# )
 			# self.baseParser.add_argument(
 				# 'xlsx_file',  
 				# type=FileStorage, 
 				# location='files', 
 				# required=False, 
-				# help='XLSX file'
+				# help='XLSX file',
 			# )
 			# self.baseParser.add_argument(
 				# 'csv_file',  
 				# type=FileStorage, 
 				# location='files', 
 				# required=False, 
-				# help='CSV file'
+				# help='CSV file',
 			# )
 			# self.baseParser.add_argument(
 				# 'xml_file',  
 				# type=FileStorage, 
 				# location='files', 
 				# required=False, 
-				# help='XML file'
+				# help='XML file',
 			# )
 
 	@property
@@ -124,8 +137,8 @@ class RequestParserBuilder :
 
 
 q_arguments 		= RequestParserBuilder(add_queries=True)
-# log.debug(" q_arguments : \n%s ", pformat(q_arguments.__dict__))
 query_arguments		= q_arguments.get_parser
+log.debug(" query_arguments : \n%s ", pformat(query_arguments.args[0].__dict__ ))
 
 q_files 			= RequestParserBuilder(add_files=True)
 file_parser			= q_files.get_parser

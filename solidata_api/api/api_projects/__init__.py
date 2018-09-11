@@ -21,7 +21,7 @@ blueprint = Blueprint( 'api_projects', __name__, template_folder=app.config["TEM
 # blueprint = Blueprint( 'api_projects', __name__, template_folder='templates' )
 
 ### enable CORS on blueprint
-CORS(blueprint)
+# CORS(blueprint)
 
 ### create API
 api = Api( 	blueprint,

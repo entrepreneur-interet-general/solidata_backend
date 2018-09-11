@@ -48,6 +48,7 @@ class AnonymousUser :
 									"conf_usr"	: False, 
 									"role" 		: "anonymous"
 								},
+					profile		= { "lang" 		: "en" } ,
 					preferences = None
 		) :
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
@@ -61,6 +62,7 @@ class AnonymousUser :
 		self._id 			= _id
 		self.infos			= infos
 		self.auth			= auth
+		self.profile		= profile
 		self.preferences 	= preferences
 
 
@@ -177,6 +179,9 @@ class User_infos :
 		self.model_infos_light = {
 			'infos' 				: self.basic_infos_light,
 		}
+		self.profile_alone = {
+			'profile' 				: self.profile,
+		}
 		self.model_in = {
 			'modif_log'				: self.modif_log , 
 			"datasets"				: self.datasets ,
@@ -259,7 +264,15 @@ class User_infos :
 			}
 		)
 
-
+		### OUT LOGIN / for login tokens
+		self.mod_login_out  		= ns_.model(model_type+"_login", 
+			{ 
+				**self.model_infos, 
+				**self.model_id, 
+				**self.model_auth_out,
+				**self.profile_alone
+			}
+		)
 
 
 	@property
@@ -282,3 +295,6 @@ class User_infos :
 	def model_access(self): 
 		return self.mod_access
 
+	@property
+	def model_login_out(self): 
+		return self.mod_login_out

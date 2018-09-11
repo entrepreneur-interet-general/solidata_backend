@@ -24,6 +24,32 @@ from flask_jwt_extended import (
 ### AUTH DECORATORS
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
+"""
+RESPONSE CODES 
+cf : https://restfulapi.net/http-status-codes/
+
+	200 (OK)
+	201 (Created)
+	202 (Accepted)
+	204 (No Content)
+	301 (Moved Permanently)
+	302 (Found)
+	303 (See Other)
+	304 (Not Modified)
+	307 (Temporary Redirect)
+	400 (Bad Request)
+	401 (Unauthorized)
+	403 (Forbidden)
+	404 (Not Found)
+	405 (Method Not Allowed)
+	406 (Not Acceptable)
+	412 (Precondition Failed)
+	415 (Unsupported Media Type)
+	500 (Internal Server Error)
+	501 (Not Implemented)
+
+
+"""
 
 ### CLAIMS LOADER INTO JWT - for access_token
 ### cf : https://flask-jwt-extended.readthedocs.io/en/latest/custom_decorators.html 
@@ -48,8 +74,8 @@ def add_claims_to_access_token(user):
 		'_id'				: user["_id"],
 		'infos'				: user["infos"],
 		'auth'				: user["auth"],
+		'profile'			: user["profile"],
 		# 'datasets'		: user["datasets"],
-		# 'profile'			: user["profile"],
 		# 'professional'	: user["professional"],
 	}
 
@@ -108,7 +134,7 @@ def user_identity_lookup(user):
 @jwt_manager.expired_token_loader
 def my_expired_token_callback():
 	"""
-	TO DO - Using the expired_token_loader decorator,
+	Using the expired_token_loader decorator,
 	we will now call this function whenever an expired
 	token attempts to access an endpoint
 	but otherwise valid access
@@ -176,7 +202,6 @@ def anonymous_or_guest_required(func):
 	return wrapper
 
 
-
 def guest_required(func):
 	"""
 	Check if user is not logged yet in access_token 
@@ -214,6 +239,27 @@ def admin_required(func):
 		
 		if claims["auth"]["role"] != 'admin':
 			return { "msg" : "Admins only !!! " }, 403
+		else:
+			return func(*args, **kwargs)
+	
+	return wrapper
+
+
+def staff_required(func):
+	"""
+	Check if user has admin or staff level in access_token
+	"""
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		
+		log.debug("-@- admin checker")
+
+		verify_jwt_in_request()
+		claims = get_jwt_claims()
+		log.debug("claims : \n %s", pformat(claims) )
+		
+		if claims["auth"]["role"] not in  ['admin', 'staff']:
+			return { "msg" : "Admins or staff only !!! " }, 403
 		else:
 			return func(*args, **kwargs)
 	

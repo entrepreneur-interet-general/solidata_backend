@@ -19,7 +19,6 @@ mod_doc				= Prj_infos(ns)
 model_doc_out		= mod_doc.mod_complete_out
 model_doc_guest_out	= mod_doc.model_guest_out
 model_doc_min		= mod_doc.model_minimum
-document_type		= "prj"
 models 				= {
 	"model_doc_out" 		: model_doc_out ,
 	"model_doc_guest_out" 	: model_doc_guest_out ,
@@ -39,7 +38,7 @@ models 				= {
 
 
 
-@ns.route("/get_one/<string:doc_id>/")
+@ns.route("/get_one/<string:doc_id>")
 class Prj_infos(Resource):
 	
 	"""
@@ -109,6 +108,8 @@ class Prj_List(Resource):
 		print()
 		print("-+- "*40)
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+		log.debug( "request : \n%s", pformat(request.__dict__) )
+
 
 		### DEBUG check
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
@@ -118,10 +119,15 @@ class Prj_List(Resource):
 		claims 				= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 
+		# log.debug("request.args : %s ", request.args)
+		# args_type = type(request.__dict__["args"])
+		# log.debug("args_type : %s ", args_type)
 
 		### query db from generic function 		
 		query_args				= query_arguments.parse_args(request)
 		page_args				= pagination_arguments.parse_args(request)
+		log.debug ("page_args : \n{}".format(page_args))
+
 		results, response_code	= Query_db_list (
 			ns, 
 			models,

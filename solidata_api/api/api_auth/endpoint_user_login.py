@@ -16,8 +16,10 @@ ns = Namespace('login', description='User : login related endpoints')
 
 ### import models 
 from solidata_api._models.models_user import LoginUser, User_infos, AnonymousUser
-model_login_user  	= LoginUser(ns).model
-model_user_access	= User_infos(ns).model_access
+model_login_user  		= LoginUser(ns).model
+model_user				= User_infos(ns)
+model_user_access		= model_user.model_access
+model_user_login_out	= model_user.model_login_out
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -98,6 +100,10 @@ class Login(Resource):
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
+		### retrieve current user identity from refresh token
+		claims 				= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+		
 		### retrieve infos from form
 		payload_email = ns.payload["email"]
 		payload_pwd   = ns.payload["pwd"]
@@ -122,7 +128,8 @@ class Login(Resource):
 			if check_password_hash(pwd, payload_pwd) :
 
 				### marshal user's info 
-				user_light 				= marshal( user , model_user_access)
+				# user_light 				= marshal( user , model_user_access)
+				user_light 				= marshal( user , model_user_login_out)
 				# user_light["_id"] 		= str(user["_id"])
 				log.debug("user_light : \n %s", pformat(user_light) )
 
@@ -154,21 +161,24 @@ class Login(Resource):
 				user["log"]["login_count"] += 1
 				mongo_users.save(user)
 
-
 				return {	
-						"msg"				: "user '{}' is logged".format(payload_email),
-						"is_user_confirmed" : user["auth"]["conf_usr"],
-						"_id"				: str(user["_id"]),
-						"infos"				: user["infos"],
-						"profile"			: user["profile"],
-						"tokens"			: tokens
+							"msg"				: "user '{}' is logged".format(payload_email),
+
+							# "is_user_confirmed" : user["auth"]["conf_usr"],
+							# "_id"				: str(user["_id"]),
+							# "infos"				: user["infos"],
+							# "profile"			: user["profile"],
+							
+							"data"				: user_light,
+							"tokens"			: tokens
+
 						}, 200
 
 			else : 
 
 				error_message = "wrong password"
 				return { 
-							"msg" 			: "incorrect login / {}".format(error_message) 
+							"msg" 				: "incorrect login / {}".format(error_message) 
 						}, 401
 
 

@@ -106,9 +106,11 @@ def Query_db_list (
 			"$in" : dft_open_level_show,
 		},
 		"team" : { 
-			"$elemMatch" : {
-				"oid_usr" : {
-					"$nin" : [ user_oid ]
+			"$not" : {
+				"$elemMatch" : {
+					"oid_usr" : {
+						"$in" : [ user_oid ]
+					}
 				}
 			}
 		} 

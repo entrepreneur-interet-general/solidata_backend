@@ -10,6 +10,8 @@ from solidata_api.api import *
 
 log.debug(">>> api_users ... creating api endpoints for USERS")
 
+from . import api, document_type
+
 ### create namespace
 ns = Namespace('infos', description='Users : users lists related endpoints ')
 

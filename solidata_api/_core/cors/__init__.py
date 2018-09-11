@@ -15,11 +15,13 @@ from solidata_api.application import CORS, cross_origin
 
 ### init CORS 
 # cf : https://flask-cors.readthedocs.io/en/latest/api.html?highlight=Access-Control-Allow-Credentials
-CORS(app, 
-    # headers=['Content-Type', 'Authorization'], 
-    # resources={r"/api/*": {"origins": "*"}},
-    # resources=r"/api/*",
-    # expose_headers=['Access-Control-Allow-Origin', 'Origin'], 
-    # supports_credentials=True
+CORS(
+	app, 
+	# headers=['Content-Type', 'Authorization'], 
+	resources={r"/api/*": {"origins": "*"}},
+	# send_wildcard=True,
+	# resources=r"/api/*",
+	# expose_headers=['Access-Control-Allow-Origin', 'Origin'], 
+	supports_credentials=True,
 )
 # log.debug("... cors :\n %s", pformat(CORS.__dict__))
