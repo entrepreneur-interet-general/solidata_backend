@@ -39,7 +39,7 @@ models 				= {
 
 
 
-@ns.route("/get_one/<string:doc_id>/")
+@ns.route("/get_one/<string:doc_id>")
 class Tag_infos(Resource):
 	
 	@ns.doc('tag_infos')

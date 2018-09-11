@@ -40,7 +40,7 @@ models 				= {
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
 
-@ns.route("/get_one/<string:doc_id>/")
+@ns.route("/get_one/<string:doc_id>")
 class Usr_infos(Resource):
 	
 	@ns.doc('usr_infos')
