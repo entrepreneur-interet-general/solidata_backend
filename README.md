@@ -4,7 +4,7 @@
 -------
 ## PRESENTATION
 
-part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur-interet-general/CIS-front) / Solidata / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper) )
+part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur-interet-general/CIS-front) / [Solidata_frontend](https://github.com/entrepreneur-interet-general/solidata_frontend) / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper) )
 
 #### Building a public service for managing, consolidating, and sharing data 
 
