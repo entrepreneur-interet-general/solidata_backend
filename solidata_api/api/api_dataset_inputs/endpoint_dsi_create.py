@@ -20,6 +20,7 @@ model_new_dsi  	= NewDsi(ns).model
 model_dsi		= Dsi_infos(ns)
 model_dsr		= Dsr_infos(ns)
 model_dsi_in	= model_dsi.mod_complete_in
+model_dsi_out	= model_dsi.mod_complete_out
 model_dsr_in	= model_dsr.mod_complete_in
 # model_dsi_ref		= create_model_dataset(ns, model_name="Dsi_ref", include_fav=True,schema="dsi")
 
@@ -210,7 +211,7 @@ class DsiCreate(Resource):
 
 
 				return {
-							"msg"				: "your file '{}' has been correctly uploaded...".format(filename),
+							"msg"		: "your file '{}' has been correctly uploaded...".format(filename),
 							"filename" 	: filename,
 							"oid_dsi" 	: str(oid_dsi_)
 						}, 200

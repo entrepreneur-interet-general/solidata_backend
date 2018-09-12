@@ -18,6 +18,7 @@ from solidata_api._models.models_datamodel_template import *
 model_new_dmt  	= NewDmt(ns).model
 model_dmt		= Dmt_infos(ns)
 model_dmt_in	= model_dmt.model_complete_in
+model_dmt_out	= model_dmt.model_complete_out
 
 
 
@@ -127,7 +128,8 @@ class DmtCreate(Resource):
 		log.debug('new_dmt : \n%s', pformat(new_dmt) )  
 
 		### marshall out the saved item as complete data
-		new_dmt_out = marshal( new_dmt , model_dmt_in)
+		new_dmt_out = marshal( new_dmt , model_dmt_out)
+		log.debug('new_dmt_out : \n%s', pformat(new_dmt_out) )  
 
 		return { 
 					"msg"	: "dear user, there is the dmt you just created... ", 

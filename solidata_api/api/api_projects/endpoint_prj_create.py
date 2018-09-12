@@ -18,6 +18,7 @@ from solidata_api._models.models_project import *
 model_form_new_prj  	= NewPrj(ns).model
 mod_prj					= Prj_infos(ns)
 model_project_in		= mod_prj.mod_complete_in
+model_project_out		= mod_prj.mod_complete_out
 
 
 
@@ -128,8 +129,8 @@ class PrjCreate(Resource):
 		log.debug('new_prj : \n%s', pformat(new_prj) )  
 
 		### marshall out the saved item as complete data
-		new_prj_out = marshal( new_prj , model_project_in)
-
+		new_prj_out = marshal( new_prj , model_project_out)
+		log.debug('new_prj_out : \n%s', pformat(new_prj_out) )  
 
 		return {
 					"msg"	: "dear user, there is the prj you just created... ", 

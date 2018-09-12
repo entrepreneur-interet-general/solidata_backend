@@ -18,6 +18,7 @@ from solidata_api._models.models_tag import *
 model_new_tag  	= NewTag(ns).model
 model_tag		= Tag_infos(ns)
 model_tag_in	= model_tag.model_complete_in
+model_tag_out	= model_tag.model_complete_out
 
 
 
@@ -127,7 +128,8 @@ class TagCreate(Resource):
 		log.debug('new_tag : \n%s', pformat(new_tag) )  
 
 		### marshall out the saved item as complete data
-		new_tag_out = marshal( new_tag , model_tag_in)
+		new_tag_out = marshal( new_tag , model_tag_out)
+		log.debug('new_tag_out : \n%s', pformat(new_tag_out) )  
 
 		return { 
 					"msg"	: "dear user, there is the tag you just created... ", 

@@ -18,6 +18,7 @@ from solidata_api._models.models_recipe import *
 model_form_new_rec  	= NewRec(ns).model
 mod_rec					= Rec_infos(ns)
 model_recipe_in			= mod_rec.mod_complete_in
+model_recipe_out		= mod_rec.mod_complete_out
 
 
 
@@ -127,8 +128,8 @@ class RecCreate(Resource):
 		log.debug('new_rec : \n%s', pformat(new_rec) )  
 
 		### marshall out the saved item as complete data
-		new_rec_out = marshal( new_rec , model_recipe_in )
-
+		new_rec_out = marshal( new_rec , model_recipe_out )
+		log.debug('new_rec_out : \n%s', pformat(new_rec_out) )  
 
 		return {
 					"msg"	: "dear user, there is the rec you just created... ", 

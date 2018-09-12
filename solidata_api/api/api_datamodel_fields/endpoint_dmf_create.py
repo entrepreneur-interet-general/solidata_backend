@@ -18,6 +18,7 @@ from solidata_api._models.models_datamodel_field import *
 model_new_dmf  	= NewDmf(ns).model
 model_dmf		= Dmf_infos(ns)
 model_dmf_in	= model_dmf.model_complete_in
+model_dmf_out	= model_dmf.model_complete_out
 
 
 
@@ -130,6 +131,7 @@ class DmfCreate(Resource):
 
 		### marshall out the saved item as complete data
 		new_dmf_out = marshal( new_dmf , model_dmf_in)
+		log.debug('new_dmf_out : \n%s', pformat(new_dmf_out) )  
 
 		return { 
 					"msg"	: "dear user, there is the dmf you just created... ", 
