@@ -10,6 +10,7 @@ class BaseConfig(object):
 
 	RUN_MODE			= "dev"
 	DEBUG				= True
+	TEMPLATES_FOLDER 	= "/templates"
 	ROOT_FOLDER			= os.getcwd()
 	UPLOADS_FOLDER 		= ROOT_FOLDER+"/uploads"
 	UPLOADS_IMAGES 		= UPLOADS_FOLDER+"/img"

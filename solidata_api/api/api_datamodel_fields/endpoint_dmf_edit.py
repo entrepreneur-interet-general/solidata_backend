@@ -40,7 +40,7 @@ model_update	= Update_infos(ns, document_type).model_update_generic
 @ns.route('/<string:doc_id>')
 @ns.response(404, 'document not found')
 @ns.param('doc_id', 'The document unique identifier')
-class Dmf_edit(Resource):
+class Dmf_update(Resource):
 	"""
 	dmf edition :
 	PUT    - Updates document's infos
@@ -50,14 +50,48 @@ class Dmf_edit(Resource):
 
 	@ns.doc('update_dmf')
 	@guest_required 
-	@ns.expect(model_update)
-	def put(self):
+	@ns.expect([model_update])
+	def put(self, doc_id):
 		"""
 		Update a  dmf in db
 		"""
+		### DEBUGGING
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
+		### DEBUG check
+		log.debug ("payload : \n{}".format(pformat(ns.payload)))
+
+		### check client identity and claims
+		claims 			= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+
+		### update doc in DB
+		updated_doc, response_code	= Query_db_update (
+			ns, 
+			models,
+			document_type,
+			doc_id,
+			claims,
+			roles_for_complete = ["admin"],
+			payload = ns.payload
+		)
+
+		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+
+		### return updated document
 		return {
-					"msg" : "nananana"
-				}
+					"msg" : "updating doc...."
+		}, 200
+		# return updated_doc, response_code
+
+
+
+
+
+
+
 
 
 	@ns.doc('delete_dmf')

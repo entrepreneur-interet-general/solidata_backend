@@ -53,7 +53,7 @@ def create_model_basic_infos( 	ns_,
 ### MODEL / PUBLIC AUTH 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_field_update(	ns_, 
-								model_name = "Field_updtae" 
+								model_name = "Field_update" 
 							):
 	
 	"""

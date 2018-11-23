@@ -50,6 +50,7 @@ class Usr_edit(Resource) :
 	
 	@ns.doc('update_usr')
 	@current_user_required
+	@ns.expect([model_update])
 	def put(self):
 		"""
 		Update a tag in db

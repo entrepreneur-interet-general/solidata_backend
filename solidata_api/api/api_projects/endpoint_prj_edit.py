@@ -50,7 +50,7 @@ class Prj_edit(Resource):
 
 	@ns.doc('update_prj')
 	@guest_required 
-	@ns.expect(model_update)
+	@ns.expect([model_update])
 	def put(self):
 		"""
 		Update a project in db

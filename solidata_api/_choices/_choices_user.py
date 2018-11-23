@@ -35,29 +35,33 @@ bad_passwords = [
 ]
 
 user_edit_auth = [
-
 	"owner",		
-	# update 		: infos, public_auth
-	# add/update 	: (dsi, data_raw, tag, dmt, dmf, team, dso, rec, mapping 	)
-	# delete		: True
-	
-	"manager",		
-	# update 		: infos, public_auth
-	# add/update 	: (dsi, data_raw, tag, dmt, dmf, team, dso, rec, mapping 	)
-	# delete		: False
-	
+	"manager",
 	"editor",		
-	# update 		: infos, 	
-	# add/update 	: (dsi, data_raw, tag, dmt, dmf,	)
-	# delete		: False
-	
 	"contributor",	
-	# update		: None
-	# add/update 	: (dsi, data_raw, 	)
-	# delete		: False
-
 ]
-
+user_edit_auth_rights	: {
+	'owner' 		: {
+		'can_edit_r_fields' : ['infos', 'public_auth','data_raw','team','mapping'],
+		'can_edit_datasets'	: ['dsi','data_raw','tag','dmt','dmf','dso','rec',],
+		'can_delete' 		: True,
+	}, 
+	'manager'		: {
+		'can_edit_r_fields' : ['infos', 'public_auth','data_raw','team','mapping'],
+		'can_edit_datasets'	: ['dsi','tag','dmt','dmf','dso','rec'],
+		'can_delete' 		: False,
+	}, 
+	'editor'		: {
+		'can_edit_r_fields' : ['infos', 'public_auth','data_raw'],
+		'can_edit_datasets'	: ['dsi','tag','dmt','dmf'],
+		'can_delete'	 	: False,
+	}, 
+	'contributor' 	: {
+		'can_edit_r_fields'	: ['data_raw'],
+		'can_edit_datasets' : ['dsi'],
+		'can_delete' 		: False,
+	}
+}
 
 
 

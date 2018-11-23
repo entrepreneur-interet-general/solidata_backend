@@ -129,6 +129,7 @@ class Marshaller :
 from .query_doc import *
 from .query_list import *
 from .query_delete import *
+from .query_update import *
 
 print()
 

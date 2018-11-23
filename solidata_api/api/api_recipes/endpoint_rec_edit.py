@@ -50,7 +50,7 @@ class Rec_edit(Resource):
 
 	@ns.doc('update_dmt')
 	@guest_required 
-	@ns.expect(model_update)
+	@ns.expect([model_update])
 	def put(self):
 		"""
 		Update a new rec in db

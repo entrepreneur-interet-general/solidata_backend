@@ -50,7 +50,7 @@ class Tag_edit(Resource):
 
 	@ns.doc('update_tag')
 	@guest_required 
-	@ns.expect(model_update)
+	@ns.expect([model_update])
 	def put(self):
 		"""
 		Update a tag in db
