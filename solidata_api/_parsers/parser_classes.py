@@ -44,7 +44,7 @@ class RequestParserBuilder :
 				'per_page', 
 				type=int, 
 				required=False, 
-				choices=[2, 5, 10, 20, 30, 40, 50, 100],
+				choices=[0, 2, 5, 10, 20, 30, 40, 50, 100],
 				default=10, 
 				help='Results per page',
 				location = 'values'

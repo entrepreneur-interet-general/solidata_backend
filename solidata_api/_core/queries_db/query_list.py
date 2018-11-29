@@ -60,10 +60,16 @@ def Query_db_list (
 	log.debug('dft_open_level_show : \n%s', pformat(dft_open_level_show) )  
 
 
-	page 			= page_args.get('page', 	1  )
-	per_page 		= page_args.get('per_page', 10 )
-	start_index		= ( page - 1 ) * per_page 
-	end_index 		= start_index + per_page
+	log.debug('page_args : \n%s', pformat(page_args) )  
+
+	page 			= page_args.get('page', 	1 )
+	per_page 		= page_args.get('per_page', 0 )
+	if per_page == 0 :
+		start_index		= ( page - 1 ) * per_page 
+		end_index 		= start_index + per_page
+	else : 
+		start_index		= 0 
+		end_index 		= 0	
 
 	q_title 		= query_args.get('q_title', 		None )
 	q_description 	= query_args.get('q_description', 	None )
@@ -88,7 +94,6 @@ def Query_db_list (
 			{ "infos.description" : q_description },
 		]
 	}
-
 	pipeline_accessible 	= {
 		"public_auth.open_level_show" : { 
 			"$in" : dft_open_level_show,
@@ -133,10 +138,14 @@ def Query_db_list (
 			# log.debug( "documents_in_team : \n %s", pformat(documents_in_team) )
 			# marshal out results
 			if documents_in_team != [] :
-					### trim list with pagimation
-				if cursor_in_team_count > per_page : 
+					
+				### trim list with pagination
+				if per_page == 0 :
+					pass
+				elif cursor_in_team_count > per_page : 
 					documents_in_team = documents_in_team[ start_index : end_index ]
 
+				### choose marshalling
 				if user_role in roles_for_complete : 
 					documents_out_in_team = marshaller.marshal_as_complete( documents_in_team )	
 				else : 
@@ -154,10 +163,14 @@ def Query_db_list (
 		# log.debug( "documents_not_team : \n %s", pformat(documents_not_team) )
 		# marshal out results
 		if documents_not_team != [] :
-			### trim list with pagimation
-			if cursor_not_team_count > per_page : 
+				
+			### trim list with pagination
+			if per_page == 0 :
+				pass
+			elif cursor_in_team_count > per_page : 
 				documents_not_team = documents_not_team[ start_index : end_index ]
-			
+
+			### choose marshalling
 			if user_role in roles_for_complete : 
 				documents_out_not_team = marshaller.marshal_as_complete( documents_not_team )			
 			elif user_role == "anonymous" :

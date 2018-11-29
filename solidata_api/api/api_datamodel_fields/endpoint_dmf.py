@@ -116,6 +116,7 @@ class Dmf_List(Resource):
 
 		### query db from generic function 		
 		query_args				= query_arguments.parse_args(request)
+		# log.debug("query_args : \n%s ", pformat(query_args) )
 		page_args				= pagination_arguments.parse_args(request)
 		results, response_code	= Query_db_list (
 			ns, 

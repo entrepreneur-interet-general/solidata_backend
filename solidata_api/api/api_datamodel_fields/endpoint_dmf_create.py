@@ -130,7 +130,7 @@ class DmfCreate(Resource):
 		log.debug('new_dmf : \n%s', pformat(new_dmf) )  
 
 		### marshall out the saved item as complete data
-		new_dmf_out = marshal( new_dmf , model_dmf_in)
+		new_dmf_out = marshal( new_dmf , model_dmf_out)
 		log.debug('new_dmf_out : \n%s', pformat(new_dmf_out) )  
 
 		return { 

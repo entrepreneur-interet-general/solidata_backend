@@ -82,7 +82,7 @@ class Dmf_update(Resource):
 
 		### return updated document
 		return {
-					"msg" : "updating doc...."
+			"msg" : "updating doc...."
 		}, 200
 		# return updated_doc, response_code
 
