@@ -54,6 +54,10 @@ class Dmf_update(Resource):
 	def put(self, doc_id):
 		"""
 		Update a  dmf in db
+
+		>
+			--- needs   : a valid access_token in the header, field_to_update, field_value
+			>>> returns : msg, doc data 
 		"""
 		### DEBUGGING
 		print()
@@ -97,7 +101,7 @@ class Dmf_update(Resource):
 	@ns.doc('delete_dmf')
 	@ns.response(204, 'document deleted')
 	@guest_required 
-	def delete(self):
+	def delete(self, doc_id):
 		"""
 		delete a dmf in db
 
