@@ -13,7 +13,8 @@ log.debug("... loading _choices_files.py ...")
 
 
 authorized_filetypes = [
-	 "csv", "xls", "xlsx", "xml" # ...
+	"csv", "xls", "xlsx", "xml" # ...
+	"API"
 ]
 
 authorized_mimetype = [ 

@@ -52,7 +52,7 @@ from solidata_api._parsers 	import * # pagination_arguments
 
 from solidata_api._choices 			import bad_passwords, authorized_filetypes, authorized_mimetype
 
-from solidata_api._core.utils 		import * # create_modif_log, secure_filename, allowed_file
+from solidata_api._core.utils 		import * # create_modif_log, secure_filename, allowed_file, return_payload
 from solidata_api._core.pandas_ops 	import * # create_modif_log, secure_filename, allowed_file
 from solidata_api._core.emailing 	import send_email
 

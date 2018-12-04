@@ -13,6 +13,8 @@ from werkzeug.datastructures import FileStorage
 
 log.debug("~ ~ ~ loading parser_classes.py ...")
 
+from solidata_api._choices import *
+
 """
 ### cf : https://flask-restful.readthedocs.io/en/0.3.6/reqparse.html
 default location for parsers 
@@ -98,10 +100,27 @@ class RequestParserBuilder :
 			self.baseParser.add_argument(
 				'data_file',  
 				type=FileStorage, 
+				# location=['files', 'form'], 
 				location='files', 
-				required=True, 
+				required=False, 
 				help='any data file : tsv, csv, xml, xls, xlsx',
 			)
+			self.baseParser.add_argument(
+				'csv_separator', 
+				type=str, 
+				required=False, 
+				choices=[',',';','|'],
+				default=',', 
+				help='Separator',
+				location = 'values'
+			)
+			# self.baseParser.add_argument(
+			# 	'form_file',  
+			# 	type=FileStorage, 
+			# 	location='form', 
+			# 	required=False, 
+			# 	help='any data file : tsv, csv, xml, xls, xlsx',
+			# )
 			# self.baseParser.add_argument(
 				# 'xls_file',  
 				# type=FileStorage, 
@@ -130,6 +149,35 @@ class RequestParserBuilder :
 				# required=False, 
 				# help='XML file',
 			# )
+			for field in [ 
+					'title', 
+					'description', 
+					'licence', 
+					'src_link'
+				] : 
+				self.baseParser.add_argument(
+					field,
+					location='form',
+				)
+			for field in [ 
+					'open_level_show', 
+					'open_level_edit', 
+				] : 
+				self.baseParser.add_argument(
+					field, 
+					location='form',
+					choices=open_level_choices, 
+					default="private"
+				)
+			for field in [ 
+					'src_type', 
+				] : 
+				self.baseParser.add_argument(
+					field, 
+					location='form',
+					choices=doc_src_type_list,
+					default='csv'
+				)
 
 	@property
 	def get_parser (self) : 

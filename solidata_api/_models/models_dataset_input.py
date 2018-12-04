@@ -108,7 +108,7 @@ class Dsi_infos :
 				**self.model_min, 
 				**self.model_in, 
 				**self.model_team_full, 
-				**self.model_uses 
+				**self.model_uses, 
 			}
 		)
 
