@@ -40,7 +40,7 @@ models 				= {
 
 
 @ns.route("/get_one/<string:doc_id>")
-class Dmf_infos(Resource):
+class Dmf_infos_(Resource):
 	
 	@ns.doc('dmf_infos')
 	# @ns.expect(query_arguments)
@@ -77,7 +77,8 @@ class Dmf_infos(Resource):
 			roles_for_complete = ["admin"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 
 
 		return results, response_code
@@ -128,6 +129,7 @@ class Dmf_List(Resource):
 			roles_for_complete = ["admin","staff"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 		
 		return results, response_code

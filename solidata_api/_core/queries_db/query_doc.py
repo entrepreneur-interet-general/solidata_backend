@@ -26,6 +26,10 @@ def Query_db_doc (
 		doc_id,
 		claims,
 		roles_for_complete 	= ["admin"],
+
+		slice_f_data		= True,
+		start_slice 		= 0,
+		end_slice			= 5 
 	):
 
 
@@ -54,7 +58,8 @@ def Query_db_doc (
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
 		document 		= db_collection.find_one( {"_id": ObjectId(doc_id) })
-		log.debug( "document : \n%s", pformat(document) )
+		log.debug( "document._id : %s", str(document._id) )
+		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
 		document		= None
@@ -65,7 +70,8 @@ def Query_db_doc (
 		"doc_id" 			: doc_id,
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
-		"is_member_of_team" : False
+		"is_member_of_team" : False,
+		"is_creator" 		: False
 	}
 
 	if document : 
@@ -73,7 +79,11 @@ def Query_db_doc (
 		### check doc's specs : public_auth, team...
 		doc_open_level_show = document["public_auth"]["open_level_show"]
 		log.debug( "doc_open_level_show : %s", doc_open_level_show )
-		
+
+		### get doc's owner infos
+		created_by_oid = document["log"]["created_by"]
+		log.debug( "created_by_oid : %s", str(created_by_oid) )
+
 		### get doc's team infos
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
@@ -82,14 +92,27 @@ def Query_db_doc (
 
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
-		if user_role in roles_for_complete or user_oid in team_oids : 
+		if user_role in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid : 
 			
 			document_out = marshal( document, models["model_doc_out"] )
 
 			# flag as member of doc's team
+			if user_oid == created_by_oid :
+				query_resume["is_creator"] = True
+
+			# flag as member of doc's team
 			if user_oid in team_oids :
 				query_resume["is_member_of_team"] = True
-		
+
+			# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
+			if document_type in ["dsi", "dsr", "dsr"] :
+    			
+				# slice f_data
+				if slice_f_data == False :
+					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+				else :
+					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_slice : end_slice ]
+
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
 		# for other users
@@ -97,15 +120,20 @@ def Query_db_doc (
 
 			if doc_open_level_show in ["commons", "open_data"] : 
 			
-				# for anonymous users --> minimum infos model
+				### for anonymous users --> minimum infos model
 				if user_id == None or user_role == "anonymous" : 
 					document_out = marshal( document, models["model_doc_min"] )
 				
-				# for registred users (guests) --> guest infos model
+				### for registred users (guests) --> guest infos model
 				else :
 					document_out = marshal( document, models["model_doc_guest_out"] )
-
-				log.debug( "document_out : \n %s", pformat(document_out) )
+					
+					# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
+					if document_type in ["dsi", "dsr", "dsr"] :
+    					
+						### slice f_data by default
+						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_slice : end_slice ]
+						
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 
 			else : 

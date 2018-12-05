@@ -65,6 +65,7 @@ class Dsi_infos :
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
 
+		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="dsi")
 
 		
 
@@ -83,6 +84,8 @@ class Dsi_infos :
 			'log'			: self.log , 
 			
 			'translations' 	: self.translations,
+
+			'data_raw'		: self.data_raw,
 
 
 		}

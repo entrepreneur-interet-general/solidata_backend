@@ -68,6 +68,7 @@ class Dmf_infos :
 
 		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="dmf")
 
+
 		self.model_id = {
 			'_id' 			: self._id,
 		}		

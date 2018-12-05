@@ -39,7 +39,7 @@ models 				= {
 
 
 @ns.route("/get_one/<string:doc_id>")
-class Prj_infos(Resource):
+class Prj_infos_(Resource):
 	
 	"""
 	PRJ infos
@@ -81,7 +81,8 @@ class Prj_infos(Resource):
 			roles_for_complete = ["admin"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 
 
 		return results, response_code
@@ -138,7 +139,8 @@ class Prj_List(Resource):
 			roles_for_complete = ["admin"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 		
 		return results, response_code
 

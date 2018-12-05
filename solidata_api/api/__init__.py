@@ -6,12 +6,14 @@ log.debug("... importing all common vars and libs from solidata.api root")
 import 	os
 from	copy import copy, deepcopy
 from  	datetime import datetime, timedelta
+import 	json
 from	bson import json_util
 from	bson.objectid import ObjectId
 from	bson.json_util import dumps
 # from 	werkzeug.datastructures import ImmutableMultiDict
 
 import 	pandas as pd
+import 	requests
 
 from 	flask 				import Blueprint, current_app as app, url_for, request, render_template
 

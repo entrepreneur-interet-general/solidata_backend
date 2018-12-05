@@ -41,7 +41,7 @@ models 				= {
 
 
 @ns.route("/get_one/<string:doc_id>")
-class Usr_infos(Resource):
+class Usr_infos_(Resource):
 	
 	@ns.doc('usr_infos')
 	# @ns.expect(query_arguments)
@@ -78,7 +78,8 @@ class Usr_infos(Resource):
 			roles_for_complete = ["admin"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 
 
 		return results, response_code
@@ -128,7 +129,8 @@ class Usr_List(Resource):
 			roles_for_complete = ["admin"],
 		)
 
-		log.debug("results : \n%s ", pformat(results) )
+		log.debug("results have been retrieved ... " )
+		# log.debug("results : \n%s ", pformat(results) )
 		
 		return results, response_code
 

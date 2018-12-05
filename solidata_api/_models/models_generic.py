@@ -50,7 +50,7 @@ def create_model_basic_infos( 	ns_,
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-### MODEL / PUBLIC AUTH 
+### MODEL / FIELD UPDATE
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_field_update(	ns_, 
 								model_name = "Field_update" 
@@ -475,6 +475,7 @@ def create_model_specs(	ns_,
 	if include_src_link == True : 
 		specs_base['src_link']		= src_link
 		specs_base['src_type']		= src_type
+		specs_base['src_parser']	= src_parser
 
 	### TO DO 
 	if include_inherit_from_dmt == True :
@@ -502,7 +503,7 @@ def create_model_data_raw( 	ns_,
 	data_raw_fields model
 	"""
 
-	if schema in ["dmf", "tag"] : 
+	if schema in ["dmf", "tag" ] : 
 
 		if schema == "tag" : 
 			schema_	= f_basics_tag
@@ -515,13 +516,28 @@ def create_model_data_raw( 	ns_,
 			description = "Data_raw"
 		)
 
-	if schema == "dsr" : 
-		data_raw_fields = fields.List(
-			RawData ,	
-			description = "List of the {}s on this document".format(model_name), 
-			default		= [] 
-		)
+	if schema in [ "dsi", "dsr", "dso" ] : 
+		
+		### JUST A DRAFT
+		# raw_nested_fields		= fields.Nested(
+		# 	ns_.model( model_name , { "arbitrary_field" : RawData} ),
+		# 	description = "Data_raw"
+		# )
 
+		# raw_field = fields.List(
+		# 	RawData ,	
+		# 	description = "List of the {}s on this document".format(model_name), 
+		# 	default		= [] 
+		# )
+
+		schema_ = {
+			# "f_data" 		: raw_field,
+			"f_col_headers" : f_coll_headers,
+		}
+		data_raw_fields		= fields.Nested(
+			ns_.model( model_name , schema_ ),
+			description = "Data_raw"
+		)
 	
 	return data_raw_fields
 

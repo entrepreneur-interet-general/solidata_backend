@@ -151,7 +151,7 @@ def Query_db_list (
 				else : 
 					documents_out_in_team = marshaller.marshal_as_guest( documents_in_team )
 
-	log.debug( "documents_out_in_team : \n %s", pformat(documents_out_in_team) )
+	# log.debug( "documents_out_in_team : \n %s", pformat(documents_out_in_team) )
 
 
 	### DOCS USER IS NOT IN TEAM
@@ -178,7 +178,7 @@ def Query_db_list (
 			else : 
 				documents_out_not_team = marshaller.marshal_as_guest( documents_not_team )
 
-	log.debug( "documents_out_not_team : \n %s", pformat(documents_out_not_team) )
+	# log.debug( "documents_out_not_team : \n %s", pformat(documents_out_not_team) )
 
 
 	### count results

@@ -14,7 +14,7 @@ from solidata_api._choices import *
 
 
 def get_file_extension(filename) : 
-	return filename.rsplit('.', 1)[1].lower()
+	return filename.rsplit('.', 1)[-1].lower()
 
 
 def allowed_file(filename):

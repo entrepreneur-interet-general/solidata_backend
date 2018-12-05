@@ -146,6 +146,13 @@ src_type 			= fields.String(
 										default			= "",
 										required		= False,
 									)
+src_parser 			= fields.String(
+										description		= "parser for an API response",
+										attribute		= "src_parser",
+										example			= "/example/of/path",
+										default			= "/",
+										required		= False,
+									)
 tag 				= fields.String(
 										description		= "tag about the document",
 										attribute		= "tag",
@@ -434,6 +441,18 @@ f_is_required		= fields.Boolean(
 										required		= False,
 										default			= False,
 									)
+
+f_coll_header		= fields.String(
+										description		= "columns headers",
+										attribute		= "f_coll_header",
+									)
+f_coll_headers		= fields.List(
+										f_coll_header,
+										example			= ["my_header"],
+										attribute		= "f_coll_headers",	
+										default			= []
+									)
+
 f_basics_tag 		= {
 	"f_code" 		: f_code,
 	"f_object" 		: f_object,
@@ -446,8 +465,18 @@ f_basics_dmf 		= {
 	"f_comments" 	: f_comments,
 	"f_is_required" : f_is_required,
 }
-# f_basics_dsr 			= {
+
+# f_basics_dsi_dsr_dso 		= {
 # 	"f_data" 		: f_code,
+# 	"f_col_headers" : f_code,
+# }
+# f_basics_dsr 		= {
+# 	"f_data" 		: f_code,
+# 	"f_col_headers" : f_code,
+# }
+# f_basics_dso 		= {
+# 	"f_data" 		: f_code,
+# 	"f_col_headers" : f_code,
 # }
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
