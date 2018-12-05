@@ -58,7 +58,7 @@ def Query_db_doc (
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
 		document 		= db_collection.find_one( {"_id": ObjectId(doc_id) })
-		log.debug( "document._id : %s", str(document._id) )
+		log.debug( "document._id : %s", str(document["_id"]) )
 		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400

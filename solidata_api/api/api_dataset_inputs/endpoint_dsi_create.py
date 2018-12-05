@@ -315,8 +315,10 @@ class DsiCreate(Resource):
 			df_headers = df.columns.values.tolist()
 			log.debug("df_headers : %s", pformat(df_headers))
 
-			### clean data from nan rows
+			### clean data from nan rows and change Nan to None
 			df = df.dropna(how="all")
+			# df = df.fillna(value="")
+			df = df.replace({np.nan:None})
 			print ("\n", df.head(5)) 
 
 			### get data as records

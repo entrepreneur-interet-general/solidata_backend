@@ -49,7 +49,7 @@ class Dsr_infos :
 
 		### SELF MODULES
 		self._id 					= oid_field
-		self.basic_infos 			= create_model_basic_infos(	ns_, 	model_name=model_type+"_infos")
+		self.basic_infos 			= create_model_basic_infos(	ns_, 	model_name=model_type+"_infos",			need_licence=True)
 		self.public_auth			= create_model_public_auth(	ns_, 	model_name=model_type+"_public_auth")
 		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs", 		include_src_link=True )
 		self.log					= create_model_log(			ns_, 	model_name=model_type+"_log",			include_is_running=True, include_is_loaded=True )

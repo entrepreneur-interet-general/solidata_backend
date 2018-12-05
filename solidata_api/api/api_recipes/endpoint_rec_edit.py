@@ -51,7 +51,7 @@ class Rec_edit(Resource):
 	@ns.doc('update_dmt')
 	@guest_required 
 	@ns.expect([model_update])
-	def put(self):
+	def put(self, doc_id):
 		"""
 		Update a new rec in db
 		"""
@@ -63,7 +63,7 @@ class Rec_edit(Resource):
 	@ns.doc('delete_rec')
 	@ns.response(204, 'document deleted')
 	@guest_required 
-	def delete(self):
+	def delete(self, doc_id):
 		"""
 		delete a rec in db
 

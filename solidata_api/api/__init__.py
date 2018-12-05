@@ -13,6 +13,7 @@ from	bson.json_util import dumps
 # from 	werkzeug.datastructures import ImmutableMultiDict
 
 import 	pandas as pd
+import 	numpy as np
 import 	requests
 
 from 	flask 				import Blueprint, current_app as app, url_for, request, render_template
