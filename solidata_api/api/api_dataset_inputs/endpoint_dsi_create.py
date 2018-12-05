@@ -311,8 +311,12 @@ class DsiCreate(Resource):
 			log.debug("finish to read file... ")
 			print (df.head(5)) 
 
-			### get columns headers
+			### get columns headers and prepare data
 			df_headers = df.columns.values.tolist()
+			df_headers = [ { 
+				"f_coll_header_val" 	: header,
+				"f_coll_header_text" 	: header,
+			} for header in df_headers ]
 			log.debug("df_headers : %s", pformat(df_headers))
 
 			### clean data from nan rows and change Nan to None

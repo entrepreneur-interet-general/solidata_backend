@@ -442,16 +442,20 @@ f_is_required		= fields.Boolean(
 										default			= False,
 									)
 
-f_coll_header		= fields.String(
-										description		= "columns headers",
-										attribute		= "f_coll_header",
+f_coll_header_val		= fields.String(
+										description		= "columns headers value",
+										attribute		= "f_coll_header_val",
 									)
-f_coll_headers		= fields.List(
-										f_coll_header,
-										example			= ["my_header"],
-										attribute		= "f_coll_headers",	
-										default			= []
+f_coll_header_text		= fields.String(
+										description		= "columns headers text",
+										attribute		= "f_coll_header_text",
 									)
+# f_coll_headers		= fields.List(
+# 										f_coll_header,
+# 										example			= ["my_header"],
+# 										attribute		= "f_coll_headers",	
+# 										default			= []
+# 									)
 
 f_basics_tag 		= {
 	"f_code" 		: f_code,
@@ -464,6 +468,10 @@ f_basics_dmf 		= {
 	"f_type" 		: f_type,
 	"f_comments" 	: f_comments,
 	"f_is_required" : f_is_required,
+}
+f_headers_ds 		= {
+	"f_coll_header_val"		: f_coll_header_val,
+	"f_coll_header_text"	: f_coll_header_text,
 }
 
 # f_basics_dsi_dsr_dso 		= {

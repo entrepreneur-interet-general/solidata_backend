@@ -71,13 +71,18 @@ class Prj_infos_(Resource):
 		claims 				= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 
+
 		### query db from generic function 		
+		query_args				= query_data_arguments.parse_args(request)
+		page_args				= pagination_arguments.parse_args(request)
 		results, response_code	= Query_db_doc (
 			ns, 
 			models,
 			document_type,
 			doc_id,
 			claims,
+			page_args,
+			query_args,
 			roles_for_complete = ["admin"],
 		)
 

@@ -27,6 +27,7 @@ class RequestParserBuilder :
 	def __init__(	self, 
 					add_pagination 	= False,
 					add_queries 	= False,
+					add_data_query 	= False,
 					add_files		= False
 				) : 
 
@@ -84,6 +85,41 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='find documents matching this list of oid to find (separated by commas)',
+				location = 'values'
+			)
+			self.baseParser.add_argument(
+				'only_stats', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='just retrieve the stats of the result',
+				location = 'values'
+			)
+
+		if add_data_query : 
+
+			self.baseParser.add_argument(
+				'q_value_str', 
+				action='append',
+				type=str, 
+				required=False, 
+				help='find data in documents matching this string in records',
+				location = 'values'
+			)
+			self.baseParser.add_argument(
+				'q_value_int', 
+				action='append',
+				type=int, 
+				required=False, 
+				help='find data in document matching this int in records',
+				location = 'values'
+			)
+			self.baseParser.add_argument(
+				'q_in_field', 
+				action='append',
+				type=str, 
+				required=False, 
+				help='find data in document matching this str as field in records',
 				location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -187,6 +223,9 @@ class RequestParserBuilder :
 q_arguments 		= RequestParserBuilder(add_queries=True)
 query_arguments		= q_arguments.get_parser
 log.debug(" query_arguments : \n%s ", pformat(query_arguments.args[0].__dict__ ))
+
+q_data 					= RequestParserBuilder(add_data_query=True)
+query_data_arguments	= q_data.get_parser
 
 q_files 			= RequestParserBuilder(add_files=True)
 file_parser			= q_files.get_parser

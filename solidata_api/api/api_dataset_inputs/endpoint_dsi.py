@@ -51,6 +51,8 @@ class Dsi_infos_(Resource):
 
 		>
 			--- needs   : dsi's oid <doc_id>
+			--- pagination args : page / per_page 
+			--- query args : q_value_str / q_value_int / q_in_field / only_stats
 			>>> returns : dsi data
 
 		"""
@@ -68,12 +70,16 @@ class Dsi_infos_(Resource):
 
 
 		### query db from generic function 		
+		query_args				= query_data_arguments.parse_args(request)
+		page_args				= pagination_arguments.parse_args(request)
 		results, response_code	= Query_db_doc (
 			ns, 
 			models,
 			document_type,
 			doc_id,
 			claims,
+			page_args,
+			query_args,
 			roles_for_complete = ["admin"],
 		)
 
@@ -96,7 +102,9 @@ class Dsi_List(Resource):
 		list of all tags in db
 
 		>
-			--- needs   : nothing - optionnal args : pagination, list of oid_dsi, list of tags, query
+			--- needs   : nothing - 
+			--- pagination args : page / per_page 
+			--- query args : q_title / q_description / tags / oids / only_stats
 			>>> returns : projects data as a list
 
 		"""

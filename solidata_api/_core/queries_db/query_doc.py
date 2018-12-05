@@ -25,11 +25,12 @@ def Query_db_doc (
 		document_type,
 		doc_id,
 		claims,
+		page_args,
+		query_args,
 		roles_for_complete 	= ["admin"],
 
 		slice_f_data		= True,
-		start_slice 		= 0,
-		end_slice			= 5 
+
 	):
 
 
@@ -55,6 +56,24 @@ def Query_db_doc (
 			log.debug("user_oid : %s", user_oid )
 			dft_open_level_show += ["commons"]
 
+	### get pagination arguments
+	log.debug('page_args : \n%s', pformat(page_args) )  
+	page 			= page_args.get('page', 	1 )
+	per_page 		= page_args.get('per_page', 0 )
+	if per_page == 0 :
+		start_index		= ( page - 1 ) * per_page 
+		end_index 		= start_index + per_page
+	else : 
+		start_index		= 0 
+		end_index 		= 5	
+
+	### get query arguments
+	q_title 		= query_args.get('q_title', 		None )
+	q_description 	= query_args.get('q_description', 	None )
+	q_oid_list		= query_args.get('oids',			None )
+	q_oid_tags		= query_args.get('tags',			None )
+	q_only_stats	= query_args.get('only_stats',		False )
+
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
 		document 		= db_collection.find_one( {"_id": ObjectId(doc_id) })
@@ -70,8 +89,10 @@ def Query_db_doc (
 		"doc_id" 			: doc_id,
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
+		"page_args"			: page_args,
+		"query_args"		: query_args,
 		"is_member_of_team" : False,
-		"is_creator" 		: False
+		"is_creator" 		: False,
 	}
 
 	if document : 
@@ -111,7 +132,7 @@ def Query_db_doc (
 				if slice_f_data == False :
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 				else :
-					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_slice : end_slice ]
+					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_index : end_index ]
 
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
@@ -128,11 +149,11 @@ def Query_db_doc (
 				else :
 					document_out = marshal( document, models["model_doc_guest_out"] )
 					
-					# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
-					if document_type in ["dsi", "dsr", "dsr"] :
+					# append "f_data" if doc is in ["dsi", "dsr", "dso"]
+					if document_type in ["dsi", "dsr", "dso"] :
     					
 						### slice f_data by default
-						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_slice : end_slice ]
+						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_index : end_index ]
 						
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 

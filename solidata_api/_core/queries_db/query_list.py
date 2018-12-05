@@ -60,8 +60,8 @@ def Query_db_list (
 	log.debug('dft_open_level_show : \n%s', pformat(dft_open_level_show) )  
 
 
+	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
-
 	page 			= page_args.get('page', 	1 )
 	per_page 		= page_args.get('per_page', 0 )
 	if per_page == 0 :
@@ -71,6 +71,7 @@ def Query_db_list (
 		start_index		= 0 
 		end_index 		= 0	
 
+	### get query arguments
 	q_title 		= query_args.get('q_title', 		None )
 	q_description 	= query_args.get('q_description', 	None )
 	q_oid_list		= query_args.get('oids',			None )

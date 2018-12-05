@@ -530,8 +530,12 @@ def create_model_data_raw( 	ns_,
 		# 	default		= [] 
 		# )
 
+		f_coll_headers = fields.Nested(
+			ns_.model( model_name , f_headers_ds ),
+			description = "Coll_headers"
+		)
 		schema_ = {
-			# "f_data" 		: raw_field,
+			# "f_data" 		: raw_field, ### --> ds f_data is not marshallable 
 			"f_col_headers" : f_coll_headers,
 		}
 		data_raw_fields		= fields.Nested(
