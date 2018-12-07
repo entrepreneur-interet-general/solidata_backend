@@ -92,7 +92,8 @@ class Marshaller :
 
 		ns 					= self.ns
 		self.results_list 	= results_list
-		log.debug('results_list : \n%s', pformat(results_list[:1]) )  
+		log.debug('results_list ...' )  
+		# log.debug('results_list : \n%s', pformat(results_list[:1]) )  
 		
 		@ns.marshal_with(self.model_doc_out)
 		def get_results():
@@ -103,7 +104,8 @@ class Marshaller :
 	
 		ns 					= self.ns
 		self.results_list 	= results_list
-		log.debug('results_list : \n%s', pformat(results_list) )  
+		log.debug('results_list ...' )  
+		# log.debug('results_list : \n%s', pformat(results_list[:1]) )  
 		
 		@ns.marshal_with(self.model_doc_guest_out)
 		def get_results():
@@ -114,7 +116,8 @@ class Marshaller :
 	
 		ns 					= self.ns
 		self.results_list 	= results_list
-		log.debug('results_list : \n%s', pformat(results_list) )  
+		log.debug('results_list ...' )  
+		# log.debug('results_list : \n%s', pformat(results_list[:1]) )  
 		
 		@ns.marshal_with(self.model_doc_min)
 		def get_results():

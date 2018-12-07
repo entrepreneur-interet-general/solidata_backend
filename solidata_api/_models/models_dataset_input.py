@@ -87,7 +87,6 @@ class Dsi_infos :
 
 			'data_raw'		: self.data_raw,
 
-
 		}
 		self.model_team_full = {
 			'team'			: self.team ,

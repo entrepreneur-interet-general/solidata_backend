@@ -63,13 +63,13 @@ def Query_db_list (
 	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
 	page 			= page_args.get('page', 	1 )
-	per_page 		= page_args.get('per_page', 0 )
-	if per_page == 0 :
+	per_page 		= page_args.get('per_page', 10 )
+	if page != 1 :
 		start_index		= ( page - 1 ) * per_page 
 		end_index 		= start_index + per_page
 	else : 
-		start_index		= 0 
-		end_index 		= 0	
+		start_index		= page - 1
+		end_index 		= per_page - 1	
 
 	### get query arguments
 	q_title 		= query_args.get('q_title', 		None )

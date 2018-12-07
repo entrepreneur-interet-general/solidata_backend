@@ -123,11 +123,27 @@ class RequestParserBuilder :
 				location = 'values'
 			)
 			self.baseParser.add_argument(
+				'only_f_data', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='just retrieve the f_data of the result',
+				location = 'values'
+			)
+			self.baseParser.add_argument(
 				'only_stats', 
 				type=inputs.boolean, 
 				required=False, 
 				default=False, 
 				help='just retrieve the stats of the result',
+				location = 'values'
+			)
+			self.baseParser.add_argument(
+				'slice_f_data', 
+				type=inputs.boolean, 
+				required=False, 
+				default=True, 
+				help='just retrieve a slice of the f_data',
 				location = 'values'
 			)
 

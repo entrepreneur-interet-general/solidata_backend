@@ -29,8 +29,6 @@ def Query_db_doc (
 		query_args,
 		roles_for_complete 	= ["admin"],
 
-		slice_f_data		= True,
-
 	):
 
 
@@ -57,22 +55,59 @@ def Query_db_doc (
 			dft_open_level_show += ["commons"]
 
 	### get pagination arguments
-	log.debug('page_args : \n%s', pformat(page_args) )  
+	log.debug('page_args : %s', pformat(page_args) )  
 	page 			= page_args.get('page', 	1 )
-	per_page 		= page_args.get('per_page', 0 )
-	if per_page == 0 :
+	per_page 		= page_args.get('per_page', 10 )
+	if page != 1 :
 		start_index		= ( page - 1 ) * per_page 
 		end_index 		= start_index + per_page
 	else : 
-		start_index		= 0 
-		end_index 		= 5	
+		start_index		= 0
+		end_index 		= per_page	
 
 	### get query arguments
-	q_title 		= query_args.get('q_title', 		None )
-	q_description 	= query_args.get('q_description', 	None )
-	q_oid_list		= query_args.get('oids',			None )
-	q_oid_tags		= query_args.get('tags',			None )
-	q_only_stats	= query_args.get('only_stats',		False )
+	q_value_str 	= query_args.get('q_value_str', 	None )
+	q_value_int 	= query_args.get('q_value_int', 	None )
+	q_in_field		= query_args.get('q_in_field',		None )
+	only_f_data		= query_args.get('only_f_data',		False )
+	only_stats		= query_args.get('only_stats',		False )
+	slice_f_data	= query_args.get('slice_f_data',	True )
+
+
+	### TO FINISH !!!
+	### prepare pipelines 
+	# pipeline_queries		= {
+	# 	"$or" : [
+	# 		{ "infos.title" : q_value_str },
+	# 	]
+	# }
+	# pipeline_accessible 	= {
+	# 	"public_auth.open_level_show" : { 
+	# 		"$in" : dft_open_level_show,
+	# 	} 
+	# }
+	# pipeline_user_is_in_team 	= {
+	# 	"team" : { 
+	# 		"$elemMatch" : {
+	# 			"oid_usr" : user_oid
+	# 		}
+	# 	} 
+	# }
+	# pipeline_user_not_in_team 	= { 
+	# 	"public_auth.open_level_show" : { 
+	# 		"$in" : dft_open_level_show,
+	# 	},
+	# 	"team" : { 
+	# 		"$not" : {
+	# 			"$elemMatch" : {
+	# 				"oid_usr" : {
+	# 					"$in" : [ user_oid ]
+	# 				}
+	# 			}
+	# 		}
+	# 	} 
+	# }
+
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
@@ -127,12 +162,25 @@ def Query_db_doc (
 
 			# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 			if document_type in ["dsi", "dsr", "dsr"] :
-    			
+			
+
+
+
+				if document_type == 'dsi' :
+					### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
+					pass
+
+
+
+
 				# slice f_data
 				if slice_f_data == False :
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 				else :
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_index : end_index ]
+
+				# add total of items within f_data in response
+				document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
 
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
@@ -151,9 +199,22 @@ def Query_db_doc (
 					
 					# append "f_data" if doc is in ["dsi", "dsr", "dso"]
 					if document_type in ["dsi", "dsr", "dso"] :
-    					
+	
+
+
+						if document_type == 'dsi' :
+							### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 	
+							pass
+
+
+
+
+
 						### slice f_data by default
 						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"][ start_index : end_index ]
+					
+						# add total of items within f_data in response
+						document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
 						
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 
