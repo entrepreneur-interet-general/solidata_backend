@@ -47,7 +47,7 @@ class RequestParserBuilder :
 				'per_page', 
 				type=int, 
 				required=False, 
-				choices=[0, 2, 5, 10, 20, 30, 40, 50, 100],
+				choices=[0, 2, 5, 10, 20, 25, 50, 100],
 				default=10, 
 				help='Results per page',
 				# location = 'values'
@@ -151,6 +151,13 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='sort data in document according this field in records',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'descending', 
+				type=inputs.boolean, 
+				required=False, 
+				help='sort data in document ascending/descending',
 				# location = 'values'
 			)
 

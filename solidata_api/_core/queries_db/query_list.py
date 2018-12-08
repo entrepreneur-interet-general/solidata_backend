@@ -14,6 +14,8 @@ from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 
 
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL FUNCTION TO QUERY LIST FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -134,6 +136,8 @@ def Query_db_list (
 		cursor_in_team 			= db_collection.find(pipeline_user_is_in_team)
 		cursor_in_team_count	= cursor_in_team.count()
 		log.debug('cursor_in_team_count : %s', cursor_in_team_count) 
+		cursor_in_team			= cursor_in_team.sort(  [ ("infos.title", 1)]  )
+		
 		if q_only_stats == False : 
 			documents_in_team		= list(cursor_in_team)
 			# log.debug( "documents_in_team : \n %s", pformat(documents_in_team) )
@@ -159,6 +163,9 @@ def Query_db_list (
 	# retrieve docs from db
 	cursor_not_team			= db_collection.find(pipeline_user_not_in_team)
 	cursor_not_team_count	= cursor_not_team.count()
+	log.debug('cursor_not_team_count : %s', cursor_not_team_count) 
+	cursor_not_team			= cursor_not_team.sort(  [ ("infos.title", 1)]  )
+
 	if q_only_stats == False : 
 		documents_not_team	= list(cursor_not_team)
 		# log.debug( "documents_not_team : \n %s", pformat(documents_not_team) )
