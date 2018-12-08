@@ -47,31 +47,35 @@ def Query_db_doc (
 	response_code		= 200
 
 	if claims or claims!={}  :
-		user_role 		= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role 	= claims["auth"]["role"]
+		user_id	 	= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 		= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
 			dft_open_level_show += ["commons"]
 
 	### get pagination arguments
-	log.debug('page_args : %s', pformat(page_args) )  
-	page 			= page_args.get('page', 	1 )
-	per_page 		= page_args.get('per_page', 10 )
+	log.debug('page_args : \n%s', pformat(page_args) )  
+	page 		= page_args.get('page', 	1 )
+	per_page 	= page_args.get('per_page', 10 )
 	if page != 1 :
 		start_index		= ( page - 1 ) * per_page 
 		end_index 		= start_index + per_page
 	else : 
 		start_index		= 0
 		end_index 		= per_page	
+	log.debug('start_index : %s', start_index )  
+	log.debug('end_index   : %s', end_index )  
 
 	### get query arguments
+	log.debug('query_args : \n%s', pformat(query_args) )  
 	q_value_str 	= query_args.get('q_value_str', 	None )
 	q_value_int 	= query_args.get('q_value_int', 	None )
 	q_in_field		= query_args.get('q_in_field',		None )
 	only_f_data		= query_args.get('only_f_data',		False )
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
+	sort_by			= query_args.get('sort_by',			None )
 
 
 	### TO FINISH !!!
@@ -163,15 +167,9 @@ def Query_db_doc (
 			# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 			if document_type in ["dsi", "dsr", "dsr"] :
 			
-
-
-
-				if document_type == 'dsi' :
-					### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
-					pass
-
-
-
+				# if document_type == 'dsi' :
+				# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
+				# 	pass
 
 				# slice f_data
 				if slice_f_data == False :

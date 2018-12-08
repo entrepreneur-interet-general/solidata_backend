@@ -41,7 +41,7 @@ class RequestParserBuilder :
 				required=False, 
 				default=1, 
 				help='Page number',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'per_page', 
@@ -50,26 +50,26 @@ class RequestParserBuilder :
 				choices=[0, 2, 5, 10, 20, 30, 40, 50, 100],
 				default=10, 
 				help='Results per page',
-				location = 'values'
+				# location = 'values'
 			)
 
 		if add_queries : 
 
 			self.baseParser.add_argument(
 				'q_title', 
-				action='append',
+				action='append', ### multiple values
 				type=str, 
 				required=False, 
 				help='find documents matching this string in the title',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'q_description', 
-				action='append',
+				action='append', ### multiple values
 				type=str, 
 				required=False, 
 				help='find documents matching this string in the description',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'tags', 
@@ -77,15 +77,15 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='find documents matching this list of tags oid (separated by commas)',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'oids', 
-				action='split',
+				action='split', ### expects string where values are separated by commas
 				type=str, 
 				required=False, 
 				help='find documents matching this list of oid to find (separated by commas)',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'only_stats', 
@@ -93,7 +93,7 @@ class RequestParserBuilder :
 				required=False, 
 				default=False, 
 				help='just retrieve the stats of the result',
-				location = 'values'
+				# location = 'values'
 			)
 
 		if add_data_query : 
@@ -104,7 +104,7 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='find data in documents matching this string in records',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'q_value_int', 
@@ -112,7 +112,7 @@ class RequestParserBuilder :
 				type=int, 
 				required=False, 
 				help='find data in document matching this int in records',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'q_in_field', 
@@ -120,7 +120,7 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='find data in document matching this str as field in records',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'only_f_data', 
@@ -128,7 +128,7 @@ class RequestParserBuilder :
 				required=False, 
 				default=False, 
 				help='just retrieve the f_data of the result',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'only_stats', 
@@ -136,7 +136,7 @@ class RequestParserBuilder :
 				required=False, 
 				default=False, 
 				help='just retrieve the stats of the result',
-				location = 'values'
+				# location = 'values'
 			)
 			self.baseParser.add_argument(
 				'slice_f_data', 
@@ -144,7 +144,14 @@ class RequestParserBuilder :
 				required=False, 
 				default=True, 
 				help='just retrieve a slice of the f_data',
-				location = 'values'
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'sort_by', 
+				type=str, 
+				required=False, 
+				help='sort data in document according this field in records',
+				# location = 'values'
 			)
 
 		if add_files : 
