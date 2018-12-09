@@ -74,7 +74,7 @@ class DsiCreate(Resource):
 			"specs"			: {
 				"doc_type" : "dsi",
 				"src_type" : payload["src_type"],
-				"src_link" : payload["src_link"]
+				"src_link" : payload["src_link"],
 			},
 		}
 		### marshall infos with dsi complete model
@@ -159,6 +159,10 @@ class DsiCreate(Resource):
 					log.debug("trying to read file / sep : %s", sep)
 					df = read_file_with_pd(uploaded_file, file_extension, sep=sep )
 					df_is_created = True
+					
+					### add src_sep info
+					new_dsi["specs"]["src_sep"] = payload['csv_sep']
+					new_dsr["specs"]["src_sep"] = payload['csv_sep']
 
 				### DSI already exists
 				else : 
@@ -283,7 +287,11 @@ class DsiCreate(Resource):
 					### create dataframe
 					df = read_dict_with_pd(api_data)
 					df_is_created = True
-				
+
+					### delete src_sep info
+					new_dsi["specs"]["src_sep"] = None
+					new_dsr["specs"]["src_sep"] = None
+
 				### no data detected | API request failed
 				else : 
 					log.info("-!- request to API failed ...")

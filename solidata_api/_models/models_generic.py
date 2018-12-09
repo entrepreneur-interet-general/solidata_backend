@@ -476,6 +476,7 @@ def create_model_specs(	ns_,
 		specs_base['src_link']		= src_link
 		specs_base['src_type']		= src_type
 		specs_base['src_parser']	= src_parser
+		specs_base['src_sep']		= src_sep
 
 	### TO DO 
 	if include_inherit_from_dmt == True :

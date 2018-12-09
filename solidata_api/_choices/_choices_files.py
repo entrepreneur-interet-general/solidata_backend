@@ -22,3 +22,7 @@ authorized_mimetype = [
 	"text/csv", "application/csv", "text/x-csv",
 	"application/xml",
 ]
+
+authorized_separators = [
+	",", ";", "|"
+]

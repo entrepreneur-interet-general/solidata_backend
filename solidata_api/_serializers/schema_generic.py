@@ -153,6 +153,14 @@ src_parser 			= fields.String(
 										default			= "/",
 										required		= False,
 									)
+src_sep 			= fields.String(
+										description		= "separator for a CSV file",
+										attribute		= "src_sep",
+										example			= ",",
+										default			= ",",
+										enum			= authorized_separators,
+										required		= False,
+									)
 tag 				= fields.String(
 										description		= "tag about the document",
 										attribute		= "tag",

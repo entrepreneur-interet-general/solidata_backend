@@ -21,27 +21,16 @@ import operator
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : https://stackoverflow.com/questions/45737561/how-to-ignore-none-values-with-operator-itemgetter-when-sorting-a-list-of-dicts 
 
-def weighted(item, key_val):
-	
-	if key_val in item :
-		if item[key_val] is None:
-			# return -float('inf')
-			return ''
-		else:
-			if type(item[key_val]) == list and item[key_val] != []:
-				# log.debug('-- item : %s', pformat(item) )  
-				return str(item[key_val][0]) if item[key_val][0] is not None else ''
-			else : 
-				return str(item[key_val])
+def weighted(nb):
+	if nb is None:
+    		return -float('inf')
 	else:
-		# log.debug('-- key_val not in item : %s', pformat(key_val) )  
-		# return -float('inf')
-		return ''
+		return nb
 	# return -float('inf') if nb is None else nb
 
-def sort_list_of_dicts(list_to_sort, key_value, is_reverse=False) :
+def sort_list_of_dicts(list_to_sort, key_value, is_reverse=True) :
 	# return sorted(list_to_sort, key = lambda i: i[key_value]) 
-	return sorted(list_to_sort, key=lambda i:weighted(i, key_value), reverse=is_reverse)
+	return sorted(list_to_sort, key=lambda i:weighted(i[key_value]), reverse=is_reverse)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
@@ -105,7 +94,6 @@ def Query_db_doc (
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
 	sort_by			= query_args.get('sort_by',			None )
-	descending		= query_args.get('descending',		False )
 
 
 	### TO FINISH !!!
@@ -214,7 +202,7 @@ def Query_db_doc (
 					log.debug( 'sort_by : %s', sort_by )
 					# NOT WORKING : document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"].sort(key=operator.itemgetter(sort_by))
 					# NOT WORKING WITH MISSING FIELDS : document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
-					document_out["data_raw"]["f_data"] = sort_list_of_dicts(document_out["data_raw"]["f_data"], sort_by, is_reverse=descending)
+					document_out["data_raw"]["f_data"] = sort_list_of_dicts(document_out["data_raw"]["f_data"], sort_by)
 					log.debug( '...document_out sorted' )
 					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
@@ -273,6 +261,12 @@ def Query_db_doc (
 				response_code	= 401
 				### unvalid credentials / empty response
 				message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
+
+		
+		log.debug( "document_out['infos'] : \n%s", pformat(document_out['infos']) )
+		log.debug( "document_out['public_auth'] : \n%s", pformat(document_out['public_auth']) )
+		log.debug( "document_out['specs'] : \n%s", pformat(document_out['specs']) )
+
 
 	else : 
 		### no document / empty response
