@@ -35,6 +35,61 @@ mongo_licences 				= mongo.db[ app.config["MONGO_COLL_LICENCES"] ]
 mongo_jwt_blacklist 		= mongo.db[ app.config["MONGO_COLL_JWT_BLACKLIST"] ]
 
 
+log.debug(">>> _core.queries_db.__init__.py / INDEXING COLLECTIONS ... " )
+
+### drop previous text indexes (only one text index per collection)
+main_text_fields_to_drop = '$**_text'
+try :
+	mongo_tags.drop_index(main_text_fields_to_drop)
+	mongo_users.drop_index(main_text_fields_to_drop)
+	mongo_projects.drop_index(main_text_fields_to_drop)
+	mongo_datamodels_templates.drop_index(main_text_fields_to_drop)
+	mongo_datamodels_fields.drop_index(main_text_fields_to_drop)
+	mongo_datasets_inputs.drop_index(main_text_fields_to_drop)
+	mongo_datasets_raws.drop_index(main_text_fields_to_drop)
+	mongo_recipes.drop_index(main_text_fields_to_drop)
+	mongo_datasets_outputs.drop_index(main_text_fields_to_drop)
+	mongo_licences.drop_index(main_text_fields_to_drop)
+	mongo_jwt_blacklist.drop_index(main_text_fields_to_drop)
+except:
+	pass
+
+# # create index for every collection needing it  
+# # cf : https://api.mongodb.com/python/current/api/pymongo/collection.html?highlight=drop#pymongo.collection.Collection.create_index
+# # cf : https://code.tutsplus.com/tutorials/full-text-search-in-mongodb--cms-24835 
+# # cf (in open scraper) : self.coll_data.create_index([('$**', 'text')])
+all_text_fields_index_name	= "all_fields"
+all_text_fields_to_index 	= [('$**', 'text')]
+
+main_text_fields_index_name	 = "main_fields"
+main_text_fields_to_index = [
+	("infos.title"			,"text") ,
+	("infos.description"	,"text") ,
+	("infos.licence"		,"text") ,
+	("data_raw.f_code"		,"text") ,
+	("data_raw.f_object"	,"text") ,
+	("data_raw.f_code"		,"text") ,
+	("data_raw.f_comments"	,"text") ,
+	("data_raw.f_data"		,"text") ,
+	("data_raw.f_code"		,"text") ,
+]
+
+log.debug(">>> _core.queries_db.__init__.py / INDEXING COLLECTIONS : all fields... " )
+mongo_datasets_inputs.create_index(		all_text_fields_to_index, name=all_text_fields_index_name) 	### index all fields
+mongo_datasets_raws.create_index(		all_text_fields_to_index, name=all_text_fields_index_name)		### index all fields
+mongo_datasets_outputs.create_index(	all_text_fields_to_index, name=all_text_fields_index_name) 	### index all fields
+
+log.debug(">>> _core.queries_db.__init__.py / INDEXING COLLECTIONS : main fields... " )
+mongo_users.create_index(					main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_tags.create_index(					main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_projects.create_index(				main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_datamodels_templates.create_index(	main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_datamodels_fields.create_index(		main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_recipes.create_index(					main_text_fields_to_index, name=main_text_fields_index_name)
+
+mongo_licences.create_index(		main_text_fields_to_index, name=main_text_fields_index_name)
+mongo_jwt_blacklist.create_index(	main_text_fields_to_index, name=main_text_fields_index_name)
+
 
 db_dict = {
 					"mongo_tags"					: mongo_tags,

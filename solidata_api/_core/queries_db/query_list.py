@@ -4,6 +4,8 @@
 _core/queries_db/query_list.py  
 """
 
+import re
+
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_list.py ..." )
 
@@ -61,7 +63,15 @@ def Query_db_list (
 				dft_open_level_show += ["private","collective"]
 	log.debug('dft_open_level_show : \n%s', pformat(dft_open_level_show) )  
 
-
+	### sum up all query arguments
+	query_resume = {
+		"document_type"		: document_type,	
+		"user_id" 			: user_id,
+		"user_role"			: user_role,
+		"page_args"			: page_args,
+		"query_args"		: query_args,
+	}
+	
 	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
 	page 			= page_args.get('page', 	1 )
@@ -74,59 +84,117 @@ def Query_db_list (
 		end_index 		= per_page - 1	
 
 	### get query arguments
-	q_title 		= query_args.get('q_title', 		None )
-	q_description 	= query_args.get('q_description', 	None )
+	log.debug('query_args : \n%s', pformat(query_args) )  
+	# q_title 		= query_args.get('q_title', 		None )
+	# q_description = query_args.get('q_description', 	None )
+	q_search_for 	= query_args.get('search_for', 		None )
 	q_oid_list		= query_args.get('oids',			None )
-	q_oid_tags		= query_args.get('tags',			None )
+	# q_oid_tags		= query_args.get('tags',			None )
 	q_only_stats	= query_args.get('only_stats',		False )
+	q_ignore_team	= query_args.get('ignore_teams',	False )
 
-	### sum up all query arguments
-	query_resume = {
-		"document_type"		: document_type,	
-		"user_id" 			: user_id,
-		"user_role"			: user_role,
-		"page_args"			: page_args,
-		"query_args"		: query_args,
-	}
 
-	### TO FINISH !!!
-	### prepare pipelines 
-	pipeline_queries		= {
-		"$or" : [
-			{ "infos.title" : q_title },
-			{ "infos.description" : q_description },
-		]
+	### pipelines for basic query
+	pipeline_queries 	= {}
+	pipe_concat			= []
+	do_query_pipe 		= False
+
+
+	# if q_oid_list != None :
+	# 	q_oid_list_ = [ ObjectId(oid) for oid in q_oid_list ]
+	# else :
+	# 	q_oid_list_ = None
+	# log.debug('q_oid_list_ : %s', q_oid_list_) 
+
+	### search by oids 
+	if q_oid_list != None : 
+		if q_oid_list != []:  
+			log.debug('q_oid_list : %s', q_oid_list) 
+			do_query_pipe 		= True
+
+			q_oid_list_ 		= [ ObjectId(oid) for oid in q_oid_list ]
+			log.debug('q_oid_list_ : %s', q_oid_list_) 
+
+			pipe_oids 			= { "_id" : { "$in" : q_oid_list_ } }
+			# pipe_oids 			= { "_id" : { "$in" : q_oid_list } }
+			log.debug('pipe_oids : %s', pipe_oids) 
+
+			pipe_concat.append(pipe_oids)
+			log.debug('pipe_concat + oid_list : %s', pipe_concat) 
+	
+	# if q_title != None : 
+	# 	do_query_pipe 		= True
+	# 	pipe_title 			= { "infos.title" : q_title }
+	# 	pipe_concat.append(pipe_title)
+	
+	# if q_description != None : 
+	# 	do_query_pipe 		= True
+	# 	pipe_description 	= { "infos.description" : q_description }
+	# 	pipe_concat.append(pipe_description)
+
+	### search by string in indexed fields 
+	if q_search_for != None : 
+		if q_search_for != [] :
+			log.debug('q_search_for : %s', q_search_for) 
+			do_query_pipe 		= True
+			search_words 		= [ '\"' + word + '\"' for word in search_words ]
+			pipe_search_for 	= { '$text' : { '$search' : u' '.join(search_words) } }
+			pipe_concat.append(pipe_search_for)
+			log.debug('pipe_concat + search_for: %s', pipe_concat) 
+
+	### build query
+	if do_query_pipe : 
+		log.debug('--> pipe_concat : %s', pipe_concat) 
+		pipeline_queries = {
+			"$or" : [ q for q in pipe_concat ]
+		}
+	log.debug('pipeline_queries : \n%s', pformat(pipeline_queries) )  
+
+
+	### check query results at this point
+	cursor_queries			= db_collection.find(pipeline_queries)
+	cursor_queries_count	= cursor_queries.count()
+	log.debug('cursor_queries_count : %s', cursor_queries_count) 
+
+
+	### pipelines for : accessible / in_tem / not_in_team
+	pipeline_accessible 	= { 
+		**pipeline_queries, 
+		**{	"public_auth.open_level_show" : { 
+				"$in" : dft_open_level_show,
+			} 
+		}
 	}
-	pipeline_accessible 	= {
-		"public_auth.open_level_show" : { 
-			"$in" : dft_open_level_show,
-		} 
-	}
-	pipeline_user_is_in_team 	= {
-		"team" : { 
-			"$elemMatch" : {
-				"oid_usr" : user_oid
-			}
-		} 
+	pipeline_user_is_in_team 	= { 
+		**pipeline_queries, 
+		**{	"team" : { 
+				"$elemMatch" : {
+					"oid_usr" : user_oid
+				}
+			} 
+		}
 	}
 	pipeline_user_not_in_team 	= { 
-		"public_auth.open_level_show" : { 
-			"$in" : dft_open_level_show,
-		},
-		"team" : { 
-			"$not" : {
-				"$elemMatch" : {
-					"oid_usr" : {
-						"$in" : [ user_oid ]
+		**pipeline_queries, 
+		**{ "public_auth.open_level_show" : { 
+				"$in" : dft_open_level_show,
+			},
+			"team" : { 
+				"$not" : {
+					"$elemMatch" : {
+						"oid_usr" : {
+							"$in" : [ user_oid ]
+						}
 					}
 				}
-			}
-		} 
+			} 
+		}
 	}
 
 	### DOCS ACCESSIBLE
 	# retrieve docs from db
 	cursor_accessible			= db_collection.find(pipeline_accessible)
+	# cursor_accessible			= cursor_queries.find(pipeline_accessible)
 	cursor_accessible_count		= cursor_accessible.count()
 	log.debug('cursor_accessible_count : %s', cursor_accessible_count) 
 
@@ -134,6 +202,7 @@ def Query_db_list (
 	# retrieve docs from db
 	if user_role != "anonymous" : 
 		cursor_in_team 			= db_collection.find(pipeline_user_is_in_team)
+		# cursor_in_team 			= cursor_queries.find(pipeline_user_is_in_team)
 		cursor_in_team_count	= cursor_in_team.count()
 		log.debug('cursor_in_team_count : %s', cursor_in_team_count) 
 		cursor_in_team			= cursor_in_team.sort(  [ ("infos.title", 1)]  )
@@ -162,6 +231,7 @@ def Query_db_list (
 	### DOCS USER IS NOT IN TEAM
 	# retrieve docs from db
 	cursor_not_team			= db_collection.find(pipeline_user_not_in_team)
+	# cursor_not_team			= cursor_queries.find(pipeline_user_not_in_team)
 	cursor_not_team_count	= cursor_not_team.count()
 	log.debug('cursor_not_team_count : %s', cursor_not_team_count) 
 	cursor_not_team			= cursor_not_team.sort(  [ ("infos.title", 1)]  )
@@ -201,16 +271,37 @@ def Query_db_list (
 	### prepare a response message
 	message  = "dear user, there is the list of {}s you can access given your credentials".format(document_type_full)
 
+	### concatenate data into one single list if : q_ignore_team == True
+	if q_ignore_team : 
+
+		log.debug('q_ignore_team concatenating lists...') 
+
+		if cursor_in_team_count > 0 : 
+			data_in = documents_out_in_team
+		else :
+			data_in = []
+		
+		if cursor_not_team_count > 0 : 
+			data_not = documents_out_not_team
+		else :
+			data_not = []
+		
+		data = data_in + data_not
+		log.debug('q_ignore_team concatenating lists / finished ') 
+		# log.debug( "data : \n %s", pformat(data) )
+
+
+	else : 
+		data = {
+			"docs_user_is_in_team" 	: documents_out_in_team , 
+			"docs_user_not_in_team" : documents_out_not_team , 
+		}
+		# log.debug( "data : \n %s", pformat(data) )
+
 
 	return {
 				"msg" 			: message,
 				"counts"		: counts ,
-
-				"data"			: {
-					"docs_user_is_in_team" 	: documents_out_in_team , 
-					"docs_user_not_in_team" : documents_out_not_team , 
-				}, 
-
+				"data"			: data, 
 				"query"			: query_resume,
-
 			}, response_code

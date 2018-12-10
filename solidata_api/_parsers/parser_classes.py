@@ -28,7 +28,7 @@ class RequestParserBuilder :
 					add_pagination 	= False,
 					add_queries 	= False,
 					add_data_query 	= False,
-					add_files		= False
+					add_files		= False,
 				) : 
 
 		self.baseParser = reqparse.RequestParser()
@@ -55,20 +55,28 @@ class RequestParserBuilder :
 
 		if add_queries : 
 
+			# self.baseParser.add_argument(
+			# 	'q_title', 
+			# 	# action='append', ### multiple values
+			# 	type=str, 
+			# 	required=False, 
+			# 	help='find documents matching this string in the title',
+			# 	# location = 'values'
+			# )
+			# self.baseParser.add_argument(
+			# 	'q_description', 
+			# 	# action='append', ### multiple values
+			# 	type=str, 
+			# 	required=False, 
+			# 	help='find documents matching this string in the description',
+			# 	# location = 'values'
+			# )
 			self.baseParser.add_argument(
-				'q_title', 
-				action='append', ### multiple values
+				'search_for', 
+				action='append',
 				type=str, 
 				required=False, 
-				help='find documents matching this string in the title',
-				# location = 'values'
-			)
-			self.baseParser.add_argument(
-				'q_description', 
-				action='append', ### multiple values
-				type=str, 
-				required=False, 
-				help='find documents matching this string in the description',
+				help='find data in documents matching this string in records',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -95,11 +103,27 @@ class RequestParserBuilder :
 				help='just retrieve the stats of the result',
 				# location = 'values'
 			)
+			self.baseParser.add_argument(
+				'ignore_teams', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='if true retrieve results mixing docs user is in the team or not',
+				# location = 'values'
+			)
 
 		if add_data_query : 
 
 			self.baseParser.add_argument(
-				'q_value_str', 
+				'token', 
+				# action='append', ### multiple values
+				type=str, 
+				required=False, 
+				help='add token to slug to be able to retrieve more complete data from a DSO',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'search_for', 
 				action='append',
 				type=str, 
 				required=False, 
@@ -107,19 +131,35 @@ class RequestParserBuilder :
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
-				'q_value_int', 
-				action='append',
-				type=int, 
-				required=False, 
-				help='find data in document matching this int in records',
-				# location = 'values'
-			)
-			self.baseParser.add_argument(
-				'q_in_field', 
+				'search_in', 
 				action='append',
 				type=str, 
 				required=False, 
-				help='find data in document matching this str as field in records',
+				help='find data in document matching this string as field in records',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'search_int', 
+				action='append',
+				type=int, 
+				required=False, 
+				help='find data in document matching this integer in records',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'search_float', 
+				action='append',
+				type=float, 
+				required=False, 
+				help='find data in document matching this float in records',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'item_id', 
+				action='append',
+				type=float, 
+				required=False, 
+				help='find data in document matching this float in records',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -128,6 +168,14 @@ class RequestParserBuilder :
 				required=False, 
 				default=False, 
 				help='just retrieve the f_data of the result',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'is_complete', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='just retrieve the complete f_data docs from the result',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -160,7 +208,15 @@ class RequestParserBuilder :
 				help='sort data in document ascending/descending',
 				# location = 'values'
 			)
-
+			self.baseParser.add_argument(
+				'shuffle_seed', 
+				# action='append',
+				type=int, 
+				required=False, 
+				default=None, 
+				help='shuffle the list of results',
+				# location = 'values'
+			)
 		if add_files : 
 
 			self.baseParser.add_argument(
@@ -244,6 +300,7 @@ class RequestParserBuilder :
 					choices=doc_src_type_list,
 					default='csv'
 				)
+		
 
 	@property
 	def get_parser (self) : 

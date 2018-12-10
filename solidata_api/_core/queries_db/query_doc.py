@@ -4,6 +4,8 @@
 _core/queries_db/query_doc.py  
 """
 
+import re
+
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_doc.py ..." )
 
@@ -22,10 +24,13 @@ import operator
 ### cf : https://stackoverflow.com/questions/45737561/how-to-ignore-none-values-with-operator-itemgetter-when-sorting-a-list-of-dicts 
 
 def weighted(nb):
+	
 	if nb is None:
-    		return -float('inf')
+		# return -float('inf')
+		return ''
 	else:
-		return nb
+		# return nb
+		return str(nb)
 	# return -float('inf') if nb is None else nb
 
 def sort_list_of_dicts(list_to_sort, key_value, is_reverse=True) :
@@ -50,7 +55,6 @@ def Query_db_doc (
 	):
 
 
-
 	### prepare marshaller 
 	# marshaller = Marshaller(ns, models)
 
@@ -71,6 +75,18 @@ def Query_db_doc (
 			user_oid 		= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
 			dft_open_level_show += ["commons"]
+
+	### sum up all query arguments
+	query_resume = {
+		"document_type"		: document_type,	
+		"doc_id" 			: doc_id,
+		"user_id" 			: user_id,
+		"user_role"			: user_role,
+		"page_args"			: page_args,
+		"query_args"		: query_args,
+		"is_member_of_team" : False,
+		"is_creator" 		: False,
+	}
 
 	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
@@ -140,17 +156,7 @@ def Query_db_doc (
 		response_code	= 400
 		document		= None
 
-	### sum up all query arguments
-	query_resume = {
-		"document_type"		: document_type,	
-		"doc_id" 			: doc_id,
-		"user_id" 			: user_id,
-		"user_role"			: user_role,
-		"page_args"			: page_args,
-		"query_args"		: query_args,
-		"is_member_of_team" : False,
-		"is_creator" 		: False,
-	}
+
 
 	if document : 
 
@@ -261,12 +267,6 @@ def Query_db_doc (
 				response_code	= 401
 				### unvalid credentials / empty response
 				message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
-
-		
-		log.debug( "document_out['infos'] : \n%s", pformat(document_out['infos']) )
-		log.debug( "document_out['public_auth'] : \n%s", pformat(document_out['public_auth']) )
-		log.debug( "document_out['specs'] : \n%s", pformat(document_out['specs']) )
-
 
 	else : 
 		### no document / empty response
