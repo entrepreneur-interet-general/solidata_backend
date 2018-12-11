@@ -5,6 +5,8 @@ _core/queries_db/query_list.py
 """
 
 import re
+import pandas as pd
+from pandas.io.json import json_normalize
 
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_list.py ..." )
@@ -92,6 +94,8 @@ def Query_db_list (
 	# q_oid_tags		= query_args.get('tags',			None )
 	q_only_stats	= query_args.get('only_stats',		False )
 	q_ignore_team	= query_args.get('ignore_teams',	False )
+	q_pivot			= query_args.get('pivot_results',	False )
+	q_normalize		= query_args.get('normalize',	False )
 
 
 	### pipelines for basic query
@@ -274,7 +278,7 @@ def Query_db_list (
 	### concatenate data into one single list if : q_ignore_team == True
 	if q_ignore_team : 
 
-		log.debug('q_ignore_team concatenating lists...') 
+		log.debug('q_ignore_team - concatenating lists...') 
 
 		if cursor_in_team_count > 0 : 
 			data_in = documents_out_in_team
@@ -287,9 +291,8 @@ def Query_db_list (
 			data_not = []
 		
 		data = data_in + data_not
-		log.debug('q_ignore_team concatenating lists / finished ') 
+		log.debug('q_ignore_team - concatenating lists / finished ') 
 		# log.debug( "data : \n %s", pformat(data) )
-
 
 	else : 
 		data = {
@@ -297,6 +300,28 @@ def Query_db_list (
 			"docs_user_not_in_team" : documents_out_not_team , 
 		}
 		# log.debug( "data : \n %s", pformat(data) )
+
+
+
+	### concatenate data into one single list if : q_ignore_team == True
+	if q_pivot and q_ignore_team : 
+
+		log.debug('\n q_pivot - pivot results with pandas...') 
+
+		log.debug('q_pivot - data[0] : \n %s', data[0]) 
+		data_df = json_normalize(data)
+		data_df_indexed = data_df.set_index('_id')
+		print ( "q_pivot / data_df_indexed.head(2) : \n%s", data_df_indexed.head(2) )
+
+		data = data_df_indexed.to_dict()
+		print ( "\n q_pivot / data[info.title]: \n%s", data["infos.title"] )
+
+
+	if q_normalize :
+
+		log.debug('\n q_normalize - nomralize results with pandas...') 
+		data_df = json_normalize(data)
+		data = data_df.to_dict('records')
 
 
 	return {

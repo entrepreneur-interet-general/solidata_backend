@@ -111,6 +111,22 @@ class RequestParserBuilder :
 				help='if true retrieve results mixing docs user is in the team or not',
 				# location = 'values'
 			)
+			self.baseParser.add_argument(
+				'pivot_results', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='pivot results',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'normalize', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='normalize results',
+				# location = 'values'
+			)
 
 		if add_data_query : 
 
@@ -217,6 +233,15 @@ class RequestParserBuilder :
 				help='shuffle the list of results',
 				# location = 'values'
 			)
+			self.baseParser.add_argument(
+				'normalize', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='normalize results',
+				# location = 'values'
+			)
+			
 		if add_files : 
 
 			self.baseParser.add_argument(

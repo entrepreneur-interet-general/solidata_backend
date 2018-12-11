@@ -5,6 +5,8 @@ _core/queries_db/query_doc.py
 """
 
 import re
+import pandas as pd
+from pandas.io.json import json_normalize
 
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_doc.py ..." )
@@ -110,6 +112,9 @@ def Query_db_doc (
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
 	sort_by			= query_args.get('sort_by',			None )
+	descending		= query_args.get('descending',		False )
+	shuffle_seed	= query_args.get('shuffle_seed',	None )
+	q_normalize		= query_args.get('normalize',		False )
 
 
 	### TO FINISH !!!
@@ -172,9 +177,6 @@ def Query_db_doc (
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
 			log.debug( "team_oids : \n%s", pformat(team_oids) )
-
-
-
 
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
@@ -268,10 +270,19 @@ def Query_db_doc (
 				### unvalid credentials / empty response
 				message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
 
+		# normalize doc if needed
+		if q_normalize :
+		
+			log.debug('\n q_normalize - nomralize results with pandas...') 
+			data_df = json_normalize(document_out)
+			document_out = data_df.to_dict('records')
+
 	else : 
 		### no document / empty response
 		response_code	= 404
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
+		document_out    = None
+
 
 	### return response
 	return {
