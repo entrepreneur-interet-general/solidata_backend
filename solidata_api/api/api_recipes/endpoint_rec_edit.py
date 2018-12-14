@@ -53,11 +53,44 @@ class Rec_edit(Resource):
 	@ns.expect([model_update])
 	def put(self, doc_id):
 		"""
-		Update a new rec in db
+		Update a  dmf in db
+
+		>
+			--- needs   : a valid access_token in the header, field_to_update, field_value
+			>>> returns : msg, doc data 
 		"""
+		
+		### DEBUGGING
+		print()
+		print("-+- "*40)
+		log.debug( "ROUTE class : %s", self.__class__.__name__ )
+
+		### DEBUG check
+		log.debug ("payload : \n{}".format(pformat(ns.payload)))
+
+		### check client identity and claims
+		claims 			= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+
+		### update doc in DB
+		updated_doc, response_code	= Query_db_update (
+			ns, 
+			models,
+			document_type,
+			doc_id,
+			claims,
+			roles_for_complete = ["admin"],
+			payload = ns.payload
+		)
+
+		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+
+		### return updated document
 		return {
-					"msg" : "nananana"
-				}
+			"msg" : "updating doc...."
+		}, 200
+		# return updated_doc, response_code
+		
 
 
 	@ns.doc('delete_rec')
