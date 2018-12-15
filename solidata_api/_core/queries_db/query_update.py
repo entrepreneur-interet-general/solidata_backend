@@ -7,6 +7,7 @@ _core/queries_db/query_update.py
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_update.py ..." )
 
+from  	datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
 from 	flask_restplus 	import  marshal
 
@@ -26,7 +27,7 @@ def Query_db_update (
 		doc_id,
 		claims,
 		roles_for_complete 	= ["admin"],
-		payload = {}
+		payload 			= {}
 	):
 
 
@@ -54,7 +55,8 @@ def Query_db_update (
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
-		document 		= db_collection.find_one( {"_id": ObjectId(doc_id) } )
+		doc_oid			= ObjectId(doc_id)
+		document 		= db_collection.find_one( {"_id": doc_oid } )
 		log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
@@ -69,11 +71,6 @@ def Query_db_update (
 		"is_member_of_team" : False,
 		"payload" 			: payload
 	}
-
-
-
-
-
 
 
 	if document : 
@@ -92,26 +89,130 @@ def Query_db_update (
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		
 
-
-		
 		# for admin or members of the team --> complete infos model
 		if user_role in roles_for_complete or user_oid in team_oids : 
 			
+			### add to list arg 
+			log.debug( "payload : \n%s", pformat(payload) )
+			
+			for payload_data in payload : 
+				
+				log.debug( "payload_data : \n%s", pformat(payload_data) )
 
-			### TO DO : update document
-			payload = { i["field_to_update"] : i["field_value"] for i in payload }
-			db_collection.update_one( {"_id": ObjectId(doc_id) }, { "$set" : payload }, upsert=True )
+				add_to_list = payload_data["add_to_list"]
+				
+				if add_to_list :
 
+					### marshal payload as new entry in list - add 
+					field_to_update = payload_data["field_to_update"]
+					doc_added_type	= payload_data["doc_type"] 
+					oid_item_field	= "oid_" + doc_added_type
 
-			document_out = marshal( document, models["model_doc_out"] )
+					### update child document too in uses field ... 
+					doc_added_oid 			= ObjectId( payload_data["field_value"] )
+					db_collection_added 	= db_dict_by_type[ doc_added_type ]
+					doc_added 				= db_collection_added.find_one( {"_id": doc_added_oid } )
+					field_to_update_added 	= "uses.by_" + document_type
+					
+					### paylod for item 
+					payload_ = {
+						field_to_update : 
+						{
+							oid_item_field 	: doc_added_oid,
+							"added_at" 		: datetime.utcnow() ,
+							"added_by" 		: user_oid,
+						}
+					}
+					### special payload_ for team updates
+					if field_to_update == "team":
+
+						log.debug( "updating team list ..." )
+
+						# overwrite field_to_update_added
+						field_to_update_added 	= "datasets." + document_type + "_list"
+
+						### add extra special field when updating team field
+						payload_["edit_auth"] 	= payload_data["edit_auth"]
+						payload_["is_fav"] 		= True
+
+					log.debug( "payload_ : \n%s", pformat(payload_) )
+
+					### payload for added item
+					payload_bis = {
+						field_to_update_added : 
+						{
+							"used_at" : [ datetime.utcnow() ],
+							"used_by" : doc_oid,
+						}
+					}
+					log.debug( "payload_bis : \n%s", pformat(payload_bis) )
+
+					### add_to_list
+					if add_to_list == "add_to_list" :
+    
+						# check if subfield exists
+						doc_list 	= document
+						is_subfield = False
+						try :
+							for i in field_to_update.split('.'):
+								doc_list = doc_list[i]
+								is_subfield = True
+						except : 
+							is_subfield = False
+
+						log.debug( "doc_list : \n%s", pformat(doc_list) )
+						log.debug( "field_to_update.split('.')[-1] : %s", field_to_update.split('.')[-1] )
+						log.debug( "doc_added_oid : %s", doc_added_oid )
+						
+						# get existing list and check if doc_oid not already in list
+						# cf : https://stackoverflow.com/questions/3897499/check-if-value-already-exists-within-list-of-dictionaries
+						can_push = False
+						if is_subfield :
+    								if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
+        									can_push = True
+
+						# if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
+						if can_push  : 
+						
+							## push in list 
+							db_collection.update_one( 
+								{ "_id"			: doc_oid }, 
+								{ "$addToSet" 	: payload_ }, 
+								upsert=True 
+							)
+							db_collection_added.update_one( 
+								{ "_id"			: doc_added_oid }, 
+								{ "$addToSet" 	: payload_bis }, 
+								upsert=True 
+							)
+
+					### delete_from_list
+					elif add_to_list == "delete_from_list " :
+						db_collection.update_one( 
+							{ "_id": doc_oid }, 
+							{ "$pull" : payload_ }, 
+						)
+						db_collection_added.update_one( 
+							{ "_id": doc_added_oid }, 
+							{ "$pull" : payload_bis }, 
+						)
+
+				else : 
+					payload_ = { field_to_update : payload_data["field_value"] }
+					db_collection.update_one( 
+						{ "_id"		: ObjectId(doc_id) }, 
+						{ "$set" 	: payload }, 
+						upsert=True 
+					)
+
+			document_updated = db_collection.find_one( {"_id": ObjectId(doc_id) } )
+			document_out = marshal( document_updated, models["model_doc_out"] )
 
 			# flag as member of doc's team
 			if user_oid in team_oids :
 				query_resume["is_member_of_team"] = True
 		
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
-
-
 
 
 

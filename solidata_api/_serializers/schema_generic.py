@@ -56,7 +56,13 @@ field_to_update		= fields.String(
 										default			= 'a new data',
 										required		= True,
 									)
-
+add_to_list			= fields.String(
+										description		= "data about a document",
+										attribute		= "add_to_list",
+										example			= False,
+										enum			= update_types_list,
+										default			= False,
+									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### basic informations about a document : project / licence / oid ...
@@ -107,6 +113,7 @@ open_level_show 	= fields.String(
 										enum			= open_level_choices,
 										required		= True,
 									)
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### multilanguage
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -132,6 +139,9 @@ text_translated		= fields.String(
 										required		= False,
 									)
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### sources DSI
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 src_link 			= fields.String(
 										description		= "source link of the document",
 										attribute		= "src_link",
@@ -161,6 +171,10 @@ src_sep 			= fields.String(
 										enum			= authorized_separators,
 										required		= False,
 									)
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### tags
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 tag 				= fields.String(
 										description		= "tag about the document",
 										attribute		= "tag",
@@ -334,14 +348,7 @@ oid_dict = {
 }
 
 
-### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-### preformat some generic fields
-### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-update_field		= {
-	# "doc_id"			: doc_id,
-	"field_to_update"	: field_to_update,
-	"field_value" 		: field_value,
-}
+
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -397,6 +404,14 @@ guests_can_edit		= fields.Boolean(
 										required		= True,
 										default			= False,
 									)
+edit_auth			= fields.String(
+										description 	= "edit auth of an user",
+										enum			= user_edit_auth,
+										example			= "owner",
+										required		= False,
+										attribute		= "edit_auth", 
+										default			= "editor" 
+									)
 									
 # public_auth 		= {
 # 	"open_level"		: open_level,
@@ -407,7 +422,6 @@ public_auth 		= {
 	"open_level_edit"	: open_level_edit,
 	"open_level_show" 	: open_level_show,
 }
-
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### data_raw for dsi - dso - dmf - tag 
@@ -568,4 +582,17 @@ open_level_edit_show 		= {
 }
 open_level_edit 			= {
 	"open_level_edit"	: open_level_edit,
+}
+
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### preformat some generic fields
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+update_field		= {
+	"edit_auth"			: edit_auth,
+	"doc_type"			: doc_type,
+	"add_to_list"		: add_to_list,
+	"field_to_update"	: field_to_update,
+	"field_value" 		: field_value,
 }

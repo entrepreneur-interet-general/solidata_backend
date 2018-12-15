@@ -112,7 +112,7 @@ def Query_db_list (
 
 	### search by oids 
 	if q_oid_list != None : 
-		if q_oid_list != []:  
+		if q_oid_list != [] and q_oid_list != [''] :  
 			log.debug('q_oid_list : %s', q_oid_list) 
 			do_query_pipe 		= True
 

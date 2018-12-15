@@ -40,6 +40,7 @@ user_edit_auth = [
 	"editor",		
 	"contributor",	
 ]
+
 user_edit_auth_rights	: {
 	'owner' 		: {
 		'can_edit_r_fields' : ['infos', 'public_auth','data_raw','team','mapping'],

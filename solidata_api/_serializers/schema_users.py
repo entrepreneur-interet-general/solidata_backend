@@ -105,14 +105,14 @@ old_refr_tok		= fields.String(
 # 										attribute		= "edit_auth", 
 # 										default			= [] 
 # 									)
-edit_auth			= fields.String(
-										description 	= "edit auth of an user",
-										enum			= user_edit_auth,
-										example			= "can_only_view",
-										required		= False,
-										attribute		= "edit_auth", 
-										default			= [] 
-									)
+# edit_auth			= fields.String(
+# 										description 	= "edit auth of an user",
+# 										enum			= user_edit_auth,
+# 										example			= "can_only_view",
+# 										required		= False,
+# 										attribute		= "edit_auth", 
+# 										default			= [] 
+# 									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### profile
