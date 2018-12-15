@@ -112,7 +112,9 @@ def Query_db_list (
 
 	### search by oids 
 	if q_oid_list != None : 
+		
 		if q_oid_list != [] and q_oid_list != [''] :  
+			
 			log.debug('q_oid_list : %s', q_oid_list) 
 			do_query_pipe 		= True
 
@@ -271,6 +273,51 @@ def Query_db_list (
 		"docs_you_are_not_in_team" 	: cursor_not_team_count ,
 	}
 
+	### add data_raw counts if collection is in ['dsi', 'dso', 'dsr']
+	if document_type in ['dsi', 'dso', 'dsr'] :
+
+		log.debug('f_data_counts - document_type : %s', document_type) 
+
+		if cursor_in_team_count > 0 : 
+			log.debug("f_data_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
+			for i in documents_in_team :
+				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
+				stats = { 
+					"f_data_count" 			: len(i["data_raw"]["f_data"]) ,
+					"f_col_headers_count" 	: len(i["data_raw"]["f_col_headers"]) ,
+				}
+				i_out["stats"] = stats
+
+		if cursor_not_team_count > 0 : 
+			for i in documents_not_team :
+				i_out = next(item for item in documents_out_not_team if item["_id"] == str(i["_id"]))
+				stats = { 
+					"f_data_count" 			: len(i["data_raw"]["f_data"]) ,
+					"f_col_headers_count" 	: len(i["data_raw"]["f_col_headers"]) ,
+				}
+				i_out["stats"] = stats
+
+	### add datasets counts if collection is in ['prj']
+	if document_type in ['prj'] :
+
+		log.debug('dsi_counts - document_type : %s', document_type) 
+
+		if cursor_in_team_count > 0 : 
+			log.debug("dsi_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
+			for i in documents_in_team :
+				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
+				stats = { 
+					"dsi_count" 	: len(i["datasets"]["dsi_list"]) ,
+				}
+				i_out["stats"] = stats
+
+		if cursor_not_team_count > 0 : 
+			for i in documents_not_team :
+				i_out = next(item for item in documents_out_not_team if item["_id"] == str(i["_id"]))
+				stats = { 
+					"dsi_count" 	: len(i["datasets"]["dsi_list"]) ,
+				}
+				i_out["stats"] = stats
 
 	### prepare a response message
 	message  = "dear user, there is the list of {}s you can access given your credentials".format(document_type_full)
@@ -291,7 +338,7 @@ def Query_db_list (
 			data_not = []
 		
 		data = data_in + data_not
-		log.debug('q_ignore_team - concatenating lists / finished ') 
+		log.debug('q_ignore_team - concatenating lists / finished... ') 
 		# log.debug( "data : \n %s", pformat(data) )
 
 	else : 

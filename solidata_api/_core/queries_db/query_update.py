@@ -99,12 +99,13 @@ def Query_db_update (
 				
 				log.debug( "payload_data : \n%s", pformat(payload_data) )
 
-				add_to_list = payload_data["add_to_list"]
-				
-				if add_to_list :
+				field_to_update = payload_data["field_to_update"]
 
+				add_to_list = payload_data.get('add_to_list', False )
+
+				if add_to_list :
+    
 					### marshal payload as new entry in list - add 
-					field_to_update = payload_data["field_to_update"]
 					doc_added_type	= payload_data["doc_type"] 
 					oid_item_field	= "oid_" + doc_added_type
 
@@ -163,16 +164,17 @@ def Query_db_update (
 						log.debug( "doc_list : \n%s", pformat(doc_list) )
 						log.debug( "field_to_update.split('.')[-1] : %s", field_to_update.split('.')[-1] )
 						log.debug( "doc_added_oid : %s", doc_added_oid )
+						log.debug( "is_subfield : %s", is_subfield )
 						
 						# get existing list and check if doc_oid not already in list
 						# cf : https://stackoverflow.com/questions/3897499/check-if-value-already-exists-within-list-of-dictionaries
 						can_push = False
 						if is_subfield :
-    								if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
-        									can_push = True
+							if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
+								can_push = True
 
 						# if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
-						if can_push  : 
+						if can_push or not is_subfield : 
 						
 							## push in list 
 							db_collection.update_one( 
@@ -201,7 +203,7 @@ def Query_db_update (
 					payload_ = { field_to_update : payload_data["field_value"] }
 					db_collection.update_one( 
 						{ "_id"		: ObjectId(doc_id) }, 
-						{ "$set" 	: payload }, 
+						{ "$set" 	: payload_ }, 
 						upsert=True 
 					)
 
