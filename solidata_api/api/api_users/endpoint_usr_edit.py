@@ -130,7 +130,6 @@ class Usr_edit(Resource) :
 
 		log.debug("results : \n%s ", pformat(results) )
 
-
 		return results, response_code
 
 

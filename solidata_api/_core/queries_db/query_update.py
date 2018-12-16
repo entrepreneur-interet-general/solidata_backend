@@ -188,15 +188,24 @@ def Query_db_update (
 								upsert=True 
 							)
 
-					### delete_from_list
-					elif add_to_list == "delete_from_list " :
+					### delete_from_list - 
+					elif add_to_list == "delete_from_list" :
+
+						log.debug( "field_to_update : %s", field_to_update )
+						log.debug( "oid_item_field : %s", oid_item_field )
+						log.debug( "field_to_update_added : %s", field_to_update_added )
+
 						db_collection.update_one( 
 							{ "_id": doc_oid }, 
-							{ "$pull" : payload_ }, 
+							{ "$pull" : 
+								{ field_to_update : { oid_item_field : doc_added_oid } } 
+							}, 
 						)
 						db_collection_added.update_one( 
 							{ "_id": doc_added_oid }, 
-							{ "$pull" : payload_bis }, 
+							{ "$pull" : 
+								{ field_to_update_added : { "used_by" : doc_oid } } 
+							}, 
 						)
 
 				else : 
@@ -207,8 +216,8 @@ def Query_db_update (
 						upsert=True 
 					)
 
-			document_updated = db_collection.find_one( {"_id": ObjectId(doc_id) } )
-			document_out = marshal( document_updated, models["model_doc_out"] )
+			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
+			document_out 		= marshal( document_updated, models["model_doc_out"] )
 
 			# flag as member of doc's team
 			if user_oid in team_oids :
