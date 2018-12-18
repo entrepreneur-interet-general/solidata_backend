@@ -26,6 +26,7 @@ models 				= {
 	"model_doc_min" 		: model_doc_min ,
 } 
 model_data				= UserData(ns).model
+
 model_update	= Update_infos(ns, document_type).model_update_generic
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -37,11 +38,10 @@ model_update	= Update_infos(ns, document_type).model_update_generic
 
 
 @ns.doc(security='apikey')
-@ns.route("/<string:user_oid>/")
+@ns.route("/<string:usr_id>")
 @ns.response(404, 'document not found')
-@ns.param('doc_oid', 'The user unique identifier')
+@ns.param('usr_id', 'The user unique identifier')
 class Usr_edit(Resource) :
-		
 	"""
 	usr edition :
 	PUT    - Updates usr infos
@@ -50,8 +50,9 @@ class Usr_edit(Resource) :
 	
 	@ns.doc('update_usr')
 	@current_user_required
+	# @guest_required
 	@ns.expect([model_update])
-	def put(self, doc_id):
+	def put(self, usr_id):
 		"""
 		Update a  usr in db
 
@@ -77,7 +78,7 @@ class Usr_edit(Resource) :
 			ns, 
 			models,
 			document_type,
-			doc_id,
+			usr_id,
 			claims,
 			roles_for_complete = ["admin"],
 			payload = ns.payload
@@ -86,16 +87,16 @@ class Usr_edit(Resource) :
 		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
 
 		### return updated document
-		return {
-			"msg" : "updating doc...."
-		}, 200
-		# return updated_doc, response_code
+		# return {
+		# 	"msg" : "updating doc...."
+		# }, 200
+		return updated_doc, response_code
 
 
 	@ns.doc('delete_user')
 	@ns.response(204, 'document deleted')
 	@current_user_required
-	def delete(self, doc_oid):
+	def delete(self, usr_id):
 		"""
 		Delete an user given its _id / only doable by admin or current_user
 		
@@ -122,7 +123,7 @@ class Usr_edit(Resource) :
 			ns, 
 			models,
 			document_type,
-			doc_id,
+			usr_id,
 			claims,
 			roles_for_delete 	= ["admin"],
 			auth_can_delete 	= ["owner"],

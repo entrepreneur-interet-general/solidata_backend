@@ -593,6 +593,7 @@ update_field		= {
 	"edit_auth"			: edit_auth,
 	"doc_type"			: doc_type,
 	"add_to_list"		: add_to_list,
+	
 	"field_to_update"	: field_to_update,
 	"field_value" 		: field_value,
 }

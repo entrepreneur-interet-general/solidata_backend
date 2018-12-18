@@ -51,6 +51,8 @@ class Register(Resource):
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
+		### TO DO = add a ghost field to filter out spams and robots
+
 		### retrieve infos from form 
 		payload_email 	= ns.payload["email"]
 		payload_pwd 	= ns.payload["pwd"]
@@ -69,15 +71,19 @@ class Register(Resource):
 
 			### create user dict from form's data
 			new_user_infos 	= {
-				"infos" : ns.payload, 
+				"infos" 	: ns.payload, 
 				# "auth" 	: ns.payload 
-				"log"	: { "created_at" : datetime.utcnow() } 
+				"log"		: { "created_at" 	: datetime.utcnow() },
+				"profile" 	: { "lang" 			: ns.payload["language"]}
 			}
 			new_user 								= marshal( new_user_infos , model_user_complete_in )
 			new_user["auth"]["pwd"] 				= hashpass
 			new_user["infos"]["open_level_edit"]	= "private"
 			new_user["infos"]["open_level_show"]	= "commons"
 			new_user["specs"]["doc_type"] 			= "usr"
+
+			### agreement to terms and conditions
+			new_user["infos"]["agreement"]			= ns.payload["agreement"]
 
 			### temporary save new user in db 
 			_id = mongo_users.insert( new_user )

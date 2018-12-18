@@ -18,9 +18,10 @@ from ._choices_docs import *
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 user_roles = [
-	"admin", 
 
+	"admin", 
 	"staff",   ### can edit all datamodels : dmf + dmt
+
 	# "collective", 
 	"registred", 
 	

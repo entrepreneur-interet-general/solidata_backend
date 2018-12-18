@@ -105,10 +105,14 @@ class Login(Resource):
 		log.debug("claims : \n %s", pformat(claims) )
 		
 		### retrieve infos from form
-		payload_email = ns.payload["email"]
-		payload_pwd   = ns.payload["pwd"]
-		log.debug("email  : %s", payload_email )
-		log.debug("pwd    : %s", payload_pwd )
+		payload_email 				= ns.payload["email"]
+		log.debug("payload_email  : %s", payload_email )
+
+		payload_pwd   				= ns.payload["pwd"]
+		log.debug("payload_pwd    : %s", payload_pwd )
+
+		payload_renew_refr_token   	= ns.payload.get("renew_refresh_token", app.config["JWT_RENEW_REFRESH_TOKEN_AT_LOGIN"] )
+		log.debug("payload_renew_refr_token    : %s", payload_renew_refr_token )
 
 		### retrieve user from db
 		user = mongo_users.find_one( {"infos.email" : payload_email } ) #, {"_id": 0 })
@@ -134,28 +138,34 @@ class Login(Resource):
 				log.debug("user_light : \n %s", pformat(user_light) )
 
 				### Use create_access_token() to create user's new access token 
+				log.debug("... access_token")
 				new_access_token 	= create_access_token(identity=user_light, fresh=False)
+
+				### create a new refresh_token when logged
+				log.debug("... refresh_token : create a new one...")
+				if payload_renew_refr_token and user["auth"]["conf_usr"] == True :
+					log.debug("... refresh_token")
+					expires 					= app.config["JWT_REFRESH_TOKEN_EXPIRES"] 
+					refresh_token 				= create_refresh_token( identity=user_light, expires_delta=expires )
+					user["auth"]["refr_tok"] 	= refresh_token
 				
-				# only update refresh_token if user is confirmed
-				# if user["auth"]["conf_usr"] == False : 
-				# 	refresh_token 		= user["auth"]["refr_tok"]  
-				# else : 
-				# 	refresh_token			= create_refresh_token(identity=user_light)
-
 				### retrieve existing refresh_token from db
-				refresh_token 		= user["auth"]["refr_tok"]  
+				else :
+					log.debug("... refresh_token : get existing one...")
+					refresh_token 		= user["auth"]["refr_tok"]  
 
+				### store tokens in dict
 				tokens = {
 						'access_token'	: new_access_token,
 						'refresh_token' : refresh_token,
 				}
 				print()
 				log.debug("user_light['_id'] : %s", user_light["_id"] )
-				log.debug("new_access_token  : %s", new_access_token )
-				log.debug("refresh_token 		 : %s", refresh_token )
+				log.debug("user_light 		 : \n%s", user_light )
+				log.debug("new_access_token  : \n%s", new_access_token )
+				log.debug("refresh_token 	 : \n%s", refresh_token )
 				print()
 
-				
 				### update user log in db
 				# user = create_modif_log(doc=user, action="login")
 				user["log"]["login_count"] += 1

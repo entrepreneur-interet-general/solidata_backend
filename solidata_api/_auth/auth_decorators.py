@@ -172,6 +172,8 @@ def anonymous_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		if claims["auth"]["role"] != 'anonymous' :
 			return { "msg" : "Anonymous users only !!! " }, 403
 		else :
@@ -194,6 +196,8 @@ def anonymous_or_guest_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		if claims["auth"]["role"] not in  ['guest', 'anonymous'] :
 			return { "msg" : "Anonymous users or guests only !!! " }, 403
 		else:
@@ -216,6 +220,8 @@ def guest_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		if claims["auth"]["role"] not in  ['admin', 'guest', 'registred', "staff" ] :
 			return { "msg" : "Registred users only !!! " }, 403
 		else:
@@ -237,6 +243,8 @@ def admin_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		if claims["auth"]["role"] != 'admin':
 			return { "msg" : "Admins only !!! " }, 403
 		else:
@@ -258,6 +266,8 @@ def staff_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		if claims["auth"]["role"] not in  ['admin', 'staff']:
 			return { "msg" : "Admins or staff only !!! " }, 403
 		else:
@@ -279,6 +289,8 @@ def renew_pwd_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		try :
 			if claims["renew_pwd"] == True:
 				return func(*args, **kwargs)
@@ -301,6 +313,8 @@ def reset_pwd_required(func):
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
 		
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
 		try :  
 			if claims["reset_pwd"] == True:
 				return func(*args, **kwargs)
@@ -344,13 +358,15 @@ def current_user_required(func):
 
 		log.debug("-@- current_user checker")
 
-		### check in kwargs
-		user_oid = kwargs["user_oid"] 
-		log.debug( "user_oid : %s" , user_oid )
-
 		verify_jwt_in_request()
 		claims = get_jwt_claims()
 		log.debug("claims : \n %s", pformat(claims) )
+
+		log.debug("kwargs : \n %s", pformat(kwargs) )
+
+		### check in kwargs
+		user_oid = kwargs["usr_id"] 
+		log.debug( "user_oid : %s" , user_oid )
 		
 		### check if oid sent is the same as the claim "_id"
 		if user_oid != claims["_id"]  : 

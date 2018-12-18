@@ -45,6 +45,13 @@ email 				= fields.String(
 										example			= "elinor.ostrom@emailna.co", ### uses https://www.mohmal.com for temporary emails
 										required		= True,
 									)
+agreement			= fields.Boolean(
+										description		= "user has agreed to terms and conditions",
+										attribute		= "agreement",
+										example			= False,
+										required		= True,
+										default			= False,
+									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### auth 
@@ -203,6 +210,8 @@ user_register = {
 	"surname" 			: surname,
 	"email" 			: email,
 	"pwd"				: pwd,
+	"lang"				: language,
+	"agreement"			: agreement,
 }
 
 old_refresh_token = {

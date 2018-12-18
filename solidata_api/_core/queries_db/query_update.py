@@ -90,7 +90,7 @@ def Query_db_update (
 		
 
 		# for admin or members of the team --> complete infos model
-		if user_role in roles_for_complete or user_oid in team_oids : 
+		if user_role in roles_for_complete or user_oid in team_oids or user_id == doc_id : 
 			
 			### add to list arg 
 			log.debug( "payload : \n%s", pformat(payload) )
