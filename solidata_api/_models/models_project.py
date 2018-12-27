@@ -65,7 +65,7 @@ class Prj_infos :
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
 		
-		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "dsi_to_dmf", "rec_to_dmf" ])
+		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "dsi_to_dmf", "dmf_to_rec", "dmf_to_open_level" ])
 
 
 		self.model_id = {

@@ -351,7 +351,7 @@ def create_model_datasets(	ns_,
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_mappings(	ns_,	
 							model_name	= "Mapping" ,
-							schema_list	= ["dsi_to_dmt", "rec_to_func", "rec_to_dmt"], 
+							schema_list	= ["dsi_to_dmt", "rec_to_func", "dmf_to_rec", "dmf_to_open_level"], 
 						) : 
 	"""
 	Mapping model
@@ -392,6 +392,23 @@ def create_model_mappings(	ns_,
 	)
 
 	return mappings
+
+def create_model_field_update_mapping(	ns_, 
+								model_name = "Mapping_update" 
+							):
+	
+	"""
+	Field update
+	"""
+	
+	# field_update = fields.Nested( 
+	# 	ns_.model( model_name, update_field ),
+	# 	description = "update a field of a document"
+	# )
+
+	mapping_update = ns_.model(model_name, update_mapping )
+	
+	return mapping_update
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

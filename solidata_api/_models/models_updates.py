@@ -43,5 +43,21 @@ class Update_infos :
 		return self.generic_update
 
 
+class Update_mapping : 
+	"""
+	Model to display / marshal 
+	updates
+	"""
 
+	def __init__(self, ns_, document_type ) :
+
+		### SELF MODULES
+		self.generic_update = create_model_field_update_mapping(	
+			ns_, model_name=document_type+"_update_mapping"
+		)
+
+
+	@property
+	def model_update_generic(self): 
+		return self.generic_update
 

@@ -354,37 +354,91 @@ oid_dict = {
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### for mappings
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-col_index 			= fields.String(
+dsi_header 			= fields.String(
 										description 	= "index of a column within a dataset input",
-										attribute		= "col_index",
-										example			= "my_col_index",
-										required		= True,
+										attribute		= "dsi_header",
+										example			= "my_dsi_header",
+										required		= False,
 									)
+
+mapping_field		= fields.String(
+										description		= "field to map",
+										attribute		= "mapping_field",
+										example			= False,
+										enum			= mapping_fields,
+										default			= False,
+									)
+id_dmt 				= fields.String(
+										description 	= "oid of a document dmt as string",
+										attribute		= "id_dmt",
+										example			= "5b841ac70a82863ff21fd4d7",
+										required		= False,
+									)
+id_dmf 				= fields.String(
+										description 	= "oid of a document dmf as string",
+										attribute		= "id_dmf",
+										example			= "5b841ac70a82863ff21fd4d7",
+										required		= False,
+									)
+id_dsi 				= fields.String(
+										description 	= "oid of a document dsi as string",
+										attribute		= "id_dsi",
+										example			= "5b841ac70a82863ff21fd4d7",
+										required		= False,
+									)
+id_rec 				= fields.String(
+										description 	= "oid of a document rec as string",
+										attribute		= "id_rec",
+										example			= "5b841ac70a82863ff21fd4d7",
+										required		= False,
+									)
+id_func 				= fields.String(
+										description 	= "oid of a document func as string",
+										attribute		= "id_func",
+										example			= "5b841ac70a82863ff21fd4d7",
+										required		= False,
+									)
+
+update_mapping 		= {
+	"mapping_field"		: mapping_field,
+	"id_dmt" 			: id_dmt,
+	"id_dmf" 			: id_dmf,
+	"id_dsi" 			: id_dsi,
+	"id_rec" 			: id_rec,
+	"id_func" 			: id_func,
+	"open_level_show" 	: open_level_show,
+	"dsi_header"			: dsi_header,
+
+}
 
 mapping_oid_dict 	= {
 
+	"dmf_to_open_level" : {
+		### target dmf
+		"oid_dmf" 			: oid_dmf,
+		### target open_level
+		"open_level_show" 	: open_level_show,
+	},
 	"dsi_to_dmf"	: {
 		### src dsi
-		"oid_dsi" 	: oid_dsi,
-		"col_index"	: col_index,
+		"oid_dsi" 		: oid_dsi,
+		"dsi_header"	: dsi_header,
 		### target dmf
-		"oid_dmt" 	: oid_dmt,
 		"oid_dmf" 	: oid_dmf,
 	} , 
-
-	"rec_to_dmf"	: {
+	"dmf_to_rec"	: {
 		### src rec
 		"oid_rec" 	: oid_rec,
-		"oid_func" 	: oid_func,
 		### target dmf
-		"oid_dmt" 	: oid_dmt,
 		"oid_dmf" 	: oid_dmf,
 		### rec_params : {}
+		# TO DO 
 	} , 
 	"rec_to_func"	: {
-		"oid_func" 	: oid_func,
 		### rec_params : {}
-	} 
+		"oid_func" 	: oid_func,
+	} ,
+
 }
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
