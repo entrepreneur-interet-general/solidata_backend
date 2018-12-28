@@ -74,13 +74,13 @@ class Prj_infos :
 		self.model_in = {
 			'modif_log'		: self.modif_log , 
 			"datasets"		: self.datasets ,
-			'mapping'		: self.mapping,
 		}
 		self.model_min = {
 			'infos' 		: self.basic_infos,
 			'public_auth' 	: self.public_auth,
 			'specs'			: self.specs , 
 			'log'			: self.log , 
+			'mapping'		: self.mapping,
 			
 			'translations' 	: self.translations,
 		

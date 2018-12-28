@@ -365,14 +365,14 @@ def create_model_mappings(	ns_,
 		### TO DO
 		
 		model_mapping 				= mapping_oid_dict[schema]
-		model_mapping['added_at'] 	= added_at
-		model_mapping['added_by'] 	= added_by
+		# model_mapping['added_at'] 	= added_at
+		# model_mapping['added_by'] 	= added_by
 		
-		if schema == "dsi_to_dmf" : 
-			model_mapping['visible_dmf_list'] = fields.List(
-				oid_dmf,
-				description = "visible dmf list"
-			)
+		# if schema == "dsi_to_dmf" : 
+		# 	model_mapping['visible_dmf_list'] = fields.List(
+		# 		oid_dmf,
+		# 		description = "visible dmf list"
+		# 	)
 
 		mapping		= fields.Nested(
 				ns_.model( schema.title(), model_mapping ),
@@ -400,11 +400,6 @@ def create_model_field_update_mapping(	ns_,
 	"""
 	Field update
 	"""
-	
-	# field_update = fields.Nested( 
-	# 	ns_.model( model_name, update_field ),
-	# 	description = "update a field of a document"
-	# )
 
 	mapping_update = ns_.model(model_name, update_mapping )
 	

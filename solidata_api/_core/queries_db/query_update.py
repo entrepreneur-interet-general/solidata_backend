@@ -100,11 +100,75 @@ def Query_db_update (
 				log.debug( "payload_data : \n%s", pformat(payload_data) )
 
 				field_to_update = payload_data["field_to_update"]
+				log.debug( "field_to_update : %s", field_to_update )
 
 				add_to_list = payload_data.get('add_to_list', False )
+				is_mapping 	= payload_data.get('is_mapping', False )
 
-				if add_to_list :
-    
+				if is_mapping : 
+
+					payload_map = {}
+
+					# cf : https://stackoverflow.com/questions/10522347/mongodb-update-objects-in-a-documents-array-nested-updating 
+
+					if field_to_update == "mapping.dmf_to_open_level" : 
+						selector_f 								= field_to_update+".oid_dmf"
+						selector_v 	= payload_map["oid_dmf"] 	= ObjectId( payload_data["id_dmf"] )
+						selector 	= { selector_f : selector_v }
+						payload_map["open_level_show"] 			= payload_data["open_level_show"]
+
+					elif field_to_update == "mapping.dsi_to_dmf" : 
+						selector_f 								= field_to_update+".dsi_header"
+						selector_v 	= payload_map["dsi_header"] = payload_data["dsi_header"]
+						selector_f_ 							= field_to_update+".oid_dsi"
+						selector_v_ = payload_map["oid_dsi"] 	= ObjectId ( payload_data["id_dsi"] )
+						selector 	= { selector_f : selector_v, selector_f_ : selector_v_ }
+						payload_map["oid_dmf"] 					= ObjectId( payload_data["id_dmf"] )
+
+					elif field_to_update == "mapping.dmf_to_rec" : 
+						selector_f 								= field_to_update+".oid_dmf"
+						selector_v 	= payload_map["oid_dmf"] 	= ObjectId( payload_data["id_dmf"] )
+						selector 	= { selector_f : selector_v }
+						payload_map["oid_rec"] 					= ObjectId( payload_data["id_rec"] )
+
+					elif field_to_update == "mapping.rec_to_func" : 
+						selector_f 								= field_to_update+".oid_dmf"
+						selector_v 	= payload_map["oid_rec"] 	= ObjectId( payload_data["id_rec"] )
+						selector 	= { selector_f : selector_v }
+
+					log.debug( "selector : \n%s", pformat(selector) )
+					log.debug( "payload_map : \n%s", pformat(payload_map) )
+
+					log.debug( "cursor : \n%s", pformat({ "_id"		: ObjectId(doc_id), **selector }) )
+
+					### update mapping if selector_v already exists -> update array element
+
+					# try : 
+					log.debug( "update mapping / existing mapper... " )
+					doc_mapped = db_collection.update_one( 
+						{ "_id"		: doc_oid, **selector }, 
+						{ "$set" 	:  
+							{ field_to_update+".$."+key : payload_map[key] for key in payload_map.keys() }
+						}, 
+					)
+					log.debug( "...doc_mapped : \n%s ", pformat(doc_mapped) )
+					log.debug( "...doc_mapped.matched_count : \n%s ", pformat(doc_mapped.matched_count) )
+
+					# update mapping if selector_v doesn't exist -> add to array
+					if doc_mapped.matched_count == 0 : 
+						log.debug( "update mapping / non existing mapper... " )
+						doc_mapped = db_collection.update_one( 
+							{ "_id"		: doc_oid }, 
+							{  "$addToSet"	:  
+								{ field_to_update : payload_map }
+							}, 
+							upsert=True
+						)
+				
+				elif add_to_list :
+
+					log.debug( "add_to_list... " )
+
 					### marshal payload as new entry in list - add 
 					doc_added_type	= payload_data["doc_type"] 
 					oid_item_field	= "oid_" + doc_added_type
@@ -209,6 +273,7 @@ def Query_db_update (
 						)
 
 				else : 
+					log.debug( "neither is_mapping nor add_to_list... " )
 					payload_ = { field_to_update : payload_data["field_value"] }
 					db_collection.update_one( 
 						{ "_id"		: ObjectId(doc_id) }, 

@@ -361,6 +361,14 @@ dsi_header 			= fields.String(
 										required		= False,
 									)
 
+is_mapping		= fields.Boolean(
+										description		= "can guests see the document ?",
+										attribute		= "is_mapping",
+										example			= True,
+										required		= False,
+										default			= False,
+									)
+
 mapping_field		= fields.String(
 										description		= "field to map",
 										attribute		= "mapping_field",
@@ -400,14 +408,16 @@ id_func 				= fields.String(
 									)
 
 update_mapping 		= {
-	"mapping_field"		: mapping_field,
+	"is_mapping"		: is_mapping,
+	"field_to_update"	: field_to_update,
+	# "mapping_field"		: mapping_field,
 	"id_dmt" 			: id_dmt,
 	"id_dmf" 			: id_dmf,
 	"id_dsi" 			: id_dsi,
 	"id_rec" 			: id_rec,
 	"id_func" 			: id_func,
 	"open_level_show" 	: open_level_show,
-	"dsi_header"			: dsi_header,
+	"dsi_header"		: dsi_header,
 
 }
 
