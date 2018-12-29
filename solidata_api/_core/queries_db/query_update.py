@@ -107,7 +107,8 @@ def Query_db_update (
 
 				if is_mapping : 
 
-					payload_map = {}
+					payload_map 		= {}
+					delete_from_mapping = payload_data.get('del_mapping', False )
 
 					# cf : https://stackoverflow.com/questions/10522347/mongodb-update-objects-in-a-documents-array-nested-updating 
 
@@ -123,7 +124,11 @@ def Query_db_update (
 						selector_f_ 							= field_to_update+".oid_dsi"
 						selector_v_ = payload_map["oid_dsi"] 	= ObjectId ( payload_data["id_dsi"] )
 						selector 	= { selector_f : selector_v, selector_f_ : selector_v_ }
-						payload_map["oid_dmf"] 					= ObjectId( payload_data["id_dmf"] )
+						if payload_data["id_dmf"] == "_ignore_" or delete_from_mapping : 
+							# payload_map["oid_dmf"] 				= None
+							pass
+						else : 
+							payload_map["oid_dmf"] 				= ObjectId( payload_data["id_dmf"] )
 
 					elif field_to_update == "mapping.dmf_to_rec" : 
 						selector_f 								= field_to_update+".oid_dmf"
@@ -143,14 +148,27 @@ def Query_db_update (
 
 					### update mapping if selector_v already exists -> update array element
 
-					# try : 
 					log.debug( "update mapping / existing mapper... " )
-					doc_mapped = db_collection.update_one( 
-						{ "_id"		: doc_oid, **selector }, 
-						{ "$set" 	:  
-							{ field_to_update+".$."+key : payload_map[key] for key in payload_map.keys() }
-						}, 
-					)
+					### $set from array if delete_mapping flag is False
+					if not delete_from_mapping : 
+						payload_set = { field_to_update+".$."+key : payload_map[key] for key in payload_map.keys() }
+						doc_mapped = db_collection.update_one( 
+							{ "_id"		: doc_oid, **selector }, 
+							{ "$set" 	:  
+								payload_set
+								# { field_to_update+".$."+key : payload_map[key] for key in payload_map.keys() }
+							}, 
+						)
+					### $pull from array if delete_mapping flag is True
+					else : 
+						payload_pull = payload_map
+						doc_mapped = db_collection.update_one( 
+							{ "_id"		: doc_oid, **selector }, 
+							{ "$pull" : {
+									field_to_update : payload_pull
+								}
+							}, 
+						)
 					log.debug( "...doc_mapped : \n%s ", pformat(doc_mapped) )
 					log.debug( "...doc_mapped.matched_count : \n%s ", pformat(doc_mapped.matched_count) )
 

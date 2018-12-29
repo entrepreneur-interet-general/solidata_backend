@@ -362,8 +362,15 @@ dsi_header 			= fields.String(
 									)
 
 is_mapping		= fields.Boolean(
-										description		= "can guests see the document ?",
+										description		= "is it an update in mapping field ?",
 										attribute		= "is_mapping",
+										example			= True,
+										required		= False,
+										default			= False,
+									)
+del_mapping		= fields.Boolean(
+										description		= "is it to delete an entry from mapping ?",
+										attribute		= "del_mapping",
 										example			= True,
 										required		= False,
 										default			= False,
@@ -409,6 +416,7 @@ id_func 				= fields.String(
 
 update_mapping 		= {
 	"is_mapping"		: is_mapping,
+	"del_mapping"		: del_mapping,
 	"field_to_update"	: field_to_update,
 	# "mapping_field"		: mapping_field,
 	"id_dmt" 			: id_dmt,
