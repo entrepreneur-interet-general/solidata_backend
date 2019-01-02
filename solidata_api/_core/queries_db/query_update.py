@@ -230,8 +230,29 @@ def Query_db_update (
 					}
 					log.debug( "payload_bis : \n%s", pformat(payload_bis) )
 
+
+					### delete_from_list - 
+					if add_to_list == "delete_from_list" :
+
+						log.debug( "field_to_update : %s", field_to_update )
+						log.debug( "oid_item_field : %s", oid_item_field )
+						log.debug( "field_to_update_added : %s", field_to_update_added )
+
+						db_collection.update_one( 
+							{ "_id": doc_oid }, 
+							{ "$pull" : 
+								{ field_to_update : { oid_item_field : doc_added_oid } } 
+							}, 
+						)
+						db_collection_added.update_one( 
+							{ "_id": doc_added_oid }, 
+							{ "$pull" : 
+								{ field_to_update_added : { "used_by" : doc_oid } } 
+							}, 
+						)
+
 					### add_to_list
-					if add_to_list == "add_to_list" :
+					elif add_to_list == "add_to_list" :
     
 						# check if subfield exists
 						doc_list 	= document
@@ -257,7 +278,32 @@ def Query_db_update (
 
 						# if not any(d.get( "oid_"+doc_added_type, None) == doc_added_oid for d in doc_list):
 						if can_push or not is_subfield : 
-						
+							
+							### delete all previous entries from list if subfield == "dmt_list" && add to list
+							if field_to_update == "datasets.dmt_list" and document_type == 'prj' : 
+							
+								log.debug( "field_to_update : %s", field_to_update )
+
+								doc_to_pull_oids = document["datasets"]["dmt_list"]
+								log.debug( "doc_to_pull_oids : %s", doc_to_pull_oids )
+
+								for doc_to_pull_oid in doc_to_pull_oids :
+    									
+									# get previous dmt from dmt_list in prj and empty list
+									db_collection.update_one( 
+										{ "_id": doc_oid }, 
+										{ "$pull" : 
+											{ field_to_update : { oid_item_field : doc_to_pull_oid["oid_dmt"] } } 
+										}, 
+									)
+									# pull previous prj oid from dmt uses list
+									db_collection_added.update_one( 
+										{ "_id": doc_to_pull_oid["oid_dmt"] }, 
+										{ "$pull" : 
+											{ field_to_update_added : { "used_by" : doc_oid } } 
+										}, 
+									)
+							 
 							## push in list 
 							db_collection.update_one( 
 								{ "_id"			: doc_oid }, 
@@ -270,25 +316,7 @@ def Query_db_update (
 								upsert=True 
 							)
 
-					### delete_from_list - 
-					elif add_to_list == "delete_from_list" :
 
-						log.debug( "field_to_update : %s", field_to_update )
-						log.debug( "oid_item_field : %s", oid_item_field )
-						log.debug( "field_to_update_added : %s", field_to_update_added )
-
-						db_collection.update_one( 
-							{ "_id": doc_oid }, 
-							{ "$pull" : 
-								{ field_to_update : { oid_item_field : doc_added_oid } } 
-							}, 
-						)
-						db_collection_added.update_one( 
-							{ "_id": doc_added_oid }, 
-							{ "$pull" : 
-								{ field_to_update_added : { "used_by" : doc_oid } } 
-							}, 
-						)
 
 				else : 
 					log.debug( "neither is_mapping nor add_to_list... " )
