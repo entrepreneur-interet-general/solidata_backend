@@ -12,5 +12,13 @@ log.debug("... loading _choices_licences.py ...")
 
 
 licences_options = [
-	"MIT", "GNU", "OGBL" # ...
+	'CC BY',
+	'CC BY-SA',
+	'CCO', 
+	'GNU', 
+	'MIT', 
+	'ODbL',
+	'ODC-By', 
+	'OpenGL', 
+	'PDDL', 
 ]

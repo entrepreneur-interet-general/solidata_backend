@@ -652,7 +652,7 @@ open_level_edit_show 		= {
 	"open_level_edit"	: open_level_edit,
 	"open_level_show" 	: open_level_show,
 }
-open_level_edit 			= {
+open_level_edit_ 			= {
 	"open_level_edit"	: open_level_edit,
 }
 

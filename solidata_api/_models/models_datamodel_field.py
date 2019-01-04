@@ -30,7 +30,7 @@ class NewDmf :
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "Dmf_basics", { **doc_basics, **f_basics_dmf, **open_level_edit } )
+		self.mod = ns_.model( "Dmf_basics", { **doc_basics, **f_basics_dmf, **open_level_edit_ } )
 	
 	@property
 	def model(self): 

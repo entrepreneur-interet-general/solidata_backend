@@ -30,7 +30,7 @@ class NewTag :
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "Tag_basics", { **doc_basics, **f_basics_tag, **open_level_edit } )
+		self.mod = ns_.model( "Tag_basics", { **doc_basics, **f_basics_tag, **open_level_edit_ } )
 	
 	@property
 	def model(self): 
