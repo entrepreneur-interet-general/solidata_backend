@@ -559,6 +559,13 @@ def create_model_data_raw( 	ns_,
 			ns_.model( model_name , schema_ ),
 			description = "Data_raw"
 		)
-	
+
+	if schema in [ "rec" ] : 
+
+		data_raw_fields		= fields.Nested(
+			ns_.model( model_name , f_basics_rec ),
+			description = "Data_raw"
+		)
+
 	return data_raw_fields
 

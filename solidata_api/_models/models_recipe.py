@@ -67,6 +67,8 @@ class Rec_infos :
 
 		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "rec_to_func" ])
 
+		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="rec")
+
 
 		self.model_id = {
 			'_id' 			: self._id,
@@ -84,7 +86,8 @@ class Rec_infos :
 			
 			'translations' 	: self.translations,
 		
-		
+			'data_raw'		: self.data_raw,
+
 
 		}
 		self.model_uses = {

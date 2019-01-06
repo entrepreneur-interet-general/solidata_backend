@@ -42,6 +42,13 @@ url_link			= fields.String(
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### for document updates
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+field_raw 			= fields.Raw(
+										description		= "raw data about a document",
+										attribute		= "field_raw",
+										example			= "raw data",
+										default			= 'a new raw data',
+										required		= True,
+									)
 field_value 		= fields.Raw(
 										description		= "data about a document",
 										attribute		= "data",
@@ -573,6 +580,13 @@ f_basics_dmf 		= {
 f_headers_ds 		= {
 	"f_coll_header_val"		: f_coll_header_val,
 	"f_coll_header_text"	: f_coll_header_text,
+}
+
+f_basics_rec 		= {
+	"f_code" 		: f_code,
+	"f_object" 		: f_object,
+	"f_comments" 	: f_comments,
+	"field_raw" 	: field_raw,
 }
 
 # f_basics_dsi_dsr_dso 		= {

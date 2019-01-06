@@ -33,18 +33,18 @@ for dft_rec in default_recipes_list :
 	
 	log.debug ("dft_rec : \n{}".format(pformat(dft_rec)))
 	
-	# Query_db_insert(
-	# 	ns, 
-	# 	models,
-	# 	document_type,
+	Query_db_insert(
+		ns, 
+		models,
+		document_type,
 
-	# 	dft_rec,
+		dft_rec,
 
-	# 	value_to_check 	= dft_rec["infos"]["title"],
-	# 	field_to_check	= "infos.title",
+		value_to_check 	= dft_rec["infos"]["title"],
+		field_to_check	= "infos.title",
 
-	# 	user_role   	= "system"
-	# )
+		user_role   	= "system"
+	)
 
 
 

@@ -34,17 +34,23 @@ default_recipes_list = [
 		},
 		"specs" : {
 			"doc_type"		: "rec",
+			"is_standard" 	: True
 		},
 		"data_raw" : {
-			"function_id" 	: "geoloc_df",
-			"params" 		: [
-				"dmf_list_to_geocode",
-				"dsi_list_to_geocode",
-				"prj_list_to_geocode",
-				"address_complement",
-				"timeout",
-				"delay",
-			],
+			"f_code" 		: "geoloc_df",
+			"f_object" 		: "geolocalize some dataframes",
+			"f_comments" 	: "first recipe to be tested in solidata",
+			"field_raw" 	: {	
+				"params" : [
+					"dmf_list_to_geocode",
+					"dsi_list_to_geocode",
+					"prj_list_to_geocode",
+					"address_complement",
+					"timeout",
+					"delay",
+				],
+			},
+
 		}
 
 	}
@@ -73,7 +79,36 @@ default_tag_list = [
 			"doc_type"		: "tag",
 			"is_standard" 	: True
 		}
-
+	},
+	{
+		"infos" : {
+			"title" 		: "government",
+			"description" 	: ""
+		},
+		"specs" : {
+			"doc_type"		: "tag",
+			"is_standard" 	: True
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "civic data",
+			"description" 	: ""
+		},
+		"specs" : {
+			"doc_type"		: "tag",
+			"is_standard" 	: True
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "climate change",
+			"description" 	: ""
+		},
+		"specs" : {
+			"doc_type"		: "tag",
+			"is_standard" 	: True
+		}
 	},
 ]
 
