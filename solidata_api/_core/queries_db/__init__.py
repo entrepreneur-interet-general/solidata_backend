@@ -189,6 +189,7 @@ from .query_list import *
 from .query_delete import *
 from .query_update import *
 from .query_enrich import *
+from .query_insert_doc import *
 
 print()
 

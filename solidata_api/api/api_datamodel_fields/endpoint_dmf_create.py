@@ -20,12 +20,29 @@ model_dmf		= Dmf_infos(ns)
 model_dmf_in	= model_dmf.model_complete_in
 model_dmf_out	= model_dmf.model_complete_out
 
+models 			= {
+	"model_doc_in" 			: model_dmf_in ,
+	"model_doc_out" 		: model_dmf_out 
+} 
 
+### CREATE DEFAULT DMFS FROM config_default_docs
+### import default documents 
+from solidata_api.config_default_docs import default_dmf_list
+for dft_dmf in default_dmf_list : 
+	log.debug ("dft_dmf : \n{}".format(pformat(dft_dmf)))
 
+	Query_db_insert(
+		ns, 
+		models,
+		document_type,
 
+		dft_dmf,
 
+		value_to_check 	= dft_dmf["infos"]["title"],
+		field_to_check	= "infos.title",
 
-
+		user_role   	= "system"
+	)
 
 
 

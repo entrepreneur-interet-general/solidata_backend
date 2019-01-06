@@ -19,13 +19,14 @@ from ._choices_docs import *
 
 user_roles = [
 
-	"admin", 
-	"staff",   ### can edit all datamodels : dmf + dmt
+	"system", 		### robot user
 
-	# "collective", 
-	"registred", 
+	"admin", 		### real user and confirmed 
+	"staff",   		### can edit all datamodels : dmf + dmt
+
+	"registred", 	### confirmed email
 	
-	"guest", ### not registred yet
+	"guest", 		### not registred yet
 	"anonymous"
 ]
 
@@ -114,6 +115,12 @@ log.debug("user_fields_client_can_update_list : \n %s\n...", pformat(user_fields
 
 
 ### choices about user's profiles
+
+user_view = [
+	"expert",		### view all collections
+	"data_lover",	### all but REC
+	"minimal",		### only PRJ + DSI
+]
 
 user_profiles = [
 	"helper",

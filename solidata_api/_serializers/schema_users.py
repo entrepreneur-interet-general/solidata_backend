@@ -49,7 +49,7 @@ agreement			= fields.Boolean(
 										description		= "user has agreed to terms and conditions",
 										attribute		= "agreement",
 										example			= False,
-										required		= True,
+										required		= False,
 										default			= False,
 									)
 
@@ -168,12 +168,17 @@ usr_profile			= fields.String(
 									)
 usr_profiles		= fields.List(
 										usr_profile,
-										# enum			= user_profiles,
 										example			= ["organizer"],
 										attribute		= "profiles",	
 										default			= []
 									)
 
+usr_view			= fields.String(
+										description		= "view of the user : which collections are visible in front",
+										enum			= user_view,
+										attribute		= "usr_view",
+										default			= 'minimal',
+									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FOR GENERIC MODELS
@@ -199,7 +204,7 @@ user_basics = {
 	"name" 				: name,
 	"surname" 			: surname,
 	"email" 			: email,
-	"pseudo"			: name,
+	"pseudo"			: pseudo,
 }
 user_basics_light = {
 	"pseudo"			: name,
@@ -233,6 +238,8 @@ user_auth_in = {
 
 usr_profile_ = {
 	"lang"  				: language,
+	"agreement"				: agreement,
+	"usr_view"				: usr_view,
 	"usr_profiles"			: usr_profiles,
 }
 

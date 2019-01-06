@@ -20,8 +20,31 @@ mod_rec					= Rec_infos(ns)
 model_recipe_in			= mod_rec.mod_complete_in
 model_recipe_out		= mod_rec.mod_complete_out
 
+models 			= {
+	"model_doc_in" 			: model_recipe_in ,
+	"model_doc_out" 		: model_recipe_out 
+} 
 
 
+### CREATE DEFAULT TAGS FROM config_default_docs
+### import default documents 
+from solidata_api.config_default_docs import default_recipes_list
+for dft_rec in default_recipes_list : 
+	
+	log.debug ("dft_rec : \n{}".format(pformat(dft_rec)))
+	
+	# Query_db_insert(
+	# 	ns, 
+	# 	models,
+	# 	document_type,
+
+	# 	dft_rec,
+
+	# 	value_to_check 	= dft_rec["infos"]["title"],
+	# 	field_to_check	= "infos.title",
+
+	# 	user_role   	= "system"
+	# )
 
 
 

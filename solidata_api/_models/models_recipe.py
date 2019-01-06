@@ -51,7 +51,7 @@ class Rec_infos :
 		self._id 					= oid_field
 		self.basic_infos 			= create_model_basic_infos(	ns_,	model_name=model_type+"_infos")
 		self.public_auth			= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
-		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs")
+		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs", 	include_is_standard=True )
 		self.log					= create_model_log(			ns_,	model_name=model_type+"_log" )
 		self.modif_log				= create_model_modif_log(	ns_, 	model_name=model_type+"_modif_log")
 

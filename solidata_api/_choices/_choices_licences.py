@@ -11,6 +11,8 @@ from log_config import log, pformat
 log.debug("... loading _choices_licences.py ...")
 
 
+
+### TO DO : UPDATE AND CREATE SPECIAL COLLECTION FOR IT
 licences_options = [
 	'CC BY',
 	'CC BY-SA',

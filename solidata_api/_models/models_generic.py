@@ -475,14 +475,18 @@ def create_model_specs(	ns_,
 						include_src_link			= False,
 						include_inherit_from_dmt	= False,
 						include_child_of_tag		= False,
+						include_is_standard			= False
 					) :
 	"""
 	Specs model 
 	"""
 	
 	specs_base = {
-					'doc_type'	: doc_type,
+					'doc_type'		: doc_type,
 				}
+
+	if include_is_standard == True : 
+		specs_base['is_standard']		= is_standard
 
 	if include_src_link == True : 
 		specs_base['src_link']		= src_link

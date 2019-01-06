@@ -21,6 +21,30 @@ model_register_user_out	= model_user.model_complete_out
 model_user_complete_in	= model_user.model_complete_in
 model_user_access		= model_user.model_access
 
+models 			= {
+	"model_doc_in" 			: model_user_complete_in ,
+	"model_doc_out" 		: model_register_user_out 
+} 
+
+### CREATE DEFAULT USRs FROM config_default_docs
+### import default documents 
+from solidata_api.config_default_docs import default_system_user_list
+for dft_usr in default_system_user_list : 
+	
+	log.debug ("dft_usr : \n{}".format(pformat(dft_usr)))
+	
+	Query_db_insert(
+		ns, 
+		models,
+		document_type,
+
+		dft_usr,
+
+		value_to_check 	= dft_usr["auth"]["role"],
+		field_to_check	= "auth.role",
+
+		user_role   	= "system"
+	)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### ROUTES
@@ -224,6 +248,11 @@ class Confirm_email(Resource):
 			user_to_confirm["auth"]["refr_tok"] = refresh_token
 			user_to_confirm["auth"]["role"] 	= "registred"
 			user_to_confirm["auth"]["conf_usr"] = True
+
+			### register as admin if user is the first to be created and confirmed in collection
+			count_users = mongo_users.count()
+			if count_users == 1 : 
+				user_to_confirm["auth"]["role"] 	= "admin"
 
 			### update modfication in user data
 			user_to_confirm = create_modif_log(doc=user_to_confirm, action="confirm_email" )

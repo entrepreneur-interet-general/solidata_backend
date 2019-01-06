@@ -33,7 +33,7 @@ class BaseConfig(object):
 	JWT_HEADER_NAME								= "Authorization" #"X-API-KEY"
 	JWT_TOKEN_LOCATION							= ["headers", "query_string"]
 	JWT_QUERY_STRING_NAME 						= "token"
-	JWT_ACCESS_TOKEN_EXPIRES 					= timedelta(minutes=30) # minutes=15
+	JWT_ACCESS_TOKEN_EXPIRES 					= timedelta(minutes=720) # minutes=15
 	JWT_REFRESH_TOKEN_EXPIRES 					= timedelta(days=10*365)  
 	# JWT_IDENTITY_CLAIM							= "_id"
 	### custom JWT expirations

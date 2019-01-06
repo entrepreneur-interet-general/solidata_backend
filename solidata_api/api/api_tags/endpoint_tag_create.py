@@ -20,10 +20,33 @@ model_tag		= Tag_infos(ns)
 model_tag_in	= model_tag.model_complete_in
 model_tag_out	= model_tag.model_complete_out
 
+models 			= {
+	"model_doc_in" 			: model_tag_in ,
+	"model_doc_out" 		: model_tag_out 
+} 
 
 
 
+### CREATE DEFAULT TAGS FROM config_default_docs
+### import default documents 
+from solidata_api.config_default_docs import default_tag_list
 
+for dft_tag in default_tag_list : 
+	
+	log.debug ("dft_tag : \n{}".format(pformat(dft_tag)))
+	
+	Query_db_insert(
+		ns, 
+		models,
+		document_type,
+
+		dft_tag,
+
+		value_to_check 	= dft_tag["infos"]["title"],
+		field_to_check	= "infos.title",
+
+		user_role   	= "system"
+	)
 
 
 

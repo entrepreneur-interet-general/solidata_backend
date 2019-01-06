@@ -113,6 +113,13 @@ open_level_show 	= fields.String(
 										enum			= open_level_choices,
 										required		= True,
 									)
+is_standard			= fields.Boolean(
+										description		= "is it standard document ?",
+										attribute		= "is_standard",
+										example			= True,
+										required		= False,
+										default			= False,
+									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### multilanguage

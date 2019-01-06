@@ -11,6 +11,7 @@ log.debug("\n>>> api_tags ... creating api blueprint for DATAMODEL TAGS")
 
 document_type		= "tag"
 
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
