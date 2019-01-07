@@ -30,10 +30,9 @@ def Query_db_update (
 		payload 			= {}
 	):
 
-
-
-	### prepare marshaller 
-	# marshaller = Marshaller(ns, models)
+	print()
+	print("-+- "*40)
+	log.debug("... _core.queries_db.query_update.py ... %s", document_type )
 
 	### default values
 	db_collection		= db_dict_by_type[document_type]
@@ -42,7 +41,7 @@ def Query_db_update (
 	user_role			= "anonymous"
 	document_out		= None
 	message 			= None
-	dft_open_level_show = ["open_data"]
+	# dft_open_level_show = ["open_data"]
 	response_code		= 200
 
 	if claims or claims!={}  :
@@ -51,7 +50,7 @@ def Query_db_update (
 		if user_role != "anonymous" : 
 			user_oid 	= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
-			dft_open_level_show += ["commons"]
+			# dft_open_level_show += ["commons"]
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 

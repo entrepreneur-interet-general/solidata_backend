@@ -1,27 +1,28 @@
 # -*- encoding: utf-8 -*-
 
 """
-endpoint_prj_edit.py  
+endpoint_dso_edit.py  
 """
 
 from solidata_api.api import *
 
-log.debug(">>> api_projects ... creating api endpoints for PRJ_EDIT")
+log.debug(">>> api_dataset_outputs ... creating api endpoints for DSO_EDIT")
 
 from . import api, document_type
 
 ### create namespace
-ns = Namespace('edit', description='Edit a prj : ... ')
+ns = Namespace('edit', description='Edit a dso : ... ')
 
 ### import models 
 from solidata_api._models.models_updates import * 
-from solidata_api._models.models_project import * 
-mod_doc				= Prj_infos(ns)
+from solidata_api._models.models_dataset_output import * 
+mod_doc				= Dso_infos(ns)
 model_doc_out		= mod_doc.mod_complete_out
 model_doc_guest_out	= mod_doc.model_guest_out
 model_doc_min		= mod_doc.model_minimum
 models 				= {
 	"model_doc_out" 		: model_doc_out ,
+	"model_doc_in" 			: model_doc_min ,
 	"model_doc_guest_out" 	: model_doc_guest_out ,
 	"model_doc_min" 		: model_doc_min ,
 } 
@@ -40,23 +41,23 @@ model_update	= Update_infos(ns, document_type).model_update_generic
 @ns.doc(security='apikey')
 @ns.route('/<string:doc_id>')
 @ns.response(404, 'document not found')
-class Prj_edit(Resource):
+class Dso_edit(Resource):
 
 	"""
-	prj edition :
+	dso edition :
 	PUT    - Updates document's infos
 	DELETE - Let you delete document
 	"""
 
-	@ns.doc('update_prj')
+	@ns.doc('update_dso')
 	@guest_required 
-	@ns.expect([model_update])
+	# @ns.expect([model_update])
 	def put(self, doc_id):
 		"""
-		Update a  prj in db
+		Rebuild a dso from prj in db
 
 		>
-			--- needs   : a valid access_token in the header, field_to_update, field_value
+			--- needs   : a valid access_token in the header
 			>>> returns : msg, doc data 
 		"""
 		
@@ -73,30 +74,29 @@ class Prj_edit(Resource):
 		log.debug("claims : \n %s", pformat(claims) )
 
 		### update doc in DB
-		updated_doc, response_code	= Query_db_update (
+		updated_dso, response_code	= Query_db_build_dso (
 			ns, 
 			models,
-			document_type,
 			doc_id,
 			claims,
 			roles_for_complete = ["admin"],
 			payload = ns.payload
 		)
 
-		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+		log.debug("updated_dso : \n%s ", pformat(updated_dso) )
 
 		### return updated document
 		# return {
 		# 	"msg" : "updating doc...."
 		# }, 200
-		return updated_doc, response_code
+		return updated_dso, response_code
 
 
-	@ns.doc('delete_prj')
+	@ns.doc('delete_dso')
 	@guest_required 
 	def delete(self, doc_id):
 		"""
-		delete a prj in db
+		delete a dso in db
 
 		> 
 			--- needs   : a valid access_token (as admin or current user) in the header, an oid of the document in the request

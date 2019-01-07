@@ -564,6 +564,13 @@ f_coll_header_text		= fields.String(
 # 										attribute		= "f_coll_headers",	
 # 										default			= []
 # 									)
+f_data 					= fields.Raw(
+										description		= "raw data about a document",
+										attribute		= "f_data",
+										example			= "raw data",
+										default			= 'a new raw data',
+										required		= True,
+									)
 
 f_basics_tag 		= {
 	"f_code" 		: f_code,

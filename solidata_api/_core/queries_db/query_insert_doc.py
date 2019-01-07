@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 """
-_core/queries_db/query_insert_dft_doc.py  
+_core/queries_db/query_insert_doc.py  
 """
 
 from log_config import log, pformat
-log.debug("... _core.queries_db.query_insert_dft_doc.py ..." )
+log.debug("... _core.queries_db.query_insert_doc.py ..." )
 
 from  	datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
@@ -18,7 +18,7 @@ from 	solidata_api._choices._choices_docs import doc_type_dict
 from solidata_api.config_default_docs import default_system_user_list
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
+### GLOBAL FUNCTION TO INSERT ONE DOC FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 

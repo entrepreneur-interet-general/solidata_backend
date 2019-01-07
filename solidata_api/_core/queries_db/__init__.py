@@ -76,7 +76,7 @@ main_text_fields_to_index = [
 
 log.debug(">>> _core.queries_db.__init__.py / INDEXING COLLECTIONS : all fields... " )
 mongo_datasets_inputs.create_index(		all_text_fields_to_index, name=all_text_fields_index_name) 	### index all fields
-mongo_datasets_raws.create_index(		all_text_fields_to_index, name=all_text_fields_index_name)		### index all fields
+mongo_datasets_raws.create_index(		all_text_fields_to_index, name=all_text_fields_index_name)	### index all fields
 mongo_datasets_outputs.create_index(	all_text_fields_to_index, name=all_text_fields_index_name) 	### index all fields
 
 log.debug(">>> _core.queries_db.__init__.py / INDEXING COLLECTIONS : main fields... " )
@@ -190,6 +190,7 @@ from .query_delete import *
 from .query_update import *
 from .query_enrich import *
 from .query_insert_doc import *
+from .query_build_dso import *
 
 print()
 

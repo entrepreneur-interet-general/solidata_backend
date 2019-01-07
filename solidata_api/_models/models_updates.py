@@ -37,7 +37,6 @@ class Update_infos :
 			ns_, model_name=document_type+"_update"
 		)
 
-
 	@property
 	def model_update_generic(self): 
 		return self.generic_update
