@@ -279,6 +279,7 @@ class Login(Resource):
 				tokens = {
 						'access_token'	: new_access_token,
 						'refresh_token' : refresh_token,
+						'salt_token' 	: public_key_str,
 				}
 				print()
 				log.debug("user_light['_id'] : %s", user_light["_id"] )

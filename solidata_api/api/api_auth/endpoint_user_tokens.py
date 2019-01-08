@@ -143,7 +143,8 @@ class NewAccessToken(Resource) :
 
 			### store tokens
 			token = {
-					'access_token': new_access_token,
+					'access_token'	: new_access_token,
+					'salt_token' 	: public_key_str,
 			}
 
 			return {	

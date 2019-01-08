@@ -145,6 +145,7 @@ class Register(Resource):
 			tokens = {
 					'access_token'		: access_token,
 					'refresh_token'		: refresh_token,
+					'salt_token' 		: public_key_str,
 					# 'access_token_confirm_email' 	: access_token_confirm_email
 			}
 			log.info("tokens : \n %s", pformat(tokens))
@@ -273,7 +274,8 @@ class Confirm_email(Resource):
 			### store tokens
 			tokens = {
 						'access_token'	: access_token,
-						'refresh_token'	: refresh_token
+						'refresh_token'	: refresh_token,
+						'salt_token' 	: public_key_str,
 					}
 			log.info("tokens : \n%s", pformat(tokens))
 
@@ -291,7 +293,8 @@ class Confirm_email(Resource):
 			### store tokens
 			tokens = {
 						'access_token'	: access_token,
-						'refresh_token'	: refresh_token
+						'refresh_token'	: refresh_token,
+						'salt_token' 	: public_key_str,
 					}
 			log.info("tokens : \n%s", pformat(tokens))
 			return { 
