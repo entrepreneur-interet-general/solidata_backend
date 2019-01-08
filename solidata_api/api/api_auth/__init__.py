@@ -12,6 +12,7 @@ from solidata_api.api import *
 log.debug("\n>>> api_auth ... creating api blueprint for AUTH")
 
 
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### create blueprint and api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

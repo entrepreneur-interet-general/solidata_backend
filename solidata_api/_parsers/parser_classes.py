@@ -332,18 +332,18 @@ class RequestParserBuilder :
 		return self.baseParser
 
 
-q_arguments 		= RequestParserBuilder(add_queries=True)
-query_arguments		= q_arguments.get_parser
+q_arguments 			= RequestParserBuilder(add_queries=True)
+query_arguments			= q_arguments.get_parser
 log.debug(" query_arguments : \n%s ", pformat(query_arguments.args[0].__dict__ ))
 
 q_data 					= RequestParserBuilder(add_data_query=True)
 query_data_arguments	= q_data.get_parser
 
-q_files 			= RequestParserBuilder(add_files=True)
-file_parser			= q_files.get_parser
+q_files 				= RequestParserBuilder(add_files=True)
+file_parser				= q_files.get_parser
 
-q_pagination 		= RequestParserBuilder(add_pagination=True)
-pagination_arguments = q_pagination.get_parser
+q_pagination 			= RequestParserBuilder(add_pagination=True)
+pagination_arguments 	= q_pagination.get_parser
 
-q_pag_args 			= RequestParserBuilder(add_pagination=True, add_queries=True)
-query_pag_args		= q_pag_args.get_parser
+q_pag_args 				= RequestParserBuilder(add_pagination=True, add_queries=True)
+query_pag_args			= q_pag_args.get_parser

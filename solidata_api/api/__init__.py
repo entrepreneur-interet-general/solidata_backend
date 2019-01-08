@@ -31,12 +31,70 @@ from flask_jwt_extended import (
 )
 
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### generate RSA key
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+import Crypto
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import AES, PKCS1_OAEP, PKCS1_v1_5
+from Crypto import Random
+
+import ast
+from base64 import b64decode, b64encode
+
+
+# cf : https://stackoverflow.com/questions/44892946/rsa-encryption-in-python-decrypt-in-js
+# cf : https://pythonhosted.org/pycrypto/Crypto.PublicKey.RSA._RSAobj-class.html#exportKey 
+# cf : https://www.pycryptodome.org/en/latest/src/examples.html 
+random_generator 	= Random.new().read
+key_pair 			= RSA.generate(1024, random_generator)
+
+private_key_str		= key_pair.exportKey().decode("utf-8")
+log.debug("private_key_str : \n %s", pformat(private_key_str))
+
+public_key 			= key_pair.publickey()
+public_key_str		= public_key.exportKey().decode("utf-8")
+log.debug("public_key_str : \n %s", pformat(public_key_str))
+
+# cf : https://medium.com/@DannyAziz97/rsa-encryption-with-js-python-7e031cbb66bb
+# cf : https://stackoverflow.com/questions/44427934/notimplementederror-use-module-crypto-cipher-pkcs1-oaep-instead-error
+# decryptor 			= PKCS1_OAEP.new(key_pair, hashAlgo=SHA256)
+
+cipher = PKCS1_v1_5.new(key_pair)
+
+def RSAencrypt(msg_clear):
+	log.debug("\ \ / / msg_clear    : \n%s", msg_clear )
+	ciphertext = cipher.encrypt(msg_clear.encode('utf8'))
+	return b64encode(ciphertext).decode('ascii')
+
+def RSAdecrypt(msg_encrypted):
+	log.debug("\ \ / / msg_encrypted    : \n%s", msg_encrypted )
+	ciphertext = b64decode(msg_encrypted.encode('ascii'))
+	log.debug("\ \ / / ciphertext    : \n%s", ciphertext )
+	plaintext = cipher.decrypt(ciphertext, b'DECRYPTION FAILED')
+	log.debug("\ \ / / plaintext    : \n%s", plaintext )
+	return plaintext.decode('utf8')
+	
+### TEST ENCRYPT
+ciphertext = RSAencrypt('a-very-common-password')
+log.info("/ / \ \ ciphertext : \n%s", ciphertext)
+### TEST DECRYPT
+plaintext = RSAdecrypt(ciphertext)
+log.info("/ / \ \ plaintext : \n%s", plaintext)
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### DEBUGGING CONFIRMAITON EMAIL 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # from solidata_api._auth import generate_confirmation_token
 
 # from solidata_api.application import mongo
 
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### import CORS settings
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 from solidata_api._core.cors 			import CORS, cross_origin
 
 # ### import data serializers

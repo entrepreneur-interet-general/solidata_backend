@@ -78,10 +78,20 @@ class Register(Resource):
 		### TO DO = add a ghost field to filter out spams and robots
 
 		### retrieve infos from form 
-		payload_email 	= ns.payload["email"]
-		payload_pwd 	= ns.payload["pwd"]
-		log.debug("email : %s", payload_email )
-		log.debug("password : %s", payload_pwd )
+		# payload_email 			= ns.payload["email"]
+		# payload_pwd 			= ns.payload["pwd"]
+		# log.debug("email : %s", payload_email )
+		# log.debug("password : %s", payload_pwd )
+		
+		payload_email_encrypted   	= ns.payload["email_encrypt"]
+		log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
+		payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
+		log.debug("email_decoded    : %s", email_decoded )
+
+		payload_pwd_encrypted   	= ns.payload["pwd_encrypt"]
+		log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
+		payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
+		log.debug("password_decoded    : %s", password_decoded )
 
 		### chek if user already exists in db
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})

@@ -52,7 +52,12 @@ agreement			= fields.Boolean(
 										required		= False,
 										default			= False,
 									)
-
+email_encrypt 		= fields.String(
+										description 	= "email of the user",
+										attribute		= "email_encrypt",
+										example			= "elinor.ostrom@emailna.co", ### uses https://www.mohmal.com for temporary emails
+										required		= True,
+									)
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### auth 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -61,6 +66,12 @@ pwd					= fields.String(
 										attribute		= "pwd",
 										example			= "a-very-common-password",
 										required		= True,
+									)
+pwd_encrypt			= fields.String(
+										description 	= "password of the user hashed from frontend with access_token",
+										attribute		= "pwd_encrypt",
+										example			= "hashed-common-password",
+										required		= False,
 									)
 confirmed_usr		= fields.Boolean(
 										description		= "user has confirmed its account from his email",
@@ -194,10 +205,15 @@ user_identity = {
 user_pwd = {
 	"pwd"		 		: pwd,
 }
+user_pwd_encrypted = {
+	"pwd_encrypt"		: pwd_encrypt,
+}
 
 user_login = {
-	"email" 			: email,
-	"pwd"				: pwd,
+	# "email" 			: email,
+	# "pwd"				: pwd,
+	"email_encrypt" 	: email_encrypt,
+	"pwd_encrypt"		: pwd_encrypt,
 }
 
 user_basics = {
@@ -213,8 +229,10 @@ user_basics_light = {
 user_register = {
 	"name" 				: name,
 	"surname" 			: surname,
-	"email" 			: email,
-	"pwd"				: pwd,
+	# "email" 			: email,
+	"email_encrypt" 	: email_encrypt,
+	# "pwd"				: pwd,
+	"pwd_encrypt"		: pwd_encrypt,
 	"lang"				: language,
 	"agreement"			: agreement,
 }
