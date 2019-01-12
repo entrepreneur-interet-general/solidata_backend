@@ -91,7 +91,9 @@ class PrjCreate(Resource):
 			"log"			: { 
 				"created_at"	: datetime.utcnow(),
 				"created_by"	: user_oid,
-				"is_running"	: False
+				"is_running"	: False,
+				"needs_rebuild"	: True,
+				"is_buildable"	: False,
 			},
 			"uses"			: {
 				"by_usr"		: [ 

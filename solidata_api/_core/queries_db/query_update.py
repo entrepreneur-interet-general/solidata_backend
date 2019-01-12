@@ -15,6 +15,80 @@ from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 
 
+def check_if_prj_is_buildable (doc_prj) :
+	""" 
+	check if prj has enough mapping to be buildable
+	"""
+
+	print("-+- "*40)
+	log.debug( "... check_if_prj_is_buildable ... " )
+
+	is_buildable = False
+
+	prj_dmt 		= doc_prj["datasets"]["dmt_list"]
+	prj_dsi 		= doc_prj["datasets"]["dsi_list"]
+	prj_map_open 	= doc_prj["mapping"]["dmf_to_open_level"]
+	prj_map_dsi 	= doc_prj["mapping"]["dsi_to_dmf"]
+
+	### check if prj contains dmt and dsi
+	if len(prj_dmt)>0 and len(prj_dsi)>0 :
+
+		log.debug( "... lengths prj_dmt & prj_map_dsi : OK ... " )
+
+		### check if prj contains dmt and dsi
+		if len(prj_map_open)>0 and len(prj_map_dsi)>0 :
+
+			log.debug( "... lengths prj_map_open & prj_map_dsi : OK ... " )
+
+			### set of unique values of dmf from prj_map_open
+			prj_dsi_set 	= { d['oid_dsi'] for d in prj_dsi }
+			log.debug( "... prj_dsi_set : \n%s : ", pformat(prj_dsi_set) )
+
+			### set of unique values of dmf from prj_map_open
+			prj_map_dmf_set 		= { d['oid_dmf'] for d in prj_map_open }
+			log.debug( "... prj_map_dmf_set : \n%s : ", pformat(prj_map_dmf_set) )
+
+			### unique values of dsi from prj_map_dsi
+			prj_map_dsi_dict 		= { d['oid_dsi'] : { "dmf_list" : [] } for d in prj_map_dsi }
+			for d in prj_map_dsi : 
+				prj_map_dsi_dict[ d['oid_dsi'] ]["dmf_list"].append( d["oid_dmf"] )
+			log.debug( "... prj_map_dsi_dict : \n%s : ", pformat(prj_map_dsi_dict) )
+
+			### set of unique values of dmf for each dsi from prj_map_dsi_dict
+			prj_map_dsi_sets 		= { k : set(v['dmf_list']) for k,v in prj_map_dsi_dict.items() }
+			log.debug( "... prj_map_dsi_sets : \n%s : ", pformat(prj_map_dsi_sets) )
+
+			### check if dmf in prj_map_dsi are in prj_map_open
+			dsi_mapped_not_in_prj 					= 0
+			dsi_mapped_but_no_dmf_mapped_in_prj_map = 0
+
+			for dsi_oid, dsi_dmf_mapped_set in prj_map_dsi_sets.items() : 
+				
+				log.debug( "... dsi_oid : %s ", dsi_oid )
+				
+				if dsi_oid in prj_dsi_set :
+					### check if dsi_dmf_mapped_set contains at least 1 dmf from prj_map_dmf_set
+					log.debug( "... dsi_dmf_mapped_set : \n%s ", pformat(dsi_dmf_mapped_set) )
+					log.debug( "... prj_map_dmf_set : \n%s ", pformat(prj_map_dmf_set) )
+					intersection 		= dsi_dmf_mapped_set & prj_map_dmf_set
+					log.debug( "... intersection : %s ", intersection )
+					len_intersection 	= len(intersection)
+					if len_intersection == 0 :
+						dsi_mapped_but_no_dmf_mapped_in_prj_map += 1
+
+				else :
+					dsi_mapped_not_in_prj += 1
+			
+			log.debug( "... dsi_mapped_not_in_prj : %s ", dsi_mapped_not_in_prj )
+			log.debug( "... dsi_mapped_but_no_dmf_mapped_in_prj_map : %s ", dsi_mapped_but_no_dmf_mapped_in_prj_map )
+
+			if dsi_mapped_but_no_dmf_mapped_in_prj_map == 0 :
+				is_buildable = True
+
+	return is_buildable
+
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -78,7 +152,7 @@ def Query_db_update (
 		doc_open_level_show = document["public_auth"]["open_level_show"]
 		doc_open_level_edit = document["public_auth"]["open_level_edit"]
 		log.debug( "doc_open_level_show : %s", doc_open_level_show )
-		
+
 		### get doc's team infos
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
@@ -252,7 +326,7 @@ def Query_db_update (
 
 					### add_to_list
 					elif add_to_list == "add_to_list" :
-    
+	
 						# check if subfield exists
 						doc_list 	= document
 						is_subfield = False
@@ -287,7 +361,7 @@ def Query_db_update (
 								log.debug( "doc_to_pull_oids : %s", doc_to_pull_oids )
 
 								for doc_to_pull_oid in doc_to_pull_oids :
-    									
+										
 									# get previous dmt from dmt_list in prj and empty list
 									db_collection.update_one( 
 										{ "_id": doc_oid }, 
@@ -326,13 +400,30 @@ def Query_db_update (
 						upsert=True 
 					)
 
-			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
-			document_out 		= marshal( document_updated, models["model_doc_out"] )
-
 			# flag as member of doc's team
 			if user_oid in team_oids :
 				query_resume["is_member_of_team"] = True
 		
+			### update log if document is a prj
+			if document_type == "prj" :
+
+				### get updated doc directly from db
+				document_updated 	= db_collection.find_one( {"_id": doc_oid } )
+				document_out 		= marshal( document_updated, models["model_doc_out"] )
+
+				### update needs_rebuild
+				db_collection.update_one( {"_id": doc_oid }, { "$set" : {"log.needs_rebuild" : True} } )
+				
+				### check if prj is buildable & update
+				is_buildable = check_if_prj_is_buildable(document_out) 
+				log.debug( "is_buildable : %s", is_buildable )
+				db_collection.update_one( {"_id": doc_oid }, { "$set" : {"log.is_buildable" : is_buildable } } )
+
+
+			### get updated doc directly from db
+			document_updated 	= db_collection.find_one( {"_id": doc_oid } )
+			document_out 		= marshal( document_updated, models["model_doc_out"] )
+
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
 

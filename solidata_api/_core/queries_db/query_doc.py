@@ -56,6 +56,10 @@ def Query_db_doc (
 
 	):
 
+	### DEBUGGING
+	print()
+	print("-+- "*40)
+	log.debug( "... Query_db_doc / document_type : %s", document_type )
 
 	### prepare marshaller 
 	# marshaller = Marshaller(ns, models)
@@ -181,7 +185,9 @@ def Query_db_doc (
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
 		if user_role in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid : 
-			
+
+			log.debug( "... user_role in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid " )
+
 			document_out = marshal( document, models["model_doc_out"] )
 
 			# flag as member of doc's team
@@ -193,7 +199,7 @@ def Query_db_doc (
 				query_resume["is_member_of_team"] = True
 
 			# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
-			if document_type in ["dsi", "dsr", "dsr"] :
+			if document_type in ["dsi", "dsr", "dsr", "dso"] :
 			
 				log.debug( '...document_type : %s', document_type )
 
@@ -216,6 +222,7 @@ def Query_db_doc (
 
 				# slice f_data
 				if slice_f_data == True :
+					log.debug( 'slice_f_data : %s', slice_f_data )
 					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
 
 				# add total of items within f_data in response
@@ -225,6 +232,8 @@ def Query_db_doc (
 
 		# for other users
 		else :
+
+			log.debug( "... user_role NOT in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid " )
 
 			if doc_open_level_show in ["commons", "open_data"] : 
 			
@@ -236,32 +245,32 @@ def Query_db_doc (
 				else :
 					document_out = marshal( document, models["model_doc_guest_out"] )
 					
-					# append "f_data" if doc is in ["dsi", "dsr", "dso"]
-					if document_type in ["dsi", "dsr", "dso"] :
-	
-						log.debug( '...document_type : %s', document_type )
+				# append "f_data" if doc is in ["dsi", "dsr", "dso"]
+				if document_type in ["dsi", "dsr", "dso"] :
 
-						# if document_type == 'dsi' :
-						# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 	
-						# 	pass
+					log.debug( '...document_type : %s', document_type )
 
-						### copy f_data
-						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
-						log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
-						
-						### sort results
-						if sort_by != None :
-							log.debug( 'sort_by : %s', sort_by )
-							# NOT WORKING : document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"].sort(key=operator.itemgetter(sort_by))
-							document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
-							log.debug( '...document_out sorted' )
-							log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
+					# if document_type == 'dsi' :
+					# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 	
+					# 	pass
 
-						### slice f_data by default
-						document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
+					### copy f_data
+					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 					
-						# add total of items within f_data in response
-						document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
+					### sort results
+					if sort_by != None :
+						log.debug( 'sort_by : %s', sort_by )
+						# NOT WORKING : document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"].sort(key=operator.itemgetter(sort_by))
+						document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
+						log.debug( '...document_out sorted' )
+						log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
+
+					### slice f_data by default
+					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
+				
+					# add total of items within f_data in response
+					document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
 						
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 

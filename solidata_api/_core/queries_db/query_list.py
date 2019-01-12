@@ -279,7 +279,7 @@ def Query_db_list (
 		log.debug('f_data_counts - document_type : %s', document_type) 
 
 		if cursor_in_team_count > 0 : 
-			log.debug("f_data_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
+			# log.debug("f_data_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
 			for i in documents_in_team :
 				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
 				stats = { 
@@ -303,7 +303,7 @@ def Query_db_list (
 		log.debug('dsi_counts - document_type : %s', document_type) 
 
 		if cursor_in_team_count > 0 : 
-			log.debug("dsi_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
+			# log.debug("dsi_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
 			for i in documents_in_team :
 				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
 				stats = { 
@@ -349,13 +349,12 @@ def Query_db_list (
 		# log.debug( "data : \n %s", pformat(data) )
 
 
-
 	### concatenate data into one single list if : q_ignore_team == True
 	if q_pivot and q_ignore_team : 
 
 		log.debug('\n q_pivot - pivot results with pandas...') 
 
-		log.debug('q_pivot - data[0] : \n %s', data[0]) 
+		# log.debug('q_pivot - data[0] : \n %s', data[0]) 
 		data_df = json_normalize(data)
 		data_df_indexed = data_df.set_index('_id')
 		print ( "q_pivot / data_df_indexed.head(2) : \n%s", data_df_indexed.head(2) )
@@ -368,7 +367,7 @@ def Query_db_list (
 
 		log.debug('\n q_normalize - nomralize results with pandas...') 
 		data_df = json_normalize(data)
-		data = data_df.to_dict('records')
+		data 	= data_df.to_dict('records')
 
 
 	return {

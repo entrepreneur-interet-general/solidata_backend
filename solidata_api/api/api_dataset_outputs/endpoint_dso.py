@@ -88,6 +88,8 @@ class Dso_infos_(Resource):
 		log.debug("results have been retrieved ... " )
 		# log.debug("results : \n%s ", pformat(results) )
 
+		log.debug("results['data']['infos']['title'] : %s", results['data']['infos']['title']) 
+		log.debug("len(results['data']['data_raw']['f_data']) : %s", len(results['data']['data_raw']['f_data']) )
 
 		return results, response_code
 

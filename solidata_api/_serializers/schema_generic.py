@@ -518,6 +518,12 @@ f_cell 				= fields.String(
 										example			= "data",
 										required		= False,
 									)
+f_title 			= fields.String(
+										description 	= "title of the field",
+										attribute		= "f_title",
+										example			= "header title",
+										required		= False,
+									)
 f_code 				= fields.String(
 										description 	= "code of the field",
 										attribute		= "f_code",
@@ -533,6 +539,7 @@ f_object 			= fields.String(
 f_type 				= fields.String(
 										description 	= "type of the field",
 										attribute		= "f_type",
+										enum			= dmf_types_list,
 										example			= "data type",
 										required		= False,
 									)
@@ -589,8 +596,9 @@ f_headers_ds 		= {
 	"f_coll_header_text"	: f_coll_header_text,
 }
 f_headers_dso 		= {
-	"f_coll_header_val"		: f_coll_header_val,
-	"f_coll_header_text"	: f_coll_header_text,
+	"f_title"				: f_title,
+	"f_code"				: f_code,
+	"f_type"				: f_type,
 	"open_level_show" 		: open_level_show,
 	"oid_dmf" 				: oid_dmf,
 }
@@ -642,6 +650,24 @@ is_linked_to_src	= fields.Boolean(
 										default			= False,
 									)
 
+is_buildable		= fields.Boolean(
+										description		= "is the project buildable as a dso ?",
+										attribute		= "is_buildable",
+										example			= False,
+										required		= False,
+										default			= False,
+									)
+needs_rebuild		= fields.Boolean(
+										description		= "does the project need to be rebuilt as a dso ?",
+										attribute		= "needs_rebuild",
+										example			= False,
+										required		= False,
+										default			= False,
+									)
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### specs basics
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 doc_type 			= fields.String(
 										description		= "category of a document",
 										attribute		= "doc_type",

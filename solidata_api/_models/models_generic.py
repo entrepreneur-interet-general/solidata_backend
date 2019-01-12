@@ -438,6 +438,7 @@ def create_model_log(	ns_,
 						include_is_loaded			= False,
 						include_src_link			= False,
 						include_is_linked_to_dmt	= False,
+						include_dso_log				= False,
 					) :
 
 	""" 
@@ -450,13 +451,17 @@ def create_model_log(	ns_,
 			}
 
 	if include_counts == True :
-			log_base[ counts_name ] = count
+		log_base[ counts_name ] 	= count
 
 	if include_is_running == True :
-			log_base[ "is_running" ] = is_running
+		log_base[ "is_running" ] 	= is_running
 
 	if include_is_loaded == True :
-			log_base[ "is_loaded" ] = is_loaded
+		log_base[ "is_loaded" ] 	= is_loaded
+
+	if include_dso_log == True :
+		log_base[ "is_buildable" ] 	= is_buildable
+		log_base[ "needs_rebuild" ] = needs_rebuild
 
 	### compile the log
 	logs = fields.Nested(

@@ -14,7 +14,7 @@ from 	flask_restplus 	import  marshal
 from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 from 	solidata_api._core.utils import merge_by_key, chain
-from 	solidata_api._core.pandas_ops import pd, concat_dsi_list
+from 	solidata_api._core.pandas_ops import pd, concat_dsi_list, convert_col_types
 
 	
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -41,7 +41,6 @@ def Query_db_build_dso (
 	dmf_collection		= db_dict_by_type['dmf']
 	dsi_collection		= db_dict_by_type['dsi']
 	dso_collection		= db_dict_by_type['dso']
-
 
 	prj_type_full 		= doc_type_dict['prj']
 	dso_type_full 		= doc_type_dict['dso']
@@ -100,7 +99,9 @@ def Query_db_build_dso (
 			## get payload's args 
 			log.debug( "payload : \n%s", pformat(payload) )
 
+			print("-+- "*40)
 			log.debug( "...and now let's build this DSO mate ! ..." )
+			print("-+- "*40)
 
 			## build an empty dso from marshall template
 			dso_in = marshal( {} , models["model_doc_in"])
@@ -139,7 +140,7 @@ def Query_db_build_dso (
 			### get all DMF from PRJ's DMT
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-			### get prj's dmt (if not empty)
+			### get prj's dmt (if not empty) - from prj/datasets/dmt_list
 			dmt_refs = doc_prj["datasets"]["dmt_list"]
 			if len(dmt_refs) > 0 : 
 				dmt_oid = dmt_refs[0]["oid_dmt"]
@@ -147,42 +148,80 @@ def Query_db_build_dso (
 				dmt_doc	= dmt_collection.find_one({"_id" : dmt_oid }) 
 				# log.debug( "dmt_doc : \n%s", pformat(dmt_doc) )
 
-				### get dmt's dmfs (if not empty)
+				### get dmt's dmfs (if not empty) - from dmt/datasets/dmf_list
 				dmt_dmf_refs = dmt_doc["datasets"]["dmf_list"]
 				if len(dmt_dmf_refs) > 0 :
 					dmf_oids = [ dmf_ref["oid_dmf"] for dmf_ref in dmt_dmf_refs ]			
 					# log.debug( "len(dmf_oids) : %s", len(dmf_oids) )
 					# log.debug( "dmf_oids : \n%s", pformat(dmf_oids) )
-					dmf_list = dmf_collection.find({"_id" : {"$in" : dmf_oids} })
-					# log.debug( "dmf_list.count() : %s", dmf_list.count() )
-					# log.debug( "dmf_list : \n%s", pformat(dmf_list) )
+					dmf_list_cursor = dmf_collection.find({"_id" : {"$in" : dmf_oids} })
+					log.debug( "dmf_list_cursor.count() : %s", dmf_list_cursor.count() )
+					log.debug( "dmf_list_cursor : \n%s", pformat(dmf_list_cursor) )
 
-					### get prj's dmfs' mapping (if not empty)
+					### convert cursor into list
+					dmf_list = list(dmf_list_cursor)
+					# print()
+					# for d in dmf_list : 
+					# 	log.debug("d['_id'] : %s", d['_id'] )
+					# 	log.debug("d['infos']['title'] : %s", d['infos']['title'] )
+					# print()
+
+					### dmf_list_light (referenced dmf for prj' dmt ) -> just list of pure oid_dmf from dmf_list (aka prj's dmt)
+					dmf_list_light 	= [ d['_id'] for d in dmf_list ]
+					log.debug( "dmf_list_light - prj's dmt's dmfs - from dmt/datasets/dmf_list : \n%s", pformat(dmf_list_light) )
+
+
+					### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+					### get PRJ's mappers - dmf_to_open_level --> create DSO's headers
+					### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+					### get prj's dmfs' mapping (if not empty) - from prj/mapping/dmf_to_open_level
 					prj_dmf_mapping 		= doc_prj["mapping"]["dmf_to_open_level"]
-					log.debug( "prj_dmf_mapping : \n%s", pformat(prj_dmf_mapping) )
+					log.debug( "prj_dmf_mapping - from prj/mapping/dmf_to_open_level : \n%s", pformat(prj_dmf_mapping) )
 					if len(prj_dmf_mapping) > 0 : 
-						prj_dmf_mapping_ 		= [ { "oid_dmf" : d["oid_dmf"] , "open_level_show" : d["open_level_show"] } for d in prj_dmf_mapping ]
-						dmf_list_from_map 		= [ d['oid_dmf'] for d in prj_dmf_mapping ]
+
+						### lighten prj_dmf_mapping_ list (referenced dmf for prj' dmt ) -> just oid_dmf and open_level_show fields if dmf in dmf_list_light
+						prj_dmf_mapping_ 		= [ { "oid_dmf" : d["oid_dmf"] , "open_level_show" : d["open_level_show"] } for d in prj_dmf_mapping if d["oid_dmf"] in dmf_list_light ]
+						log.debug( "prj_dmf_mapping_ - exclude dmf not in dmf_list_light : \n%s", pformat(prj_dmf_mapping_) )
+						
+						### lighten prj_dmf_mapping_ list (referenced dmf for prj' dmt ) -> just list of pure oid_dmf
+						dmf_list_from_map 		= [ d['oid_dmf'] for d in prj_dmf_mapping_ ]
 						log.debug( "dmf_list_from_map : \n%s", pformat(dmf_list_from_map) )
-						
-						headers_dso_from_dmf 	= [ { "oid_dmf" : d["_id"] , "name" : d["infos"]["title"] } for d in dmf_list if d["_id"] in dmf_list_from_map ]
-						log.debug( "headers_dso_from_dmf : \n%s", pformat(headers_dso_from_dmf) )
-						
-						headers_dso 			= list( merge_by_key( chain( prj_dmf_mapping_, headers_dso_from_dmf), 'oid_dmf') )
+
+						### get prj's dmfs' headers (if not empty) - from dmf_list (aka prj's dmt)
+						headers_dso_from_dmf_list 	= [ 
+							{ 	
+								"oid_dmf" 	: d["_id"] , 
+								"f_type" 	: d["data_raw"]["f_type"],
+								"f_code" 	: d["data_raw"]["f_code"],
+								"f_title" 	: d["infos"]["title"]
+							} 
+							for d in dmf_list if d["_id"] in dmf_list_from_map 
+						]
+						log.debug( "headers_dso_from_dmf_list : \n%s", pformat(headers_dso_from_dmf_list) )
+
+						### merge prj_dmf_mapping_ and headers_dso_from_dmf_list
+						headers_dso 			= list( merge_by_key( chain( prj_dmf_mapping_, headers_dso_from_dmf_list), 'oid_dmf') )
 						log.debug( "headers_dso : \n%s", pformat(headers_dso) )
 
 						### copy headers to dso_in
 						dso_in["data_raw"]["f_col_headers"] = headers_dso
 
+
 						### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-						### get all DSI from PRJ's dataset
+						### get PRJ's mappers - dsi_to_dmf --> filter out dmf not in dmf_list_light
 						### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-						
-						### get prj's dsis' mapping (if not empty)
+
+						### get prj's dsis' mapping (if not empty) - from prj/mapping/dsi_to_dmf
 						prj_dsi_mapping = doc_prj["mapping"]["dsi_to_dmf"]
 						log.debug( "prj_dsi_mapping : \n%s", pformat(prj_dsi_mapping) )
 
-						### dsis' doc list 
+
+						### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+						### get all DSI from PRJ's dataset - only mapped DSIs
+						### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+						### dsis' doc list - from prj/datasets/dsi_list
 						dsi_oids = [ dsi_ref["oid_dsi"] for dsi_ref in doc_prj["datasets"]["dsi_list"] ]
 						log.debug( "dsi_oids : \n%s", pformat(dsi_oids) )
 						if len(dsi_oids) > 0 and len(prj_dsi_mapping) : 
@@ -207,10 +246,28 @@ def Query_db_build_dso (
 							# log.debug( "dsi_raw_data_list : \n%s", pformat(dsi_raw_data_list) )
 
 							### reindex and concatenate all f_data from headers_dso and df_mapper_dsi_to_dmf with pandas
-							dso_f_data = concat_dsi_list(headers_dso, df_mapper_dsi_to_dmf, dsi_raw_data_list)
+							if len(dsi_raw_data_list)> 0 :
+								df_data_concat = concat_dsi_list(headers_dso, df_mapper_dsi_to_dmf, dsi_raw_data_list)
 
-							### copy headers to dso_in
-							dso_in["data_raw"]["f_data"] = dso_f_data
+								### TO DO convert df_data_concat columns to types writable by mongodb
+								### depending on dmf_list --> ["data_raw"]["f_type"]
+								# df_data_concat = convert_col_types (df_data_concat, dmf_list)
+
+
+								### get df_data_concat as a list
+								dso_f_data = df_data_concat.to_dict('records')
+								log.debug("... dso_f_data is composed ...")
+
+							else : 
+								dso_f_data = []
+							log.debug("... dso_f_data is composed ...")
+							log.debug("... dso_f_data : \n%s", pformat(dso_f_data[:5]))
+
+							### copy f_data to dso_in
+							dso_in["data_raw"]["f_data"] 	= dso_f_data
+
+							### flag dso as loaded
+							dso_in["log"]["is_loaded"] 		= True
 
 
 						else : 
@@ -229,13 +286,19 @@ def Query_db_build_dso (
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 			### replace / upsert DSO built 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-			log.debug( "dso_in : \n%s", pformat(dso_in) )
+			value_test_f_data = dso_in["data_raw"]["f_data"][0]
+			log.debug( "value_test_f_data : \n%s", pformat(value_test_f_data) )
+			for k, v in value_test_f_data.items() : 
+				log.debug("type(k) : %s", type(k))
+				log.debug("type(v) : %s", type(v))
+			log.debug("... preparing to replace / insert dso_in ...")
+
 			_id = dso_collection.replace_one( {"_id" : doc_oid }, dso_in, upsert=True )
 			log.info("dso_in has been created and stored in DB ...")
 			log.info("_id : \n%s", pformat(str(_id) ) )
 
 			document_out 	= marshal( dso_in, models["model_doc_out"] )
-			message 		= "dear user, the {} corresponding to the {} has been updated".format(dso_type_full, prj_type_full) 
+			message 		= "the {} corresponding to the {} has been rebuilt".format(dso_type_full, prj_type_full) 
 
 
 		# TO DO 
@@ -269,6 +332,6 @@ def Query_db_build_dso (
 	### return response
 	return {
 				"msg" 	: message ,
-				"data"	: document_out,
+				# "data"	: document_out,
 				"query"	: query_resume,
 			}, response_code
