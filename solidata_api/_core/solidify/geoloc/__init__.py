@@ -113,9 +113,9 @@ def concat_cols(row, columns_to_concat):
 ###        + update doc after each slice so to show progress to user
 def geoloc_df_col( 
 		row_val, 
-		complement="", 
-		time_out=dft_timeout, 
-		delay=dft_delay 
+		complement	= "", 
+		time_out	= dft_timeout, 
+		delay		= dft_delay 
 	) : 
 
 	"""

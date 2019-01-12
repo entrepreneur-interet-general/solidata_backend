@@ -136,10 +136,11 @@ class DsiCreate(Resource):
 				log.debug("filename : %s", filename)
 
 				### check if file already exists in db
-				existing_dsi = mongo_datasets_inputs.find_one({"specs.src_link" : filename})
+				# existing_dsi = mongo_datasets_inputs.find_one({"specs.src_link" : filename})
 
-				### save data if file is not already existing 
-				if existing_dsi is None and allowed_file(filename) : 
+				### save data if file is allowed # and not already existing 
+				# if existing_dsi is None and allowed_file(filename) : 
+				if allowed_file(filename) : 
 
 					### get file extension from file itself
 					file_extension = get_file_extension(filename)
@@ -166,13 +167,14 @@ class DsiCreate(Resource):
 
 				### DSI already exists
 				else : 
-					log.info("-!- dsi already exists...")
-					existing_dsi_oid = existing_dsi["_id"]
+					log.info("-!- filename not permited...")
+					# existing_dsi_oid = existing_dsi["_id"]
 					return {
-								"msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
+								# "msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
+								"msg"		: "your file '{}' format is not permited...".format(filename),
 								"data"		: {
 									"filename" 	: filename,
-									"_id" 		: str(existing_dsi_oid)
+									# "_id" 		: str(existing_dsi_oid)
 								}
 							}, 401
 

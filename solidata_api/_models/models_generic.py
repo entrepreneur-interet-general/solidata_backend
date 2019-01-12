@@ -547,12 +547,27 @@ def create_model_data_raw( 	ns_,
 		# 	default		= [] 
 		# )
 
+		if schema == "dso" : 
+			schema_f	= f_headers_dso
+		
+		else : 
+			schema_f	= f_headers_ds
+
+
 		f_coll_headers = fields.Nested(
-			ns_.model( model_name , f_headers_ds ),
+			ns_.model( model_name , schema_f ),
 			description = "Coll_headers"
 		)
+
+		f_coll_headers_list = fields.List( 
+			f_coll_headers,
+			description = "List of {}s on this document".format(schema), 
+			default 		= [] 
+		) 
+
 		schema_ = {
-			"f_col_headers" : f_coll_headers,
+			"f_col_headers" : f_coll_headers_list,
+			# "f_col_headers" : f_coll_headers,
 			"f_data"		: f_data,
 		}
 		data_raw_fields		= fields.Nested(

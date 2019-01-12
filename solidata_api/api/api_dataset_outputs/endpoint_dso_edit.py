@@ -57,7 +57,8 @@ class Dso_edit(Resource):
 		Rebuild a dso from prj in db
 
 		>
-			--- needs   : a valid access_token in the header
+			--- needs   : a valid guest access_token in the header
+			--- optionnal args : none
 			>>> returns : msg, doc data 
 		"""
 		

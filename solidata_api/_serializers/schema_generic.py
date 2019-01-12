@@ -588,6 +588,12 @@ f_headers_ds 		= {
 	"f_coll_header_val"		: f_coll_header_val,
 	"f_coll_header_text"	: f_coll_header_text,
 }
+f_headers_dso 		= {
+	"f_coll_header_val"		: f_coll_header_val,
+	"f_coll_header_text"	: f_coll_header_text,
+	"open_level_show" 		: open_level_show,
+	"oid_dmf" 				: oid_dmf,
+}
 
 f_basics_rec 		= {
 	"f_code" 		: f_code,
