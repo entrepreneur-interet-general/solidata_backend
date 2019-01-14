@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 """
-_models/models_updates.py  
+_models/models_solidify.py  
 """
 
 from log_config import log, pformat
 
-log.debug("... loading models_updates.py ...")
+log.debug("... loading models_solidify.py ...")
 
 
 from flask_restplus import fields
@@ -24,38 +24,20 @@ from solidata_api._models.models_generic import *
 # model_user_infos 	= ns.model( "User model", user_infos) #, mask="{name,surname,email}" )
 
 
-class Update_infos : 
+class Solidify_run_params : 
 	"""
 	Model to display / marshal 
-	updates
+	solidify run params
 	"""
 
 	def __init__(self, ns_, document_type ) :
 
 		### SELF MODULES
-		self.generic_update = create_model_field_update(	
-			ns_, model_name=document_type+"_update"
+		self.generic_solidify = create_model_solidify_run_params(	
+			ns_, model_name=document_type+"_solidify"
 		)
 
 	@property
-	def model_update_generic(self): 
-		return self.generic_update
-
-
-class Update_mapping : 
-	"""
-	Model to display / marshal 
-	updates
-	"""
-
-	def __init__(self, ns_, document_type ) :
-
-		### SELF MODULES
-		self.generic_update = create_model_field_update_mapping(	
-			ns_, model_name=document_type+"_update_mapping"
-		)
-
-	@property
-	def model_update_generic(self): 
-		return self.generic_update
+	def model_solidify_generic(self): 
+		return self.generic_solidify
 

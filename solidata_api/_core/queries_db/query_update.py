@@ -203,16 +203,16 @@ def Query_db_update (
 						else : 
 							payload_map["oid_dmf"] 				= ObjectId( payload_data["id_dmf"] )
 
-					elif field_to_update == "mapping.dmf_to_rec" : 
-						selector_f 								= field_to_update+".oid_dmf"
-						selector_v 	= payload_map["oid_dmf"] 	= ObjectId( payload_data["id_dmf"] )
-						selector 	= { selector_f : selector_v }
-						payload_map["oid_rec"] 					= ObjectId( payload_data["id_rec"] )
-
-					elif field_to_update == "mapping.rec_to_func" : 
-						selector_f 								= field_to_update+".oid_dmf"
+					elif field_to_update == "mapping.map_rec" : 
+						selector_f 								= field_to_update+".oid_rec"
 						selector_v 	= payload_map["oid_rec"] 	= ObjectId( payload_data["id_rec"] )
 						selector 	= { selector_f : selector_v }
+						payload_map["rec_params"] 				=  payload_data["rec_params"] 
+
+					# elif field_to_update == "mapping.rec_to_func" : 
+					# 	selector_f 								= field_to_update+".oid_dmf"
+					# 	selector_v 	= payload_map["oid_rec"] 	= ObjectId( payload_data["id_rec"] )
+					# 	selector 	= { selector_f : selector_v }
 
 					log.debug( "selector : \n%s", pformat(selector) )
 					log.debug( "payload_map : \n%s", pformat(payload_map) )

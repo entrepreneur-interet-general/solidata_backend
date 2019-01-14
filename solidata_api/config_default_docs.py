@@ -37,19 +37,28 @@ default_recipes_list = [
 			"is_standard" 	: True
 		},
 		"data_raw" : {
-			"f_code" 		: "geoloc_df",
+			"f_code" 		: "geoloc_ban_nominatim",
 			"f_object" 		: "geolocalize some dataframes",
 			"f_comments" 	: "first recipe to be tested in solidata",
 			"field_raw" 	: {	
-				"params" : [
-					"dmf_list_to_geocode",
-					"dsi_list_to_geocode",
-					"prj_list_to_geocode",
+				"parameters" : [
+					"new_dmfs_list", 		### dmf to add to dmt and dsis
+					"dmf_list_to_geocode",	### 
+					# "prj_list_to_geocode",
 					"address_complement",
 					"timeout",
 					"delay",
 				],
 			},
+		},
+		"mapping" : {
+			"map_func" : {
+				"function_path" : "geoloc.geoloc_df",
+				"default_values" : {
+					"timeout" 	: 20,
+					"delay"		: 1
+				}
+			}
 
 		}
 

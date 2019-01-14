@@ -33,7 +33,7 @@ def Query_db_build_dso (
 
 	print()
 	print("-+- "*40)
-	log.debug("... _core.queries_db.query_build_doc.py ... %s" )
+	log.debug("... _core.queries_db.query_build_doc.py ..." )
 
 	### get mongodb collections
 	prj_collection		= db_dict_by_type['prj']
@@ -50,7 +50,6 @@ def Query_db_build_dso (
 	document_out		= None
 	message 			= None
 	response_code		= 200
-
 
 	if claims or claims!={}  :
 		user_role 		= claims["auth"]["role"]

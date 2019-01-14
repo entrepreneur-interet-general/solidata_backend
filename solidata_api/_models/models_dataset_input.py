@@ -84,10 +84,11 @@ class Dsi_infos :
 			'log'			: self.log , 
 			
 			'translations' 	: self.translations,
-
-			'data_raw'		: self.data_raw,
-
 		}
+
+		self.model_data_raw 	={
+			'data_raw'		: self.data_raw,
+		} 
 		self.model_team_full = {
 			'team'			: self.team ,
 		}
@@ -111,6 +112,7 @@ class Dsi_infos :
 				**self.model_in, 
 				**self.model_team_full, 
 				**self.model_uses, 
+				**self.model_data_raw,
 			}
 		)
 
@@ -121,7 +123,8 @@ class Dsi_infos :
 				**self.model_in, 
 				**self.model_id, 
 				**self.model_team_full, 
-				**self.model_uses 
+				**self.model_uses,
+				**self.model_data_raw, 
 			} 
 		)
 

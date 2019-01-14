@@ -65,7 +65,7 @@ class Dso_infos :
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
 
-		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="dso")
+		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", 		schema="dso" )
 
 		
 
@@ -84,10 +84,10 @@ class Dso_infos :
 			'log'			: self.log , 
 			
 			'translations' 	: self.translations,
-
-			'data_raw'		: self.data_raw,
-
 		}
+		self.mod_data_raw 	={
+			'data_raw'		: self.data_raw,
+		} 
 		self.model_team_full = {
 			'team'			: self.team ,
 		}
@@ -111,6 +111,7 @@ class Dso_infos :
 				**self.model_in, 
 				**self.model_team_full, 
 				**self.model_uses, 
+				**self.mod_data_raw,
 			}
 		)
 
@@ -121,7 +122,8 @@ class Dso_infos :
 				**self.model_in, 
 				**self.model_id, 
 				**self.model_team_full, 
-				**self.model_uses 
+				**self.model_uses,
+				**self.mod_data_raw, 
 			} 
 		)
 

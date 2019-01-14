@@ -61,3 +61,6 @@ api.add_namespace(ns_prj_edit)
 
 from .endpoint_prj_mapping import 	ns as ns_prj_mapping
 api.add_namespace(ns_prj_mapping)
+
+from .endpoint_prj_solidify import 	ns as ns_prj_solidify
+api.add_namespace(ns_prj_solidify)

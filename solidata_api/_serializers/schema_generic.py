@@ -421,12 +421,35 @@ id_rec 				= fields.String(
 										example			= "5b841ac70a82863ff21fd4d7",
 										required		= False,
 									)
-id_func 				= fields.String(
+id_func 			= fields.String(
 										description 	= "oid of a document func as string",
 										attribute		= "id_func",
 										example			= "5b841ac70a82863ff21fd4d7",
 										required		= False,
 									)
+
+
+rec_params 			= fields.Raw(
+										description		= "raw parameters for a recipe",
+										attribute		= "rec_params",
+										example			= "raw data",
+										default			= 'a new raw map parameters',
+										required		= False,
+									)
+function_path 		= fields.String(
+										description 	= "path to find the function in _core.solidify folder",
+										attribute		= "function_path",
+										example			= "geoloc.geoloc_df",
+										required		= False,
+									)
+default_values 		= fields.Raw(
+										description		= "default values for parameters of a recipe",
+										attribute		= "default_values",
+										example			= "{ '<param_name>' : '<dft_val>' }",
+										default			= 'default values for parametesparameters',
+										required		= False,
+									)
+
 
 update_mapping 		= {
 	"is_mapping"		: is_mapping,
@@ -437,10 +460,10 @@ update_mapping 		= {
 	"id_dmf" 			: id_dmf,
 	"id_dsi" 			: id_dsi,
 	"id_rec" 			: id_rec,
-	"id_func" 			: id_func,
+	# "id_func" 			: id_func,
 	"open_level_show" 	: open_level_show,
 	"dsi_header"		: dsi_header,
-
+	"rec_params"		: rec_params
 }
 
 mapping_oid_dict 	= {
@@ -458,17 +481,16 @@ mapping_oid_dict 	= {
 		### target dmf
 		"oid_dmf" 	: oid_dmf,
 	} , 
-	"dmf_to_rec"	: {
+	"map_rec"	: {
 		### src rec
 		"oid_rec" 	: oid_rec,
-		### target dmf
-		"oid_dmf" 	: oid_dmf,
 		### rec_params : {}
-		# TO DO 
+		"rec_params"		: rec_params
 	} , 
-	"rec_to_func"	: {
+	"map_func"	: {
 		### rec_params : {}
-		"oid_func" 	: oid_func,
+		"function_path" 	: function_path,
+		"default_values"	: default_values
 	} ,
 
 }
@@ -728,4 +750,12 @@ update_field		= {
 	
 	"field_to_update"	: field_to_update,
 	"field_value" 		: field_value,
+}
+
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### preformat some generic fields
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+run_recipe 		= {
+	"id_rec" 			: id_rec,
 }

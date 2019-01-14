@@ -351,7 +351,7 @@ def create_model_datasets(	ns_,
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 def create_model_mappings(	ns_,	
 							model_name	= "Mapping" ,
-							schema_list	= ["dsi_to_dmt", "rec_to_func", "dmf_to_rec", "dmf_to_open_level"], 
+							schema_list	= ["dsi_to_dmt", "map_func", "map_rec", "dmf_to_open_level"], 
 						) : 
 	"""
 	Mapping model
@@ -405,6 +405,21 @@ def create_model_field_update_mapping(	ns_,
 	
 	return mapping_update
 
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### MODEL / SOLIDIFY
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+def create_model_solidify_run_params(	ns_, 
+								model_name = "Solidify_run_params" 
+							):
+	
+	"""
+	Field update
+	"""
+
+	solidify_run_params = ns_.model(model_name, run_recipe )
+	
+	return solidify_run_params
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### MODEL / MODIFICATIONS LOG

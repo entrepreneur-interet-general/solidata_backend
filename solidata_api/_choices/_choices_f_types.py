@@ -23,6 +23,7 @@ dmf_types_list = [
 	'geoloc',
 	'tag',
 	'category',
+	'media_link',
 	'boolean',
 	'other'
 ]

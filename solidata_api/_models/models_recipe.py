@@ -58,14 +58,14 @@ class Rec_infos :
 		self.uses					= create_model_uses(		ns_,	model_name=model_type+"_uses", 		schema_list=[ "usr","prj" ])
 		self.uses_light				= create_model_uses(		ns_,	model_name=model_type+"_uses", 		schema_list=[ "prj" ])
 		
-		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag","func" ])
-		self.datasets_light			= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag","func" ], is_light=True )
+		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag" ])
+		self.datasets_light			= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	schema_list=[ "tag" ], is_light=True )
 
 		self.translations			= create_model_translations(ns_, 	model_name=model_type+"_translations")
 		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
 		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
 
-		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "rec_to_func" ])
+		self.mapping				= create_model_mappings(	ns_,	model_name=model_type+"_mapping", 	schema_list=[ "map_func" ])
 
 		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", schema="rec")
 

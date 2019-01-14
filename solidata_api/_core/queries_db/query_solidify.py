@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 """
-_core/queries_db/query_enrich.py  
+_core/queries_db/query_solidify.py  
 """
 
 from log_config import log, pformat
-log.debug("... _core.queries_db.query_enrich.py ..." )
+log.debug("... _core.queries_db.query_solidify.py ..." )
 
 from  	datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
@@ -13,7 +13,6 @@ from 	flask_restplus 	import  marshal
 
 from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
-
 from 	solidata_api._core.solidify import *
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -21,7 +20,7 @@ from 	solidata_api._core.solidify import *
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
-def Query_db_enrich (
+def Query_db_solidify (
 		ns, 
 		models,
 		document_type,
@@ -30,6 +29,17 @@ def Query_db_enrich (
 		roles_for_complete 	= ["admin"],
 		payload 			= {}
 	):
+
+	print()
+	print("-+- "*40)
+	log.debug("... _core.queries_db.Query_db_solidify.py ..." )
+
+	### get mongodb collections
+	prj_collection		= db_dict_by_type['prj']
+	dmt_collection		= db_dict_by_type['dmt']
+	dmf_collection		= db_dict_by_type['dmf']
+	dsi_collection		= db_dict_by_type['dsi']
+	rec_collection		= db_dict_by_type['rec']
 
 
 	### prepare marshaller 
@@ -53,7 +63,7 @@ def Query_db_enrich (
 			log.debug("user_oid : %s", user_oid )
 			dft_open_level_show += ["commons"]
 
-	### retrieve from db
+	### retrieve doc (PRJ f.e.) from db
 	if ObjectId.is_valid(doc_id) : 
 		doc_oid			= ObjectId(doc_id)
 		document 		= db_collection.find_one( {"_id": doc_oid } )
@@ -72,13 +82,11 @@ def Query_db_enrich (
 		"payload" 			: payload
 	}
 
-
 	if document : 
 
 		### check doc's specs : public_auth, team...
-		doc_open_level_show = document["public_auth"]["open_level_show"]
 		doc_open_level_edit = document["public_auth"]["open_level_edit"]
-		log.debug( "doc_open_level_show : %s", doc_open_level_show )
+		log.debug( "doc_open_level_edit : %s", doc_open_level_edit )
 		
 		### get doc's team infos
 		if "team" in document : 
@@ -88,23 +96,40 @@ def Query_db_enrich (
 
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		
-
 		# for admin or members of the team --> complete infos model
-		if user_role in roles_for_complete or user_oid in team_oids or user_id == doc_id : 
+		if user_role in roles_for_complete or user_oid in team_oids : 
 			
-			### add to list arg 
 			log.debug( "payload : \n%s", pformat(payload) )
+
+			### get recipe id to run from payload
+			recipe_to_run = payload[0]["id_rec"]
+			log.debug( "recipe_to_run : %s", recipe_to_run )
+
+			### retrieve recipe from db
+			rec_oid = ObjectId(recipe_to_run)
+			log.debug( "rec_oid : %s", rec_oid )
+			recipe = rec_collection.find_one( { "_id" : rec_oid })
+			log.debug( "recipe : \n%s", pformat(recipe) )
+
+			### retrieve recipe params from doc's mapping
+			map_rec_list = document["mapping"]["map_rec"]
+			log.debug( "map_rec_list : \n%s", pformat(map_rec_list) )
+			rec_params = next( item for item in map_rec_list if item["oid_rec"] == rec_oid )
+			log.debug( "rec_oid : \n%s", pformat(rec_params) )
+
+
+			### choose the function to run from recipe in db
 			
-			for payload_data in payload : 
-				
-				log.debug( "payload_data : \n%s", pformat(payload_data) )
-
-				field_to_update = payload_data["field_to_update"]
-				log.debug( "field_to_update : %s", field_to_update )
-
-				add_to_list = payload_data.get('add_to_list', False )
 
 
+
+
+
+
+
+
+
+			### send back updated document
 			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
 			document_out 		= marshal( document_updated, models["model_doc_out"] )
 
@@ -119,23 +144,9 @@ def Query_db_enrich (
 		# for other users
 		else :
 
-			if doc_open_level_show in ["commons", "open_data"] : 
-			
-				# for anonymous users --> minimum infos model
-				if user_id == None or user_role == "anonymous" : 
-					document_out = marshal( document, models["model_doc_min"] )
-				
-				# for registred users (guests) --> guest infos model
-				else :
-					document_out = marshal( document, models["model_doc_guest_out"] )
-
-				log.debug( "document_out : \n %s", pformat(document_out) )
-				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
-
-			else : 
-				response_code	= 401
-				### unvalid credentials / empty response
-				message = "dear user, you don't have the credentials to access/see this {} with this oid : {}".format(document_type_full, doc_id) 
+			response_code	= 401
+			### unvalid credentials / empty response
+			message = "dear user, you don't have the credentials to solidify this {} with this oid : {}".format(document_type_full, doc_id) 
 
 
 

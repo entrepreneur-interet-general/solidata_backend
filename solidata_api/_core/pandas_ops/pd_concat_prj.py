@@ -49,6 +49,7 @@ def convert_col_types (df_light, df_map_) :
 		if f_type in dmf_type_int or f_type in dmf_type_float :
 			
 			df_light[col] = pd.to_numeric(df_light[col], errors='coerce')
+			print( df_light.head() )
 
 			if f_type in dmf_type_int :
 				df_light.loc[col] = df_light[col].astype('int')
@@ -111,6 +112,7 @@ def dsi_remap (dsi_data, df_mapper_dsi_to_dmf, df_mapper_col_headers ) :
 
 	### generate df from dsi_data
 	df_ 	= pd.DataFrame(dsi_data["data_raw"]["f_data"])
+	
 	### drop useless columns in df_
 	df_cols 			= list(df_.columns)
 	df_cols_to_drop 	= [ h for h in df_cols if h not in df_cols_to_keep ]
@@ -119,6 +121,12 @@ def dsi_remap (dsi_data, df_mapper_dsi_to_dmf, df_mapper_col_headers ) :
 	log.debug("... df_light (after columns drop) ...")
 	# print(df_light.head(3))
 
+	### convert Nan to None
+	df_light = df_light.replace({np.nan:None})
+	print()
+	log.debug("... df_light : Nan values converted to None ...")
+	log.debug("... df_light.dtypes : \n%s", pformat(df_light.dtypes))
+	print(df_light.head(3))
 
 	### convert columns types
 	df_light = convert_col_types( df_light, df_map_ )
@@ -179,11 +187,11 @@ def concat_dsi_list(headers_dso, df_mapper_dsi_to_dmf, dsi_raw_data_list) :
 
 
 	### convert Nan to None
-	df_data_concat = df_data_concat.replace({np.nan:None})
-	print()
-	log.debug("... df_data_concat : Nan values converted to None ...")
-	log.debug("... df_data_concat.dtypes : \n%s", pformat(df_data_concat.dtypes))
-	print(df_data_concat.head(3))
+	# df_data_concat = df_data_concat.replace({np.nan:None})
+	# print()
+	# log.debug("... df_data_concat : Nan values converted to None ...")
+	# log.debug("... df_data_concat.dtypes : \n%s", pformat(df_data_concat.dtypes))
+	# print(df_data_concat.head(3))
 
 
 	return df_data_concat
