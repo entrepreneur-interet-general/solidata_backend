@@ -65,6 +65,11 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur
 
 	__... tutorial still to do ...__
 
+
+- run the app : 
+
+`$ python appserver.py --mode=dev_email` 
+
 ------
 
 ## INSPIRATIONS / BENCHMARK

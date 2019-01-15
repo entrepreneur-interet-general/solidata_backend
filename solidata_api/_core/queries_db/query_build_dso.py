@@ -14,7 +14,7 @@ from 	flask_restplus 	import  marshal
 from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 from 	solidata_api._core.utils import merge_by_key, chain
-from 	solidata_api._core.pandas_ops import pd, concat_dsi_list, convert_col_types
+from 	solidata_api._core.pandas_ops import pd, concat_dsi_list, prj_dsi_mapping_as_df
 
 	
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -229,12 +229,13 @@ def Query_db_build_dso (
 							log.debug( "dsi_list : \n%s", pformat(dsi_list) )
 
 							### prj_dsi_mapping to df + index
-							df_mapper_dsi_to_dmf = pd.DataFrame(prj_dsi_mapping)
-							dsi_mapped_list		 = list(df_mapper_dsi_to_dmf["oid_dsi"])
-							df_mapper_dsi_to_dmf = df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"])
-							print()
-							log.debug("... df_mapper_dsi_to_dmf ...")
-							print(df_mapper_dsi_to_dmf)
+							# df_mapper_dsi_to_dmf = pd.DataFrame(prj_dsi_mapping)
+							# dsi_mapped_list		 = list(df_mapper_dsi_to_dmf["oid_dsi"])
+							# df_mapper_dsi_to_dmf = df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"])
+							# print()
+							# log.debug("... df_mapper_dsi_to_dmf ...")
+							# print(df_mapper_dsi_to_dmf)
+							dsi_mapped_list, df_mapper_dsi_to_dmf = prj_dsi_mapping_as_df(prj_dsi_mapping)
 
 							### get all dsis' f_data
 							dsi_raw_data_list = []
@@ -247,11 +248,6 @@ def Query_db_build_dso (
 							### reindex and concatenate all f_data from headers_dso and df_mapper_dsi_to_dmf with pandas
 							if len(dsi_raw_data_list)> 0 :
 								df_data_concat = concat_dsi_list(headers_dso, df_mapper_dsi_to_dmf, dsi_raw_data_list)
-
-								### TO DO convert df_data_concat columns to types writable by mongodb
-								### depending on dmf_list --> ["data_raw"]["f_type"]
-								# df_data_concat = convert_col_types (df_data_concat, dmf_list)
-
 
 								### get df_data_concat as a list
 								dso_f_data = df_data_concat.to_dict('records')

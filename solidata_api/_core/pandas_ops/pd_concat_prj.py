@@ -13,6 +13,25 @@ from . import pd, np
 from solidata_api._choices._choices_f_types import *
 
 
+def prj_dsi_mapping_as_df(prj_dsi_mapping) : 
+	""" 
+	prj_dsi_mapping to df + index
+	""" 
+	print()
+	print( "- prj_dsi_mapping " + "-\- "*40)
+	log.debug("... run prj_dsi_mapping_as_df ...")
+	
+	df_mapper_dsi_to_dmf = pd.DataFrame(prj_dsi_mapping)
+	dsi_mapped_list		 = list(set(df_mapper_dsi_to_dmf["oid_dsi"]))
+	df_mapper_dsi_to_dmf = df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"]).sort_index()
+	print()
+	log.debug("... df_mapper_dsi_to_dmf ...")
+	print(df_mapper_dsi_to_dmf)
+
+	print("-\- "*40)
+	return dsi_mapped_list, df_mapper_dsi_to_dmf
+
+
 
 def convert_col_types (df_light, df_map_) : 
 	""" 
@@ -93,7 +112,7 @@ def dsi_remap (dsi_data, df_mapper_dsi_to_dmf, df_mapper_col_headers ) :
 	"""
 
 	print()
-	print("-+- "*40)
+	print("-|- "*40)
 	log.debug("... dsi_remap ...")
 
 	### add df_mapper_dsi_to_dmf from df_mapper_col_headers

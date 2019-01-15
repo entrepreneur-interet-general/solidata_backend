@@ -82,7 +82,8 @@ class Prj_solidify(Resource):
 			payload = ns.payload
 		)
 
-		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+		# log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+		log.debug("the prj has been updated") 
 
 		### return updated document
 		# return {

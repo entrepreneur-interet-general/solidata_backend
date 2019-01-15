@@ -110,15 +110,19 @@ def Query_db_solidify (
 			payload_data = payload[0]
 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-			### OPERATIONS RELATED TO DOCUMENT
+			### OPERATIONS RELATED TO DOCUMENTS
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+			### store db docs in a dict
 			documents = {
 				"src_doc" : document
 			}
 
-			is_complex_rec 	= payload_data.get( "is_complex_rec", False )
-			
-			if is_complex_rec : 
+			### check if recipe run implies to modify DMT, DSI, PRJ's MAPPING...
+			# is_complex_rec 	= payload_data.get( "is_complex_rec", False )
+
+			### load corresponding DMT, DSI, PRJ if is_complex_rec
+			if document_type in ["prj"] : 
 
 				### get datasets from document
 				datasets = document["datasets"]
@@ -130,6 +134,7 @@ def Query_db_solidify (
 				documents["dmt_doc"]	= dmt_doc
 				log.debug( "dmt_doc loaded ... " )
 
+				### load DMFs from db
 				dmt_dmf_refs 			= dmt_doc["datasets"]["dmf_list"]
 				dmf_oids 				= [ dmf_ref["oid_dmf"] for dmf_ref in dmt_dmf_refs ]
 				dmf_list_cursor 		= dmf_collection.find({"_id" : {"$in" : dmf_oids} })
@@ -137,7 +142,7 @@ def Query_db_solidify (
 				documents["dmf_list"]	= dmf_list
 				log.debug( "dmf_list loaded ... " )
 
-				### load DSI from db
+				### load DSIs from db
 				dsi_oids 		= [ dsi_ref["oid_dsi"] for dsi_ref in dsi_refs ]
 				dsi_list_cursor = dsi_collection.find({"_id" : {"$in" : dsi_oids} })
 				dsi_list 		= list(dsi_list_cursor)
@@ -189,7 +194,15 @@ def Query_db_solidify (
 
 			# Get class from globals and create an instance
 			# log.debug( "globals() : \n%s", pformat(globals()) )
-			module = globals()[recipe_func_class]( src_docs=documents, rec_params=rec_params_, is_complex_rec=is_complex_rec)
+			module = globals()[recipe_func_class]( 
+				user_oid, 
+				src_docs			= documents, 
+				rec_params			= rec_params_,
+				use_multiprocessing	= False,
+				pool_or_process		= "pool", 		### "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
+				async_or_starmap	= "starmap", 	### "async" | "starmap"
+				cpu_number			= 1
+			)
 
 			# Get the function (from the instance) that we need to call to run the function
 			solidify_func = getattr(module, recipe_func_runner)
