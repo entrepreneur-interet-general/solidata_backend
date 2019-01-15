@@ -53,8 +53,9 @@ default_recipes_list = [
 		},
 		"mapping" : {
 			"map_func" : {
-				"function_path" : "geoloc.geoloc_df",
-				"default_values" : {
+				"function_class" 	: "geoloc_prj",
+				"function_runner" 	: "run_geoloc",
+				"default_values" 	: {
 					"timeout" 	: 20,
 					"delay"		: 1
 				}

@@ -9,6 +9,7 @@ from log_config import log, pformat
 
 log.debug("... loading geoloc.py ...")
 
+from .. import db_dict_by_type
 
 ### NOTEBOOK
 # cf Jupyter notebook : '@/_snippets/tests_geopy_02.ipynb' 
@@ -154,3 +155,95 @@ def geoloc_df_col(
 	
 	else : 
 		return None
+
+
+
+
+### - - - - - - - - - - - - - - - - - - - - ### 
+### GEOLOC WRAPPER / RUNNER FOR SOLIDATA
+### - - - - - - - - - - - - - - - - - - - - ### 
+
+class geoloc_prj : 
+	
+	def __init__ ( 	self, 
+					src_docs 		= None, 
+					rec_params		= {},
+					is_complex_rec	= False,
+				) : 
+		""" 
+		initiate the class to add geolocalization to data
+		""" 
+
+		print()
+		print("- ~ "*40)
+
+		log.debug("... initiating geoloc_prj ...")
+		self.src_docs 		= src_docs
+		self.rec_params 	= rec_params
+		self.is_complex_rec = is_complex_rec
+
+		log.debug("... rec_params : \n%s", pformat(rec_params) )
+
+
+	def remap_prj (self) : 
+	
+		log.debug("... running remap_prj ...")
+
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### OPERATIONS ON PRJ's MAPPING
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+	
+		### remap open_level of each new_dmf in PRJ's mapping with default value
+
+		### add mapping for each DSI's new column in PRJ's mapping 
+
+
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### OPERATIONS ON DMT
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+		### add new_dmfs to DMT if does not exist yet
+
+		### save updated DMT
+
+
+	def run_geoloc ( self, *args, **kwargs ) : 
+
+		log.debug("... running geoloc_prj ...")
+
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### OPERATIONS ON DSI
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### load every DSI's f_data as a dataframe & add new columns (new_dmfs) if does not exist yet
+		for dsi_doc in self.src_docs["dsi_list"] : 
+			
+			print()
+			log.debug("... solidifying dsi_doc['infos']['title'] : %s", dsi_doc['infos']['title'])
+
+			### proceed geoloc for f_data
+			dsi_f_data 	= dsi_doc["data_raw"]["f_data"]
+			df_f_data 	= pd.DataFrame(dsi_f_data)
+			print (df_f_data.head(3))
+
+			### get columns to geoloc from mapper / rec_params
+
+			### save/update new f_data for each DSI
+
+
+
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### COMPLEX OPERATIONS : UPDATE DMT / REMAP PRJ's DMT-OPEN_LEVEL / REMAP PRJ's DSI-DMT 
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		if self.is_complex_rec == True :
+			
+			log.debug("... running geoloc_prj ...")
+			
+			self.remap_prj()
+
+
+
+
+
+
+	
+

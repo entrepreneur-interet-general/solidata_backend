@@ -362,8 +362,37 @@ oid_dict = {
 }
 
 
-
-
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### for recipes
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+is_complex_rec			= fields.Boolean(
+										description		= "does the recipe need to load the project ?",
+										attribute		= "is_complex_rec",
+										example			= False,
+										required		= False,
+										default			= False,
+									)
+# need_load_prj			= fields.Boolean(
+# 										description		= "does the recipe need to load the project ?",
+# 										attribute		= "need_load_prj",
+# 										example			= False,
+# 										required		= False,
+# 										default			= False,
+# 									)
+# need_load_dmt			= fields.Boolean(
+# 										description		= "does the recipe need to load the datamodel ?",
+# 										attribute		= "need_load_dmt",
+# 										example			= False,
+# 										required		= False,
+# 										default			= False,
+# 									)
+# need_load_dsi			= fields.Boolean(
+# 										description		= "does the recipe need to load the dataset input(s) ?",
+# 										attribute		= "need_load_dsi",
+# 										example			= False,
+# 										required		= False,
+# 										default			= False,
+# 									)
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### for mappings
@@ -436,10 +465,16 @@ rec_params 			= fields.Raw(
 										default			= 'a new raw map parameters',
 										required		= False,
 									)
-function_path 		= fields.String(
-										description 	= "path to find the function in _core.solidify folder",
-										attribute		= "function_path",
-										example			= "geoloc.geoloc_df",
+function_class 		= fields.String(
+										description 	= "path to load the class from _core.solidify folder",
+										attribute		= "function_class",
+										example			= "geoloc",
+										required		= False,
+									)
+function_runner 	= fields.String(
+										description 	= "name of the function in function_class",
+										attribute		= "function_runner",
+										example			= "geoloc_prj",
 										required		= False,
 									)
 default_values 		= fields.Raw(
@@ -489,11 +524,14 @@ mapping_oid_dict 	= {
 	} , 
 	"map_func"	: {
 		### rec_params : {}
-		"function_path" 	: function_path,
+		"function_class" 	: function_class,
+		"function_runner" 	: function_runner,
 		"default_values"	: default_values
 	} ,
 
 }
+
+
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### edit auth for a document
@@ -758,4 +796,8 @@ update_field		= {
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 run_recipe 		= {
 	"id_rec" 			: id_rec,
+	"is_complex_rec"	: is_complex_rec,
+	# "need_load_prj"		: need_load_prj,
+	# "need_load_dmt"		: need_load_dmt,
+	# "need_load_dsi"		: need_load_dsi,
 }
