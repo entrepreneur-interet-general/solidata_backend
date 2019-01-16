@@ -33,8 +33,11 @@ from .. import db_dict_by_type
 # cf : https://medium.com/@jmcarpenter2/swiftapply-automatically-efficient-pandas-apply-operations-50e1058909f9
 import 	swifter
 
+import 	geopy.geocoders
 from 	geopy.geocoders import Nominatim, BANFrance
 from 	geopy.extra.rate_limiter import RateLimiter
+
+geopy.geocoders.options.default_user_agent = "solidata_app"
 
 from 	functools import partial
 # from tqdm import tqdm
@@ -62,24 +65,24 @@ process2.start()
 '''
 
 ### - - - - - - - - - - - - - - ### 
+### GEOCODERS
+### - - - - - - - - - - - - - - ### 
+
+geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
+geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
+# geocoder_nom = Nominatim()
+# geocoder_ban = BANFrance()
+
+
+### - - - - - - - - - - - - - - ### 
 ### GENERIC VARIABLES
 ### - - - - - - - - - - - - - - ### 
 
 dft_delay        = 1
-dft_timeout      = 20
+dft_timeout      = 10
 full_address_col = "temp_solidata_full_address_"
 location_col     = "temp_solidata_location_"
 
-
-### - - - - - - - - - - - - - - ### 
-### GEOCODERS
-### - - - - - - - - - - - - - - ### 
-
-geocoder_nom = Nominatim(user_agent="solidata_app")
-geocoder_ban = BANFrance(user_agent="solidata_app")
-### rate limiter
-geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=dft_delay)
-geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=dft_delay)
 
 
 ### - - - - - - - - - - - - - - ### 
@@ -135,7 +138,8 @@ def geoloc_df_col(
 		row_val, 
 		complement	= "", 
 		time_out	= dft_timeout, 
-		delay		= dft_delay 
+		delay		= dft_delay, 
+		apply_sleep = False
 	) : 
 
 	"""
@@ -155,6 +159,10 @@ def geoloc_df_col(
 	print ( "- geoloc_df_col " + "*.  "*40 ) 
 	log.debug("\n- row_val : %s", row_val)
 	
+	### rate limiter
+	geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=delay)
+	geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=delay)
+
 	if pd.notnull(row_val) : 
 		
 		### add address complement to full_address_col value (in case it helps)
@@ -162,14 +170,17 @@ def geoloc_df_col(
 		log.debug("- adress : %s", adress)
 
 		try :
-			### 
+			### test with nominatim first
 			location_raw = geocoder_nom.geocode( query=adress, timeout=time_out, extratags=True)
 		except : 
+			### test with BAN first
 			location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
 
 		log.debug("- location_raw : \n%s", pformat(location_raw))
 
-		sleep(delay)
+		### make function sleep 
+		if apply_sleep : 
+			sleep(delay)
 
 		if location_raw : 
 			return LocToDict(location_raw)
@@ -192,7 +203,13 @@ def errorhandler(exc):
 	log.warning('Exception : \n%s', exc)
 
 
-def geoloc_dsi ( dsi_doc, params, self_df_mapper_dsi_to_dmf, self_dmf_list_to_geocode ) : 
+def geoloc_dsi ( 	dsi_doc, 
+					params, 
+					self_df_mapper_dsi_to_dmf, 
+					self_dmf_list_to_geocode,
+					use_swifter 	= False,
+					dft_test_trim 	= 4,
+				) : 
 
 	print()
 	print ( "- geoloc_dsi " + "-   "*40 ) 
@@ -204,6 +221,7 @@ def geoloc_dsi ( dsi_doc, params, self_df_mapper_dsi_to_dmf, self_dmf_list_to_ge
 	dsi_oid 		= dsi_doc["_id"]
 	test_geoloc 	= params["test_geoloc"]
 	new_dmfs_list	= params["new_dmfs_list"]
+	dsi_is_running 	= dsi_doc["log"].get( "is_running", False )
 
 	### get mapped headers for this dsi
 	dsi_mapper = self_df_mapper_dsi_to_dmf.loc[dsi_oid]
@@ -220,15 +238,17 @@ def geoloc_dsi ( dsi_doc, params, self_df_mapper_dsi_to_dmf, self_dmf_list_to_ge
 	log.debug("... cols_to_concat : \n%s ", pformat(cols_to_concat))
 
 	### load every DSI's f_data as a dataframe & add new columns (new_dmfs) if does not exist yet
-	dsi_f_data 	= dsi_doc["data_raw"]["f_data"]
-	df_f_data 	= pd.DataFrame(dsi_f_data)
+	dsi_f_data 		= dsi_doc["data_raw"]["f_data"]
+	df_f_data_src 	= pd.DataFrame(dsi_f_data)
 	# print()
 	# log.debug("... df_f_data.head(3) ... ")
 	# print (df_f_data.head(3))
 	
+	### just keep cols_to_concat we want to work on to save memory
+	df_f_data = df_f_data_src[ cols_to_concat ]
 
 	### before concatenating columns clean cols_to_concat from NaN values
-	df_f_data[ cols_to_concat ] = df_f_data[ cols_to_concat ].fillna(value="")
+	df_f_data = df_f_data.fillna(value="")
 
 	''' apply concat function to each row (axis=1) --> alternative LESS pythonic
 			### change type of every target column --> string 
@@ -240,16 +260,14 @@ def geoloc_dsi ( dsi_doc, params, self_df_mapper_dsi_to_dmf, self_dmf_list_to_ge
 			print (df_f_data.head(3))
 	'''
 
-
-
 	### apply concat function to each row (axis=1) --> alternative MORE pythonic
-	df_f_data[full_address_col] = df_f_data[cols_to_concat].apply( lambda x : ', '.join(x.astype(str)), axis=1 )
+	df_f_data[full_address_col] = df_f_data[ cols_to_concat ].apply( lambda x : ', '.join(x.astype(str)), axis=1 )
 
 	log.debug("... df_f_data.shape - before test check : %s", df_f_data.shape )
 
-	### slice only first 10 rows if test mode : 
+	### slice only first n rows if test mode is activated : 
 	if test_geoloc : 
-		df_f_data = df_f_data.iloc[ 0:4 ]
+		df_f_data = df_f_data.iloc[ 0 : dft_test_trim ]
 
 	log.debug("... df_f_data.shape - after test check : %s", df_f_data.shape )
 	print()
@@ -257,38 +275,59 @@ def geoloc_dsi ( dsi_doc, params, self_df_mapper_dsi_to_dmf, self_dmf_list_to_ge
 	print (df_f_data.head(10))
 
 	### proceed geoloc for f_data
-	df_f_data[ location_col ] = df_f_data[ full_address_col ].swifter.apply( 
-		geoloc_df_col, 
-		complement	= params["address_complement"], 
-		time_out	= params["timeout"], 
-		delay		= params["delay"],
-	)
+	log.debug("type( df_f_data[ full_address_col ] ) : %s", type(df_f_data[ full_address_col ])  )
+	
 
-	### create and populate new columns in df_f_data from : self.new_dmfs_list
-	for new_col in new_dmfs_list : 
-		new_col_title 				= new_col["infos"]["title"]
-		df_f_data[new_col_title] 	= df_f_data[location_col].apply(extract_loc, field_name=new_col_title)
+	### flag dsi as already running
+	src_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, { "$set" : { "log.is_running" : True } } )
 
-	### drop temp columns : location_col + full_address_col
-	df_f_data = df_f_data.drop([location_col, full_address_col], axis=1)
+	if dsi_is_running == False : 
 
-	### convert NaN values to None
-	df_f_data = df_f_data.replace({np.nan:None})
+		if use_swifter : 
+			### with swifter
+			df_f_data[ location_col ] = df_f_data[ full_address_col ].swifter.apply( 
+				geoloc_df_col, 
+				complement	= params["address_complement"], 
+				time_out	= params["timeout"], 
+				delay		= params["delay"],
+				apply_sleep = False
+			)
+		else :
+			### without swifter
+			df_f_data[ location_col ] = df_f_data[ full_address_col ].apply( 
+				geoloc_df_col, 
+				complement	= params["address_complement"], 
+				time_out	= params["timeout"], 
+				delay		= params["delay"],
+				apply_sleep = False
+			)
+
+		### create and populate new columns in df_f_data_src from new_dmfs_list
+		for new_col in new_dmfs_list : 
+			new_col_title 					= new_col["infos"]["title"]
+			df_f_data_src[new_col_title] 	= df_f_data[location_col].apply(extract_loc, field_name=new_col_title)
+
 
 	print()
-	log.debug("... df_f_data.head(10) - after ageocoding ... ")
-	print (df_f_data.head(10))
+	log.debug("... df_f_data_src.head(10) - after ageocoding ... ")
+	print (df_f_data_src.head(10))
 
 	### save updated DSI's F_DATA
-	# updated_f_data = df_f_data.to_dict('records')
-	# prj_id = db_dict_by_type['dmt'].update_one( {"_id" : self.dmt_doc["_id"]}, {"$set" :  { "data_raw.f_data" : updated_f_data}} )
+	updated_f_data = df_f_data_src.to_dict('records')
+
+	### unflag is_running
+	dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
+
+	# if test_geoloc == False and dsi_is_running == False : 
+	# 	dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
 
 
 	### callback for multiprocessing
 	log.debug("geoloc_dsi finished ... building response for callback")
 	return_response = { 
-		"oid_dsi" : dsi_oid, 
-		"is_geolocalized" : True 
+		"oid_dsi" 			: dsi_oid, 
+		"f_data_geoloc"		: df_f_data,
+		"is_geolocalized" 	: True 
 	}
 	return return_response
 
@@ -321,7 +360,6 @@ class geoloc_prj :
 		log.debug("... initiating geoloc_prj ...")
 
 		### for multiprocessing / Pool 
-		self.result_list 			= []
 		self.use_multiprocessing 	= use_multiprocessing
 		self.pool_or_process 		= pool_or_process
 		self.async_or_starmap 		= async_or_starmap
@@ -345,13 +383,13 @@ class geoloc_prj :
 		self.new_dmfs_list_ligth 	= [ dmf_ref["_id"] for dmf_ref in self.new_dmfs_list  ]
 		log.debug("... self.new_dmfs_list_ligth : \n%s", pformat(self.new_dmfs_list_ligth) )
 
-		self.new_dmfs_ol 			= rec_params["new_dmf_open_level_show"]
+		self.new_dmfs_ols 			= rec_params["new_dmf_open_level_show"]
 		self.address_complement 	= rec_params["address_complement"]
 
 		self.test_geoloc 			= rec_params.get("test_geoloc", False)
 		log.debug("... self.test_geoloc : %s", self.test_geoloc )
 
-		if rec_params["delay"] and rec_params["timeout"] != None : 
+		if rec_params["delay"] and rec_params["delay"] != 0 : 
 			self.delay 				= rec_params["delay"]
 		else : 
 			self.delay = self.rec_params["delay"] = dft_delay
@@ -367,8 +405,8 @@ class geoloc_prj :
 			self.dmt_doc 			= src_docs["dmt_doc"]
 			self.dmf_list 			= src_docs["dmf_list"]
 			self.dsi_list 			= src_docs["dsi_list"]
-			self.prj_dmf_mapping 	= src_docs["src_doc"]["mapping"]["dmf_to_open_level"]
-			self.prj_dsi_mapping 	= src_docs["src_doc"]["mapping"]["dsi_to_dmf"]
+			self.prj_dmf_ols_mapping 	= src_docs["src_doc"]["mapping"]["dmf_to_open_level"]
+			self.prj_dsi_mapping 		= src_docs["src_doc"]["mapping"]["dsi_to_dmf"]
 		
 		### only geoloc a DSI
 		else : 
@@ -402,7 +440,7 @@ class geoloc_prj :
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 		### OPERATIONS ON PRJ's DMT
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-
+		print()
 		### add new_dmfs to DMT if does not exist yet
 		new_dmfs_refs_dataset = [ 	{ 
 								"oid_dmf" 	: dmf_ref, 
@@ -411,55 +449,110 @@ class geoloc_prj :
 							} for dmf_ref in self.new_dmfs_list_ligth ]
 		log.debug("new_dmfs_refs_dataset :\n%s", pformat(new_dmfs_refs_dataset) )
 
-		dmt_existing_dmf_dataset = self.dmt_doc["datasets"]["dmf_list"]
-		dmt_existing_dmf_oids	= [ dmf_ref["oid_dmf"] for dmf_ref in dmt_existing_dmf_dataset ]
+		dmt_existing_dmf_dataset = [ dmf_ref for dmf_ref in self.dmt_doc["datasets"]["dmf_list"] if dmf_ref["oid_dmf"] not in self.new_dmfs_list_ligth ]
+		log.debug("dmt_existing_dmf_dataset :\n%s", pformat(dmt_existing_dmf_dataset) )
+
+		dmt_existing_dmf_oids	= [ dmf_ref["oid_dmf"] for dmf_ref in dmt_existing_dmf_dataset if dmf_ref["oid_dmf"] not in self.new_dmfs_list_ligth ]
+		log.debug("dmt_existing_dmf_oids :\n%s", pformat(dmt_existing_dmf_oids) )
+	
 		dmf_to_add_to_existing 	= [ new_dmf for new_dmf in new_dmfs_refs_dataset if new_dmf["oid_dmf"] not in dmt_existing_dmf_oids ]
+		log.debug("dmf_to_add_to_existing :\n%s", pformat(dmf_to_add_to_existing) )
 		
 		updated_dmf_list = dmt_existing_dmf_dataset + dmf_to_add_to_existing
 		log.debug("updated_dmf_list :\n%s", pformat(updated_dmf_list) )
 
 		### save updated DMT
-		# dmt_id = db_dict_by_type['dmt'].update_one( {"_id" : self.dmt_doc["_id"]}, {"$set" :  { "datasets.dmf_list" : updated_dmf_list}} )
+		dmt_ = db_dict_by_type['dmt'].update_one( {"_id" : self.dmt_doc["_id"]}, { "$set" : { "datasets.dmf_list" : updated_dmf_list} } )
 
 
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 		### OPERATIONS ON PRJ's MAPPING / DMF_TO_OPEN_LEVEL
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-
+		print()
 		### remap open_level of each new_dmf in PRJ's mapping with default value
-		new_dmfs_refs_map_ol = [ 	{ 
+		new_dmfs_refs_map_ols = [ 	{ 
 								"oid_dmf" 			: dmf_ref, 
-								"open_level_show" 	: self.new_dmfs_ol,
+								"open_level_show" 	: self.new_dmfs_ols,
 							} for dmf_ref in self.new_dmfs_list_ligth ]
-		log.debug("new_dmfs_refs_map_ol :\n%s", pformat(new_dmfs_refs_map_ol) )
-		prj_existing_mapping_dmf_ol	= [ dmf_ref["oid_dmf"] for dmf_ref in self.prj_dmf_mapping ]
-		dmf_map_to_add_to_existing 	= [ new_dmf for new_dmf in new_dmfs_refs_map_ol if new_dmf["oid_dmf"] not in dmt_existing_dmf_oids ]
+		log.debug("new_dmfs_refs_map_ols :\n%s", pformat(new_dmfs_refs_map_ols) )
+		log.debug("self.new_dmfs_list_ligth :\n%s", pformat(self.new_dmfs_list_ligth) )
 		
-		updated_dmf_ol_list = self.prj_dmf_mapping + dmf_map_to_add_to_existing
-		log.debug("updated_dmf_ol_list :\n%s", pformat(updated_dmf_ol_list) )
+		log.debug("self.prj_dmf_ols_mapping :\n%s", pformat(self.prj_dmf_ols_mapping) )
+
+		if self.prj_dmf_ols_mapping != [] :
+
+			prj_existing_mapping_dmf_ols		= [ dmf_ref for dmf_ref in self.prj_dmf_ols_mapping if dmf_ref["oid_dmf"] not in self.new_dmfs_list_ligth ]
+			log.debug("prj_existing_mapping_dmf_ols :\n%s", pformat(prj_existing_mapping_dmf_ols) )
+
+			prj_existing_mapping_dmf_ols_oids	= [ dmf_ref["oid_dmf"] for dmf_ref in prj_existing_mapping_dmf_ols ]
+			log.debug("prj_existing_mapping_dmf_ols_oids :\n%s", pformat(prj_existing_mapping_dmf_ols_oids) )
+
+			dmf_ols_to_add_to_existing 		= [ new_dmf for new_dmf in new_dmfs_refs_map_ols if new_dmf["oid_dmf"] not in prj_existing_mapping_dmf_ols_oids ]
+			
+			updated_dmf_ols_list = prj_existing_mapping_dmf_ols + dmf_ols_to_add_to_existing
+			log.debug("updated_dmf_ols_list :\n%s", pformat(updated_dmf_ols_list) )
+		
+		else : 
+			updated_dmf_ols_list = new_dmfs_refs_map_ols
 
 		### save updated PRJ's MAPPING FOR DMF_TO_OPEN_LEVEL
-		# prj_id = db_dict_by_type['dmt'].update_one( {"_id" : self.dmt_doc["_id"]}, {"$set" :  { "mapping.dmf_to_open_level" : updated_dmf_list}} )
+		src_ = db_dict_by_type[self.src_doc_type].update_one( {"_id" : self.src_doc["_id"]}, { "$set" : { "mapping.dmf_to_open_level" : updated_dmf_ols_list} } )
 
 
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 		### OPERATIONS ON PRJ's MAPPING / DSI_TO_DMF
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-
+		print()
 		### get columns to geoloc from mapper / rec_params
 		### prj_dsi_mapping to df + index
-		self.dsi_mapped_list, self.df_mapper_dsi_to_dmf = prj_dsi_mapping_as_df(self.prj_dsi_mapping)
+		self.dsi_mapped_list, df_mapper_dsi_to_dmf = prj_dsi_mapping_as_df(self.prj_dsi_mapping)
 		
 		log.debug("self.dsi_mapped_list :\n%s", pformat(self.dsi_mapped_list) )
-		# log.debug("self.df_mapper_dsi_to_dmf ...") 
-		# print(self.df_mapper_dsi_to_dmf)
 
+		### set up self.df_mapper_dsi_to_dmf for later purposes
+		self.df_mapper_dsi_to_dmf = df_mapper_dsi_to_dmf
 
-		### TO DO : add mapping for each DSI's new column in PRJ's mapping 
+		### reset index of df_mapper_dsi_to_dmf_reindexed
+		df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf.copy() #.reset_index() 
+		log.debug("df_mapper_dsi_to_dmf_reindexed ...") 
+		print(df_mapper_dsi_to_dmf_reindexed)
+
+		### add mapping for each DSI's new column in PRJ's mapping 
+		dsi_oids = [ dsi_doc["_id"] for dsi_doc in self.dsi_list ]
+		for dsi_oid in dsi_oids :  
+
+			### create list of new entries
+			newmap_dsi_to_dmf = [ {
+					"dsi_header" 	: new_dmf_to_map["infos"]["title"], 
+					"oid_dsi" 		: dsi_oid, 
+					"oid_dmf" 		: new_dmf_to_map["_id"], 
+				} for new_dmf_to_map in self.new_dmfs_list ]
+			log.debug("newmap_dsi_to_dmf : \n%s ", pformat(newmap_dsi_to_dmf) ) 
+			df_newmap_dsi_to_dmf = pd.DataFrame(newmap_dsi_to_dmf).set_index(["oid_dsi","oid_dmf"])
+
+			### append list of values to df_mapper_dsi_to_dmf
+			df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf_reindexed.append(df_newmap_dsi_to_dmf)
+	
+		log.debug("df_mapper_dsi_to_dmf_reindexed -> after adding dsi entries ") 
+		print(df_mapper_dsi_to_dmf_reindexed)
+
+		df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf[~df_mapper_dsi_to_dmf.index.duplicated(keep="first")].sort_index()
+		log.debug("df_mapper_dsi_to_dmf_reindexed -> after deleting duplicate indices from multiindex") 
+		print(df_mapper_dsi_to_dmf_reindexed)
+
+		### reindex by oid_dsi -> oid_dmf (delete possible twin value) & reset index
+		df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf_reindexed.reset_index()
+		log.debug("df_mapper_dsi_to_dmf_reindexed -> after adding dsi entries reset_index ...") 
+		print(df_mapper_dsi_to_dmf_reindexed)
+
+		### get list of values from dataframe
+		updated_dsi_to_dmf_list = df_mapper_dsi_to_dmf_reindexed.to_dict('records')
+		log.debug("updated_dsi_to_dmf_list : \n%s ", pformat(updated_dsi_to_dmf_list) ) 
+
+		### save updated PRJ's MAPPING FOR DSI_TO_DMF
+		src_ = db_dict_by_type[self.src_doc_type].update_one( {"_id" : self.src_doc["_id"]}, {"$set" :  { "mapping.dsi_to_dmf" : updated_dsi_to_dmf_list }} )
+			
 		
-
-
-
 
 	def run_geoloc ( self, *args, **kwargs ) : 
 
@@ -485,7 +578,9 @@ class geoloc_prj :
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 		### OPERATIONS ON DSI - AS MULTIPROCESSING PROCESSES (if needed)
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-		
+
+		src_ = db_dict_by_type[self.src_doc_type].update_one( {"_id" : self.src_doc["_id"]}, { "$set" : { "log.is_running" : True} } )
+
 		if self.use_multiprocessing : 
 			processes 	= []
 			if self.pool_or_process == "pool" :
@@ -494,7 +589,7 @@ class geoloc_prj :
 		### loop dsi list
 		for dsi_doc in self.dsi_list : 
 
-			## CHOICE A : use a Process (no call back)
+			## CHOICE A : use a Process (no return / call back)
 			if self.use_multiprocessing and self.pool_or_process == "process" : 
 				log.debug("... run_geoloc : multiprocessing / PROCESSES (Process) ...")
 				process = Process( 
@@ -503,12 +598,12 @@ class geoloc_prj :
 				)
 				processes.append(process)
 
-			### CHOICE B : use a Pool
+			### CHOICE B : use a Pool (call backs)
 			elif self.use_multiprocessing and self.pool_or_process == "pool" : 
 
 				if self.async_or_starmap == "starmap" : 
 					log.debug("... run_geoloc : multiprocessing / POOL (pool.starmap) ...")
-					pool.starmap( 	
+					result = pool.starmap( 	
 									geoloc_dsi, 
 									[ ( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode ) ], 
 								)
@@ -516,7 +611,7 @@ class geoloc_prj :
 				elif self.async_or_starmap == "async" : 
 					log.debug("... run_geoloc : multiprocessing / POOL (pool.async) ...")
 					### Use apply_async if you want callback to be called for each time.
-					pool.apply_async( 	
+					result = pool.apply_async( 	
 									geoloc_dsi, 
 									( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode ) ,
 									callback		= callback_geoloc,
@@ -533,7 +628,8 @@ class geoloc_prj :
 		if self.use_multiprocessing and self.pool_or_process == "process" : 
 			
 			log.debug("... run_geoloc : multiprocessing / PROCESSES ...")
-			[ p.start() for p in processes ]
+			result = [ p.start() for p in processes ]
+			log.debug("process - result : \n%s ", pformat(result) )
 
 
 		## CHOICE B : run Pool
@@ -544,7 +640,9 @@ class geoloc_prj :
 			pool.join() # wait for all subprocesses to finish
 
 			log.debug("... run_geoloc : pool closed...")
-			log.debug("... self.result_list : \n%s", pformat(self.result_list))
+			log.debug("process - result : \n%s ", pformat(result) )
+
+
 
 
 		print ( "-   "*40 ) 

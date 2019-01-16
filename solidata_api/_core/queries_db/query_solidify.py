@@ -121,6 +121,11 @@ def Query_db_solidify (
 			### check if recipe run implies to modify DMT, DSI, PRJ's MAPPING...
 			# is_complex_rec 	= payload_data.get( "is_complex_rec", False )
 
+			### check if the doc requested is already running
+			is_doc_running = document["log"].get("is_running", False)
+			log.debug( "is_doc_running : %s", is_doc_running )
+
+
 			### load corresponding DMT, DSI, PRJ if is_complex_rec
 			if document_type in ["prj"] : 
 
@@ -148,6 +153,22 @@ def Query_db_solidify (
 				dsi_list 		= list(dsi_list_cursor)
 				documents["dsi_list"]	= dsi_list
 				log.debug( "dsi_list loaded ... " )
+
+				### check if related dsi are already running
+				is_running_dsi 		= [ dsi["log"].get("is_running", False) for dsi in dsi_list ]
+				is_running_dsi_set 	= set(is_running_dsi)
+				log.debug( "is_running_dsi_set : %s", is_running_dsi_set )
+
+				are_dsi_running = True
+				if len(is_running_dsi_set) == 1 : 
+					if list(is_running_dsi_set)[0] == False :
+						are_dsi_running = False
+				log.debug( "are_dsi_running : %s", are_dsi_running )
+
+				if are_dsi_running == False and is_doc_running == True : 
+					document_ 				= prj_collection.update_one( {"_id" : doc_oid }, { "$set" : { "log.is_running" : False } } )
+					document 				= prj_collection.find_one( {"_id" : doc_oid } )
+					documents["src_doc"]	= document
 
 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -190,6 +211,8 @@ def Query_db_solidify (
 			log.debug( "recipe_func_runner : %s", recipe_func_runner )
 
 
+
+
 			### load the function & pass the parameters
 
 			# Get class from globals and create an instance
@@ -198,10 +221,10 @@ def Query_db_solidify (
 				user_oid, 
 				src_docs			= documents, 
 				rec_params			= rec_params_,
-				use_multiprocessing	= False,
-				pool_or_process		= "pool", 		### "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
-				async_or_starmap	= "starmap", 	### "async" | "starmap"
-				cpu_number			= 1
+				use_multiprocessing	= True,
+				pool_or_process		= "pool", 	### dft="pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
+				async_or_starmap	= "async", 	### "async" | "starmap"
+				cpu_number			= 2
 			)
 
 			# Get the function (from the instance) that we need to call to run the function
@@ -209,7 +232,6 @@ def Query_db_solidify (
 
 			### run the solidifying function
 			solidify_func()
-
 
 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
