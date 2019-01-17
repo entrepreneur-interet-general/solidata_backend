@@ -83,32 +83,41 @@ dft_timeout      = 10
 full_address_col = "temp_solidata_full_address_"
 location_col     = "temp_solidata_location_"
 
-
+empty_location 	= {
+	"src_geocoder"	: None,
+	"raw"        	: None,
+	"address"    	: None,
+	"point"      	: None,
+	"latitude"   	: None,
+	"longitude"  	: None,
+}
 
 ### - - - - - - - - - - - - - - ### 
 ### GENERIC GEOLOC FUNCTIONS
 ### - - - - - - - - - - - - - - ### 
 
-def LocToDict(location_raw) : 
+def LocToDict(location_raw, src_geocoder=None) : 
 	""" 
 	location formater
 	"""
 	log.debug("... LocToDict / location_raw : \n%s ", pformat(location_raw) )
 	if location_raw != None : 
 		return {
-			"raw"       : location_raw.raw,
-			"address"   : location_raw.address,
-			"point"     : location_raw.point,
-			"latitude"  : location_raw.latitude,
-			"longitude" : location_raw.longitude,
+			"src_geocoder"	: src_geocoder,
+			"raw"       	: location_raw.raw,
+			"address"   	: location_raw.address,
+			"point"     	: location_raw.point,
+			"latitude"  	: location_raw.latitude,
+			"longitude" 	: location_raw.longitude,
 		}
 	else : 
 		return {
-			"raw"        : None,
-			"address"    : None,
-			"point"      : None,
-			"latitude"   : None,
-			"longitude"  : None,
+			"src_geocoder"	: src_geocoder,
+			"raw"        	: None,
+			"address"    	: None,
+			"point"      	: None,
+			"latitude"   	: None,
+			"longitude"  	: None,
 		}
 
 def extract_loc(row, field_name="longitude") :
@@ -163,33 +172,37 @@ def geoloc_df_col(
 	geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=delay)
 	geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=delay)
 
+	src_geocoder = "failed"
+	location_raw = None
+
+	# if pd.isna(row_val) == False : 
 	if pd.notnull(row_val) : 
-		
+
 		### add address complement to full_address_col value (in case it helps)
-		adress = ", ".join( [ row_val, complement ] )
+		adress = row_val
+		if complement != "" :
+			adress = ", ".join( [ row_val, complement ] )
 		log.debug("- adress : %s", adress)
 
+		### run geocoders
 		try :
 			### test with nominatim first
+			src_geocoder = "nominatim"
 			location_raw = geocoder_nom.geocode( query=adress, timeout=time_out, extratags=True)
 		except : 
-			### test with BAN first
+			### test with BAN then
+			src_geocoder = "BAN"
 			location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
-
-		log.debug("- location_raw : \n%s", pformat(location_raw))
 
 		### make function sleep 
 		if apply_sleep : 
 			sleep(delay)
 
-		if location_raw : 
-			return LocToDict(location_raw)
-		
-		else : 
-			return None
+	# log.debug("- location_raw : \n%s", pformat(location_raw))
+	return LocToDict(location_raw, src_geocoder)
 	
-	else : 
-		return None
+	# else : 
+	# 	return None
 
 
 ### - - - - - - - - - - - - - - - - - - - ### 
@@ -197,18 +210,25 @@ def geoloc_df_col(
 ### - - - - - - - - - - - - - - - - - - - ### 
 
 def callback_geoloc (result_geoloc) : 
-	log.debug('callback_geoloc - result_geoloc : \n%s', result_geoloc )
+	log.debug('callback_geoloc ...' )
+	# log.debug('callback_geoloc - result_geoloc : \n%s', pformat(result_geoloc) )
+	log.debug('callback_geoloc - result_geoloc["oid_dsi"] : %s', result_geoloc['oid_dsi'] )
+
+	log.debug('callback_geoloc - result_geoloc["f_data_geoloc"].columns.values.tolist() : \n%s', pformat( result_geoloc["f_data_geoloc"].columns.values.tolist() ) )
+	print()
+	log.debug("... result_geoloc['f_data_geoloc'] ... ")
+	print(result_geoloc["f_data_geoloc"].head(10))
 
 def errorhandler(exc):
 	log.warning('Exception : \n%s', exc)
-
 
 def geoloc_dsi ( 	dsi_doc, 
 					params, 
 					self_df_mapper_dsi_to_dmf, 
 					self_dmf_list_to_geocode,
 					use_swifter 	= False,
-					dft_test_trim 	= 4,
+					dft_test_trim 	= 5,
+					apply_sleep		= False,
 				) : 
 
 	print()
@@ -222,6 +242,11 @@ def geoloc_dsi ( 	dsi_doc,
 	test_geoloc 	= params["test_geoloc"]
 	new_dmfs_list	= params["new_dmfs_list"]
 	dsi_is_running 	= dsi_doc["log"].get( "is_running", False )
+
+
+	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+	### load DSI's f_data
+	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 	### get mapped headers for this dsi
 	dsi_mapper = self_df_mapper_dsi_to_dmf.loc[dsi_oid]
@@ -244,11 +269,12 @@ def geoloc_dsi ( 	dsi_doc,
 	# log.debug("... df_f_data.head(3) ... ")
 	# print (df_f_data.head(3))
 	
-	### just keep cols_to_concat we want to work on to save memory
+	### just keep cols_to_concat we want to work on to save memory ?
 	df_f_data = df_f_data_src[ cols_to_concat ]
 
 	### before concatenating columns clean cols_to_concat from NaN values
 	df_f_data = df_f_data.fillna(value="")
+	# df_f_data = df_f_data.replace({np.nan:None})
 
 	''' apply concat function to each row (axis=1) --> alternative LESS pythonic
 			### change type of every target column --> string 
@@ -271,16 +297,19 @@ def geoloc_dsi ( 	dsi_doc,
 
 	log.debug("... df_f_data.shape - after test check : %s", df_f_data.shape )
 	print()
-	log.debug("... df_f_data.head(10) - after apply 'concat_cols' ... ")
-	print (df_f_data.head(10))
-
-	### proceed geoloc for f_data
-	log.debug("type( df_f_data[ full_address_col ] ) : %s", type(df_f_data[ full_address_col ])  )
-	
+	log.debug("... df_f_data.head(dft_test_trim) - after apply 'concat_cols' ... ")
+	print (df_f_data.head(dft_test_trim))
 
 	### flag dsi as already running
 	src_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, { "$set" : { "log.is_running" : True } } )
 
+
+	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+	### proceed geoloc for f_data
+	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+	### this operation will apply on a numpy serie
+	# log.debug("type( df_f_data[ full_address_col ] ) : %s", type(df_f_data[ full_address_col ])  ) 
 	if dsi_is_running == False : 
 
 		if use_swifter : 
@@ -290,7 +319,7 @@ def geoloc_dsi ( 	dsi_doc,
 				complement	= params["address_complement"], 
 				time_out	= params["timeout"], 
 				delay		= params["delay"],
-				apply_sleep = False
+				apply_sleep = apply_sleep
 			)
 		else :
 			### without swifter
@@ -299,7 +328,7 @@ def geoloc_dsi ( 	dsi_doc,
 				complement	= params["address_complement"], 
 				time_out	= params["timeout"], 
 				delay		= params["delay"],
-				apply_sleep = False
+				apply_sleep = apply_sleep
 			)
 
 		### create and populate new columns in df_f_data_src from new_dmfs_list
@@ -307,26 +336,44 @@ def geoloc_dsi ( 	dsi_doc,
 			new_col_title 					= new_col["infos"]["title"]
 			df_f_data_src[new_col_title] 	= df_f_data[location_col].apply(extract_loc, field_name=new_col_title)
 
+		print()
+		log.debug("... df_f_data_src.columns.values.tolist() : \n%s", pformat(df_f_data_src.columns.values.tolist()) )
 
-	print()
-	log.debug("... df_f_data_src.head(10) - after ageocoding ... ")
-	print (df_f_data_src.head(10))
 
-	### save updated DSI's F_DATA
-	updated_f_data = df_f_data_src.to_dict('records')
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+		### save updated DSI's F_DATA
+		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-	### unflag is_running
+		print()
+		log.debug("... df_f_data_src.head(dft_test_trim) - after ageocoding ... ")
+		print (df_f_data_src.head(dft_test_trim))
+
+		### convert Nan to None
+		df_f_data_src = df_f_data_src.replace({np.nan:None})
+		print()
+		log.debug("... df_f_data_src : Nan values converted to None ...")
+		# log.debug("... df_f_data_src.dtypes : \n%s", pformat(df_f_data_src.dtypes))
+		print (df_f_data_src.head(dft_test_trim))
+
+		### convert records to dict
+		updated_f_data = df_f_data_src.to_dict('records')
+		log.debug("... updated_f_data : \n%s", pformat( updated_f_data[ : dft_test_trim] ) )
+
+		# if test_geoloc == False and dsi_is_running == False : 
+		# 	log.debug("geoloc_dsi finished - NOT A TEST ... saving to db")
+		
+		### save updated_f_data to db - DSI collection only
+		dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
+
+
+	### unflag DSI's log.is_running
 	dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
-
-	# if test_geoloc == False and dsi_is_running == False : 
-	# 	dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
-
 
 	### callback for multiprocessing
 	log.debug("geoloc_dsi finished ... building response for callback")
 	return_response = { 
 		"oid_dsi" 			: dsi_oid, 
-		"f_data_geoloc"		: df_f_data,
+		"f_data_geoloc"		: df_f_data_src,
 		"is_geolocalized" 	: True 
 	}
 	return return_response
@@ -520,7 +567,8 @@ class geoloc_prj :
 		### add mapping for each DSI's new column in PRJ's mapping 
 		dsi_oids = [ dsi_doc["_id"] for dsi_doc in self.dsi_list ]
 		for dsi_oid in dsi_oids :  
-
+			
+			log.debug("newmap_dsi_to_dmf / dsi_oid : %s ", dsi_oid ) 
 			### create list of new entries
 			newmap_dsi_to_dmf = [ {
 					"dsi_header" 	: new_dmf_to_map["infos"]["title"], 
@@ -536,7 +584,8 @@ class geoloc_prj :
 		log.debug("df_mapper_dsi_to_dmf_reindexed -> after adding dsi entries ") 
 		print(df_mapper_dsi_to_dmf_reindexed)
 
-		df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf[~df_mapper_dsi_to_dmf.index.duplicated(keep="first")].sort_index()
+		df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf_reindexed[~df_mapper_dsi_to_dmf_reindexed.index.duplicated(keep="first")].sort_index()
+		# df_mapper_dsi_to_dmf_reindexed = df_mapper_dsi_to_dmf_reindexed.reset_index().set_index(["oid_dsi","oid_dmf"]).sort_index()
 		log.debug("df_mapper_dsi_to_dmf_reindexed -> after deleting duplicate indices from multiindex") 
 		print(df_mapper_dsi_to_dmf_reindexed)
 
@@ -553,7 +602,6 @@ class geoloc_prj :
 		src_ = db_dict_by_type[self.src_doc_type].update_one( {"_id" : self.src_doc["_id"]}, {"$set" :  { "mapping.dsi_to_dmf" : updated_dsi_to_dmf_list }} )
 			
 		
-
 	def run_geoloc ( self, *args, **kwargs ) : 
 
 		print()
@@ -594,7 +642,12 @@ class geoloc_prj :
 				log.debug("... run_geoloc : multiprocessing / PROCESSES (Process) ...")
 				process = Process( 
 					target 	= geoloc_dsi, 
-					args 	= ( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode, )  
+					args 	= ( 
+						dsi_doc, 
+						self.rec_params, 
+						self.df_mapper_dsi_to_dmf, 
+						self.dmf_list_to_geocode,
+					)  
 				)
 				processes.append(process)
 
@@ -605,7 +658,12 @@ class geoloc_prj :
 					log.debug("... run_geoloc : multiprocessing / POOL (pool.starmap) ...")
 					result = pool.starmap( 	
 									geoloc_dsi, 
-									[ ( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode ) ], 
+									[ ( 
+										dsi_doc, 
+										self.rec_params, 
+										self.df_mapper_dsi_to_dmf, 
+										self.dmf_list_to_geocode 
+									) ], 
 								)
 
 				elif self.async_or_starmap == "async" : 
@@ -613,7 +671,12 @@ class geoloc_prj :
 					### Use apply_async if you want callback to be called for each time.
 					result = pool.apply_async( 	
 									geoloc_dsi, 
-									( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode ) ,
+									( 
+										dsi_doc, 
+										self.rec_params, 
+										self.df_mapper_dsi_to_dmf, 
+										self.dmf_list_to_geocode 
+									) ,
 									callback		= callback_geoloc,
 									error_callback	= errorhandler
 								)
@@ -621,7 +684,12 @@ class geoloc_prj :
 			### CHOICE C : chained as usual synchronous process
 			else : 
 				log.debug("... run_geoloc : multiprocessing / NONE ...")
-				result = geoloc_dsi( dsi_doc, self.rec_params, self.df_mapper_dsi_to_dmf, self.dmf_list_to_geocode )
+				result = geoloc_dsi( 
+										dsi_doc, 
+										self.rec_params, 
+										self.df_mapper_dsi_to_dmf, 
+										self.dmf_list_to_geocode 
+									)
 
 
 		## CHOICE A : run processes

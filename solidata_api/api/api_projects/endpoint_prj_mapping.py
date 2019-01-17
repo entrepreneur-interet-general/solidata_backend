@@ -72,7 +72,7 @@ class Prj_mapping(Resource):
 		log.debug("claims : \n %s", pformat(claims) )
 
 		### update doc in DB
-		updated_doc, response_code	= Query_db_update (
+		response, response_code	= Query_db_update (
 			ns, 
 			models,
 			document_type,
@@ -82,11 +82,11 @@ class Prj_mapping(Resource):
 			payload = ns.payload
 		)
 
-		log.debug("updated_doc : \n%s ", pformat(updated_doc) )
+		log.debug("response : \n%s ", pformat(response) )
 
 		### return updated document
 		# return {
 		# 	"msg" : "updating doc...."
 		# }, 200
-		return updated_doc, response_code
+		return response, response_code
 

@@ -454,8 +454,6 @@ def Query_db_update (
 
 
 
-
-
 	else : 
 		### no document / empty response
 		response_code	= 404

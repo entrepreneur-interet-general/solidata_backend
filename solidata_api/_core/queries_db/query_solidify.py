@@ -234,6 +234,8 @@ def Query_db_solidify (
 			solidify_func()
 
 
+
+
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 			### OPERATIONS RELATED TO RESPONSE
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -241,6 +243,12 @@ def Query_db_solidify (
 			### send back updated document
 			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
 			document_out 		= marshal( document_updated, models["model_doc_out"] )
+
+			
+			
+			### TO DO : in case doc solidified is DSI --> f_data sliced for preview
+			### slice/trim : document_out["data_raw"]["f_data"]
+
 
 			# flag as member of doc's team
 			if user_oid in team_oids :
@@ -263,7 +271,7 @@ def Query_db_solidify (
 		response_code	= 404
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
 
-	### return response
+	### return the response
 	return {
 				"msg" 	: message ,
 				"data"	: document_out,
