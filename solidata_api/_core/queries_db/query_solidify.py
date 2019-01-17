@@ -222,8 +222,8 @@ def Query_db_solidify (
 				src_docs			= documents, 
 				rec_params			= rec_params_,
 				use_multiprocessing	= True,
-				pool_or_process		= "pool", 	### dft="pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
-				async_or_starmap	= "async", 	### "async" | "starmap"
+				pool_or_process		= "pool", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
+				async_or_starmap	= "starmap", 	### "async" | "starmap"
 				cpu_number			= 2
 			)
 

@@ -36,6 +36,7 @@ import 	swifter
 import 	geopy.geocoders
 from 	geopy.geocoders import Nominatim, BANFrance
 from 	geopy.extra.rate_limiter import RateLimiter
+from 	geopy.exc import GeopyError
 
 geopy.geocoders.options.default_user_agent = "solidata_app"
 
@@ -65,21 +66,11 @@ process2.start()
 '''
 
 ### - - - - - - - - - - - - - - ### 
-### GEOCODERS
-### - - - - - - - - - - - - - - ### 
-
-geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
-geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
-# geocoder_nom = Nominatim()
-# geocoder_ban = BANFrance()
-
-
-### - - - - - - - - - - - - - - ### 
 ### GENERIC VARIABLES
 ### - - - - - - - - - - - - - - ### 
 
 dft_delay        = 1
-dft_timeout      = 10
+dft_timeout      = 5
 full_address_col = "temp_solidata_full_address_"
 location_col     = "temp_solidata_location_"
 
@@ -91,6 +82,21 @@ empty_location 	= {
 	"latitude"   	: None,
 	"longitude"  	: None,
 }
+
+### - - - - - - - - - - - - - - ### 
+### GEOCODERS
+### - - - - - - - - - - - - - - ### 
+
+geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
+geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
+# geocoder_nom = Nominatim()
+# geocoder_ban = BANFrance()
+
+### rate limiter
+geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=dft_delay)
+geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=dft_delay)
+
+
 
 ### - - - - - - - - - - - - - - ### 
 ### GENERIC GEOLOC FUNCTIONS
@@ -168,31 +174,51 @@ def geoloc_df_col(
 	print ( "- geoloc_df_col " + "*.  "*40 ) 
 	log.debug("\n- row_val : %s", row_val)
 	
-	### rate limiter
-	geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=delay)
-	geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=delay)
+	# ### rate limiter
+	# geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=delay)
+	# geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=delay)
 
 	src_geocoder = "failed"
 	location_raw = None
 
-	# if pd.isna(row_val) == False : 
-	if pd.notnull(row_val) : 
-
-		### add address complement to full_address_col value (in case it helps)
-		adress = row_val
-		if complement != "" :
+	### add address complement to full_address_col value (in case it helps)
+	adress = row_val
+	if complement != "" :
+		if row_val != "" :
 			adress = ", ".join( [ row_val, complement ] )
-		log.debug("- adress : %s", adress)
+		else : 
+			adress = complement
+	
+	log.debug("- adress : %s", adress)
+	
+	# if pd.isna(row_val) == False : 
+	# if pd.notnull(row_val) : 
+	if adress != "" :
 
 		### run geocoders
 		try :
 			### test with nominatim first
+			log.debug("- try Nominatim - ")
 			src_geocoder = "nominatim"
 			location_raw = geocoder_nom.geocode( query=adress, timeout=time_out, extratags=True)
-		except : 
-			### test with BAN then
-			src_geocoder = "BAN"
-			location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
+			if location_raw == None :
+				### test just with BAN then
+				log.debug("- try BAN (1) - ")
+				src_geocoder = "BAN"
+				location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
+
+		except (GeopyError, AttributeError) : 
+			log.error(GeopyError)
+			log.error(AttributeError)
+			try : 
+				### test just with BAN then
+				log.debug("- try BAN (2) - ")
+				src_geocoder = "BAN"
+				location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
+			except (GeopyError, AttributeError) : 
+				log.error(GeopyError)
+				log.error(AttributeError)
+				pass
 
 		### make function sleep 
 		if apply_sleep : 
@@ -214,10 +240,10 @@ def callback_geoloc (result_geoloc) :
 	# log.debug('callback_geoloc - result_geoloc : \n%s', pformat(result_geoloc) )
 	log.debug('callback_geoloc - result_geoloc["oid_dsi"] : %s', result_geoloc['oid_dsi'] )
 
-	log.debug('callback_geoloc - result_geoloc["f_data_geoloc"].columns.values.tolist() : \n%s', pformat( result_geoloc["f_data_geoloc"].columns.values.tolist() ) )
-	print()
-	log.debug("... result_geoloc['f_data_geoloc'] ... ")
-	print(result_geoloc["f_data_geoloc"].head(10))
+	# log.debug('callback_geoloc - result_geoloc["f_data_geoloc"].columns.values.tolist() : \n%s', pformat( result_geoloc["f_data_geoloc"].columns.values.tolist() ) )
+	# print()
+	# log.debug("... result_geoloc['f_data_geoloc'] ... ")
+	# print(result_geoloc["f_data_geoloc"].head(10))
 
 def errorhandler(exc):
 	log.warning('Exception : \n%s', exc)
@@ -227,7 +253,7 @@ def geoloc_dsi ( 	dsi_doc,
 					self_df_mapper_dsi_to_dmf, 
 					self_dmf_list_to_geocode,
 					use_swifter 	= False,
-					dft_test_trim 	= 5,
+					dft_test_trim 	= 10,
 					apply_sleep		= False,
 				) : 
 
@@ -301,7 +327,8 @@ def geoloc_dsi ( 	dsi_doc,
 	print (df_f_data.head(dft_test_trim))
 
 	### flag dsi as already running
-	src_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, { "$set" : { "log.is_running" : True } } )
+	log.debug("... flag DSI doc as running ... " )
+	# src_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, { "$set" : { "log.is_running" : True } } )
 
 
 	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -310,6 +337,7 @@ def geoloc_dsi ( 	dsi_doc,
 
 	### this operation will apply on a numpy serie
 	# log.debug("type( df_f_data[ full_address_col ] ) : %s", type(df_f_data[ full_address_col ])  ) 
+	log.debug("... dsi_is_running : %s ", dsi_is_running )
 	if dsi_is_running == False : 
 
 		if use_swifter : 
@@ -365,17 +393,20 @@ def geoloc_dsi ( 	dsi_doc,
 		### save updated_f_data to db - DSI collection only
 		dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
 
+		# log.error("ERROR in geoloc_dsi for dsi_oid : %s", dsi_oid )
 
 	### unflag DSI's log.is_running
-	dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
+	# log.debug("... flag DSI doc as NOT running ... " )
+	# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
 
 	### callback for multiprocessing
-	log.debug("geoloc_dsi finished ... building response for callback")
+	log.debug("geoloc_dsi finished ... building response for callback - dsi_oid : %s", dsi_oid)
 	return_response = { 
 		"oid_dsi" 			: dsi_oid, 
-		"f_data_geoloc"		: df_f_data_src,
+		# "f_data_geoloc"		: df_f_data_src,
 		"is_geolocalized" 	: True 
 	}
+	print()
 	return return_response
 
 
@@ -627,6 +658,9 @@ class geoloc_prj :
 		### OPERATIONS ON DSI - AS MULTIPROCESSING PROCESSES (if needed)
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
+		log.debug("... flag SRC doc as running ... " )
+		log.debug("... self.src_doc['_id'] : %s", self.src_doc["_id"] )
+		log.debug("... self.src_doc_type : %s", self.src_doc_type )
 		src_ = db_dict_by_type[self.src_doc_type].update_one( {"_id" : self.src_doc["_id"]}, { "$set" : { "log.is_running" : True} } )
 
 		if self.use_multiprocessing : 
@@ -636,7 +670,9 @@ class geoloc_prj :
 
 		### loop dsi list
 		for dsi_doc in self.dsi_list : 
-
+			
+			print() 
+			
 			## CHOICE A : use a Process (no return / call back)
 			if self.use_multiprocessing and self.pool_or_process == "process" : 
 				log.debug("... run_geoloc : multiprocessing / PROCESSES (Process) ...")
@@ -677,7 +713,7 @@ class geoloc_prj :
 										self.df_mapper_dsi_to_dmf, 
 										self.dmf_list_to_geocode 
 									) ,
-									callback		= callback_geoloc,
+									# callback		= callback_geoloc,
 									error_callback	= errorhandler
 								)
 
