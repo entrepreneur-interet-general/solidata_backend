@@ -51,6 +51,7 @@ from flask_pymongo import PyMongo
 
 # declare mongo empty connector
 mongo = PyMongo()
+log.debug("... mongo : \n%s", pformat(mongo.__dict__))
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

@@ -13,6 +13,8 @@ from flask import current_app as app
 
 from solidata_api.application import mongo
 
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL VARIABLES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###

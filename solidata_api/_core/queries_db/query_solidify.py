@@ -217,12 +217,19 @@ def Query_db_solidify (
 
 			# Get class from globals and create an instance
 			# log.debug( "globals() : \n%s", pformat(globals()) )
+			### WARNING !!! --> multithreading could make OS crash 
+			### cf : https://stackoverflow.com/questions/50168647/multiprocessing-causes-python-to-crash-and-gives-an-error-may-have-been-in-progr 
+			### add in .bask or venv/bin/activate : 
+			# 'export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES'
+
+
 			module = globals()[recipe_func_class]( 
 				user_oid, 
 				src_docs			= documents, 
 				rec_params			= rec_params_,
 				use_multiprocessing	= True,
-				pool_or_process		= "pool", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
+				### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/
+				pool_or_process		= "process", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
 				async_or_starmap	= "starmap", 	### "async" | "starmap"
 				cpu_number			= 2
 			)
@@ -232,7 +239,6 @@ def Query_db_solidify (
 
 			### run the solidifying function
 			solidify_func()
-
 
 
 

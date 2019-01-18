@@ -9,6 +9,7 @@ from log_config import log, pformat
 
 log.debug("... loading geoloc.py ...")
 
+import 	os
 from  	datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
 
@@ -18,8 +19,14 @@ from 	multiprocessing import Process, Pool, cpu_count
 import 	pprint
 pp = pprint.PrettyPrinter(indent=2)
 
+
+
 ### import db collections
 from .. import db_dict_by_type
+
+
+
+
 
 ### NOTEBOOK
 # cf Jupyter notebook : '@/_snippets/tests_geopy_02.ipynb' 
@@ -36,16 +43,19 @@ import 	swifter
 import 	geopy.geocoders
 from 	geopy.geocoders import Nominatim, BANFrance
 from 	geopy.extra.rate_limiter import RateLimiter
-from 	geopy.exc import GeopyError
+from 	geopy.exc import GeopyError, GeocoderTimedOut
 
 geopy.geocoders.options.default_user_agent = "solidata_app"
 
-from 	functools import partial
+# from 	functools import partial
 # from tqdm import tqdm
 
 ### import pandas functions
 from 	solidata_api._core.pandas_ops import pd, np, prj_dsi_mapping_as_df
 
+### for forked processes --> create mongoclient inside forked process
+from flask import current_app as app
+from pymongo import MongoClient
 
 '''
 ### example multhithreading ... 
@@ -66,13 +76,14 @@ process2.start()
 '''
 
 ### - - - - - - - - - - - - - - ### 
-### GENERIC VARIABLES
+### GENERIC DEFAULT VARIABLES
 ### - - - - - - - - - - - - - - ### 
 
-dft_delay        = 1
+dft_delay        = 0.5
 dft_timeout      = 5
-full_address_col = "temp_solidata_full_address_"
-location_col     = "temp_solidata_location_"
+full_address_col 	= "temp_solidata_full_address_"
+location_compl_col	= "temp_solidata_compl_location_"
+location_col     	= "temp_solidata_location_"
 
 empty_location 	= {
 	"src_geocoder"	: None,
@@ -83,20 +94,42 @@ empty_location 	= {
 	"longitude"  	: None,
 }
 
+
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### FOR FORKED PROCESSES (MULTITHREADING)
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### cf : https://stackoverflow.com/questions/48055354/how-to-multiprocessing-pool-with-pymongo-in-python-2-7
+def create_connect():
+		
+	client = MongoClient(app.config["MONGO_URI"], maxPoolSize=20 )
+	# client = MongoClient(app.config["MONGO_URI"], maxPoolSize=2 )
+	# log.debug("app.config['MONGO_URI'] : %s", app.config["MONGO_URI"])
+
+	# test_find_usr_sys = client[app.config["MONGO_DBNAME"]][app.config["MONGO_COLL_USERS"]].find_one({"auth.role" : "system"}) 
+	# log.debug("test_find_usr_sys : \n%s", test_find_usr_sys )
+
+	app_db = client[app.config["MONGO_DBNAME"]]
+
+	return client, app_db
+
 ### - - - - - - - - - - - - - - ### 
 ### GEOCODERS
 ### - - - - - - - - - - - - - - ### 
 
-geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
-geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
-# geocoder_nom = Nominatim()
-# geocoder_ban = BANFrance()
+# geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
+# geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
+# # # geocoder_nom = Nominatim()
+# # # geocoder_ban = BANFrance()
 
-### rate limiter
-geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=dft_delay)
-geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=dft_delay)
+# # ### rate limiter
+# geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=dft_delay)
+# geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=dft_delay)
 
 
+def info():
+	log.debug('module name: %s', __name__)
+	log.debug('parent process: %s', os.getppid())
+	log.debug('process id: %s', os.getpid())
 
 ### - - - - - - - - - - - - - - ### 
 ### GENERIC GEOLOC FUNCTIONS
@@ -133,7 +166,7 @@ def extract_loc(row, field_name="longitude") :
 	# print(row)
 	# print (type(row))
 	return row[field_name]
-	
+
 def concat_cols(row, columns_to_concat):
 	""" 
 	concat function
@@ -144,14 +177,51 @@ def concat_cols(row, columns_to_concat):
 		return row[columns_to_concat[0]]
 
 
+
+### - - - - - - - - - - - - - - ### 
+### GEOCODERS
+### - - - - - - - - - - - - - - ### 
+
 ### TO DO  : prevent error 429 (too many requests) by using RateLimiter
+
+def geocode_with_Nominatim(		adress,
+								time_out	= dft_timeout, 
+							) :
+	geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
+	log.debug("- geocode_with_Nominatim - ")
+	try:
+		loc = geocoder_nom.geocode(
+							query=adress, 
+							timeout=time_out, 
+							# exactly_one=True,
+							extratags=True
+		)
+		log.debug("- loc : \n%s ", loc)
+		return loc
+	except GeocoderTimedOut:
+		return geocode_with_Nominatim(adress)	
+
+def geocode_with_Ban(	adress, 		
+						time_out	= dft_timeout, 
+					) :
+	geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
+	log.debug("- geocode_with_Ban - ")
+	try:
+		loc = geocoder_ban.geocode(
+							query=adress, 
+							timeout=time_out, 
+							# exactly_one=True,
+		)
+		log.debug("- loc : \n%s ", loc)
+		return loc
+	except GeocoderTimedOut:
+		return geocode_with_Ban(adress)	
 
 ### main geolocalizing function for dataframe
 ### NOTE : try to slice dataframe by 100 rows 
 ###        + update doc after each slice so to show progress to user
 def geoloc_df_col( 
 		row_val, 
-		complement	= "", 
 		time_out	= dft_timeout, 
 		delay		= dft_delay, 
 		apply_sleep = False
@@ -162,7 +232,6 @@ def geoloc_df_col(
 
 	df[location_col] = df[full_address_col].swifter.apply( 
 		geoloc_df_col, 
-		complement=adress_complement, 
 		time_out=dft_timeout, 
 		delay=dft_delay, 
 	)
@@ -173,21 +242,17 @@ def geoloc_df_col(
 	print()
 	print ( "- geoloc_df_col " + "*.  "*40 ) 
 	log.debug("\n- row_val : %s", row_val)
-	
-	# ### rate limiter
-	# geocode_nom = RateLimiter(geocoder_nom.geocode, min_delay_seconds=delay)
-	# geocode_ban = RateLimiter(geocoder_ban.geocode, min_delay_seconds=delay)
 
 	src_geocoder = "failed"
 	location_raw = None
 
 	### add address complement to full_address_col value (in case it helps)
 	adress = row_val
-	if complement != "" :
-		if row_val != "" :
-			adress = ", ".join( [ row_val, complement ] )
-		else : 
-			adress = complement
+	# if complement != "" :
+	# 	if row_val != "" :
+	# 		adress = ", ".join( [ row_val, complement ] )
+	# 	else : 
+	# 		adress = complement
 	
 	log.debug("- adress : %s", adress)
 	
@@ -195,34 +260,30 @@ def geoloc_df_col(
 	# if pd.notnull(row_val) : 
 	if adress != "" :
 
+		print()
+
+		### make function sleep 
+		if apply_sleep : 
+			sleep(delay)
+
 		### run geocoders
 		try :
 			### test with nominatim first
 			log.debug("- try Nominatim - ")
 			src_geocoder = "nominatim"
-			location_raw = geocoder_nom.geocode( query=adress, timeout=time_out, extratags=True)
+			location_raw = geocode_with_Nominatim(adress, time_out=time_out)
+			
+			# log.debug("- type(location_raw) : %s ", type(location_raw))
+
 			if location_raw == None :
 				### test just with BAN then
 				log.debug("- try BAN (1) - ")
 				src_geocoder = "BAN"
-				location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
+				location_raw = geocode_with_Ban(adress, time_out=time_out)
 
-		except (GeopyError, AttributeError) : 
-			log.error(GeopyError)
-			log.error(AttributeError)
-			try : 
-				### test just with BAN then
-				log.debug("- try BAN (2) - ")
-				src_geocoder = "BAN"
-				location_raw = geocoder_ban.geocode( query=adress, timeout=time_out)
-			except (GeopyError, AttributeError) : 
-				log.error(GeopyError)
-				log.error(AttributeError)
-				pass
+		except ValueError as error_message : 
+			log.error("ValueError : %s", ValueError)
 
-		### make function sleep 
-		if apply_sleep : 
-			sleep(delay)
 
 	# log.debug("- location_raw : \n%s", pformat(location_raw))
 	return LocToDict(location_raw, src_geocoder)
@@ -253,8 +314,7 @@ def geoloc_dsi ( 	dsi_doc,
 					self_df_mapper_dsi_to_dmf, 
 					self_dmf_list_to_geocode,
 					use_swifter 	= False,
-					dft_test_trim 	= 10,
-					apply_sleep		= False,
+					apply_sleep		= True,
 				) : 
 
 	print()
@@ -267,8 +327,13 @@ def geoloc_dsi ( 	dsi_doc,
 	dsi_oid 		= dsi_doc["_id"]
 	test_geoloc 	= params["test_geoloc"]
 	new_dmfs_list	= params["new_dmfs_list"]
+	dft_test_trim	= params["test_rows"]
 	dsi_is_running 	= dsi_doc["log"].get( "is_running", False )
 
+	### locally open mongo client
+	mongodb_client, mongodb_db	= create_connect()
+	mongodb_coll_dsi	= mongodb_db[app.config["MONGO_COLL_DATASETS_INPUTS"]]
+	log.debug("... mongodb_coll_dsi : \n%s", pformat(mongodb_coll_dsi) )
 
 	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 	### load DSI's f_data
@@ -302,6 +367,7 @@ def geoloc_dsi ( 	dsi_doc,
 	df_f_data = df_f_data.fillna(value="")
 	# df_f_data = df_f_data.replace({np.nan:None})
 
+	
 	''' apply concat function to each row (axis=1) --> alternative LESS pythonic
 			### change type of every target column --> string 
 			df_f_data[cols_to_concat] 	= df_f_data[cols_to_concat].astype(str)
@@ -315,6 +381,13 @@ def geoloc_dsi ( 	dsi_doc,
 	### apply concat function to each row (axis=1) --> alternative MORE pythonic
 	df_f_data[full_address_col] = df_f_data[ cols_to_concat ].apply( lambda x : ', '.join(x.astype(str)), axis=1 )
 
+	### add address complement as new column 
+	df_f_data[location_compl_col] = params["address_complement"]
+
+	### merge the columns
+	df_f_data[full_address_col] = df_f_data[[full_address_col, location_compl_col]].apply(lambda x: ' '.join(x), axis=1)
+	df_f_data = df_f_data.drop([location_compl_col], axis=1)
+
 	log.debug("... df_f_data.shape - before test check : %s", df_f_data.shape )
 
 	### slice only first n rows if test mode is activated : 
@@ -327,7 +400,7 @@ def geoloc_dsi ( 	dsi_doc,
 	print (df_f_data.head(dft_test_trim))
 
 	### flag dsi as already running
-	log.debug("... flag DSI doc as running ... " )
+	# log.debug("... flag DSI doc as running ... " )
 	# src_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, { "$set" : { "log.is_running" : True } } )
 
 
@@ -339,6 +412,8 @@ def geoloc_dsi ( 	dsi_doc,
 	# log.debug("type( df_f_data[ full_address_col ] ) : %s", type(df_f_data[ full_address_col ])  ) 
 	log.debug("... dsi_is_running : %s ", dsi_is_running )
 	if dsi_is_running == False : 
+
+		info() 
 
 		if use_swifter : 
 			### with swifter
@@ -353,11 +428,20 @@ def geoloc_dsi ( 	dsi_doc,
 			### without swifter
 			df_f_data[ location_col ] = df_f_data[ full_address_col ].apply( 
 				geoloc_df_col, 
-				complement	= params["address_complement"], 
 				time_out	= params["timeout"], 
 				delay		= params["delay"],
 				apply_sleep = apply_sleep
 			)
+		# df_f_data[ location_col ] = df_f_data[ full_address_col ].apply( 
+		# 	geocode_nom, 
+		# 	# complement	= params["address_complement"], 
+		# 	# time_out	= params["timeout"], 
+		# 	# delay		= params["delay"],
+		# 	# apply_sleep = apply_sleep
+		# )
+		print()
+		log.debug("... df_f_data.head(dft_test_trim) - after apply 'geoloc_df_col' ... ")
+		print (df_f_data.head(dft_test_trim))
 
 		### create and populate new columns in df_f_data_src from new_dmfs_list
 		for new_col in new_dmfs_list : 
@@ -373,8 +457,8 @@ def geoloc_dsi ( 	dsi_doc,
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 		print()
-		log.debug("... df_f_data_src.head(dft_test_trim) - after ageocoding ... ")
-		print (df_f_data_src.head(dft_test_trim))
+		log.debug("... df_f_data_src.head(dft_test_trim) - after geocoding ... ")
+		print (df_f_data_src.head(dft_test_trim + 1))
 
 		### convert Nan to None
 		df_f_data_src = df_f_data_src.replace({np.nan:None})
@@ -391,13 +475,21 @@ def geoloc_dsi ( 	dsi_doc,
 		# 	log.debug("geoloc_dsi finished - NOT A TEST ... saving to db")
 		
 		### save updated_f_data to db - DSI collection only
-		dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
-
+		### causes update error when multithreading if db collection == db_dict_by_type['dsi']
+		# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
+		
+		### uses the client creaed inside forked process
+		dsi_ = mongodb_coll_dsi.update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
+		# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
 		# log.error("ERROR in geoloc_dsi for dsi_oid : %s", dsi_oid )
 
 	### unflag DSI's log.is_running
 	# log.debug("... flag DSI doc as NOT running ... " )
 	# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
+
+	### freeing memory from costfull pandas objects
+	del dsi_, updated_f_data, df_f_data_src, df_f_data, dsi_f_data
+	mongodb_client.close()
 
 	### callback for multiprocessing
 	log.debug("geoloc_dsi finished ... building response for callback - dsi_oid : %s", dsi_oid)
@@ -651,7 +743,7 @@ class geoloc_prj :
 		### if doc_type == "dsi"
 		else : 
 			log.debug("... run_geoloc / simple recipe ...")
-			self.remap_dsi()
+			self.remap_dsi() 
 
 
 		### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -672,6 +764,9 @@ class geoloc_prj :
 		for dsi_doc in self.dsi_list : 
 			
 			print() 
+			### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/
+			### WARNING !!! --> multithreading could make OS crash 
+			### cf : https://stackoverflow.com/questions/50168647/multiprocessing-causes-python-to-crash-and-gives-an-error-may-have-been-in-progr 
 			
 			## CHOICE A : use a Process (no return / call back)
 			if self.use_multiprocessing and self.pool_or_process == "process" : 
@@ -685,7 +780,9 @@ class geoloc_prj :
 						self.dmf_list_to_geocode,
 					)  
 				)
-				processes.append(process)
+				# processes.append(process)
+				log.debug("... run_geoloc : multiprocessing / PROCESS ...")
+				process.start()
 
 			### CHOICE B : use a Pool (call backs)
 			elif self.use_multiprocessing and self.pool_or_process == "pool" : 
@@ -732,20 +829,19 @@ class geoloc_prj :
 		if self.use_multiprocessing and self.pool_or_process == "process" : 
 			
 			log.debug("... run_geoloc : multiprocessing / PROCESSES ...")
-			result = [ p.start() for p in processes ]
-			log.debug("process - result : \n%s ", pformat(result) )
+			# result = [ p.start() for p in processes ]
+			# log.debug("process - result : \n%s ", pformat(result) )
 
 
 		## CHOICE B : run Pool
 		elif self.use_multiprocessing and self.pool_or_process == "pool" : 
 
 			log.debug("... run_geoloc : multiprocessing / POOL ...")
-			pool.close()
-			pool.join() # wait for all subprocesses to finish
+			pool.close()	
+			pool.join() 	# wait for all subprocesses to finish
 
 			log.debug("... run_geoloc : pool closed...")
 			log.debug("process - result : \n%s ", pformat(result) )
-
 
 
 
