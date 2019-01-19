@@ -227,7 +227,7 @@ def Query_db_solidify (
 				user_oid, 
 				src_docs			= documents, 
 				rec_params			= rec_params_,
-				use_multiprocessing	= True,
+				use_multiprocessing	= False,
 				### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/
 				pool_or_process		= "process", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
 				async_or_starmap	= "starmap", 	### "async" | "starmap"
