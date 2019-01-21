@@ -59,6 +59,7 @@ log.debug("... mongo : \n%s", pformat(mongo.__dict__))
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 from flask_mail import Mail
 mail = Mail()
+log.debug("... mail : \n%s", pformat(mail.__dict__))
 
 
 

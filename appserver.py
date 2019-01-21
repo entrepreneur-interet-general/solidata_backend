@@ -93,3 +93,7 @@ def app_runner(mode, host, port) :
 if __name__ == '__main__':  
 
 	app_runner()
+
+else : 
+
+	gunicorn_app = app_runner()
