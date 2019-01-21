@@ -295,7 +295,7 @@ def Query_db_doc (
 
 	### return response
 	return {
-				"msg" 	: message ,
+				"msg" 	: message,
 				"data"	: document_out,
 				"query"	: query_resume,
 			}, response_code

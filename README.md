@@ -30,6 +30,7 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur
 - _API_       : **[Flask-RestPlus](http://flask-restplus.readthedocs.io/en/stable/)**... Swagger documentation integrated
 - _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**... wrapper JWT for Flask
 - _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**... templating, sending, etc...
+- _Geocoding_  : **[Geopy](https://geopy.readthedocs.io/en/stable/)**... to use several geocoder : Nominatim, BAN, etc...
 
 #### Features :
 
@@ -63,12 +64,90 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/entrepreneur
 
 ### _LOCALLY_
 
-	__... tutorial still to do ...__
+- clone / fork the depo 
+	...
+
+- create a virtual environment for Python3
+	
+	```
+	python3 -m venv venv
+	pip install --upgrade pip
+	pip install -r requirements.txt
+	```
+
+- create a secret config_file `config_prod.py` in the folder `./solidata_api` based 
+
+	```
+	cp ./solidata_api/config_pro_exampled.py ./solidata_api/config_prod.py
+	nano ./solidata_api/config_prod.py 
+	```
+
+- pay attention at the MONGO_URI variable depending on your local mongodb configuration...
+	- The following is the standard URI connection scheme (from [mongo documentation](https://docs.mongodb.com/manual/reference/connection-string/)):
+		```
+		mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+		```
+
+- run the app in dev mode (without possibility to send email) : 
+
+	```
+	$ python appserver.py --mode=dev
+	``` 
+
+- run the app in dev mode (with possibility to send email) : 
+
+	```
+	$ python appserver.py --mode=dev_email
+	``` 
+
+### _PRODUCTION_
+
+- for now we are using the following configuration
+
+	- droplet in digitalocean.com
+	- ubuntu 18.04
+	- 3Go RAM / 2CPU
+	- 60Go memory
+
+- configure your server (user, firewall...): 
+	- cf : [ docs 1 ](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04) 
+	- cf : [ docs 2 ](https://www.digitalocean.com/community/tutorials/how-to-setup-a-firewall-with-ufw-on-an-ubuntu-and-debian-cloud-server) 
+	- cf : [ docs 3 ](https://scottlinux.com/2011/10/10/ufw-allow-from-specific-ip-on-specific-port/ )
+
+- install mongodb : 
+	- cf : [ docs 1 ](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+	- cf : [ docs 2 ](https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04)	
+	- cf : [ docs 3 ](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-mongodb-on-ubuntu-16-04#part-two-securing-mongodb) 
+	- cf : [ docs 4 ](https://www.tecmint.com/install-mongodb-on-ubuntu-18-04/ )
 
 
-- run the app : 
+- install nginx : 
+	- cf : [ docs 1 ](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-18-04)
+	- cf :[ docs 2](https://linuxize.com/post/how-to-install-nginx-on-ubuntu-18-04/)
+	- cf : [ docs 3 ](https://linuxize.com/post/how-to-set-up-nginx-server-blocks-on-ubuntu-18-04/ )
 
-`$ python appserver.py --mode=dev_email` 
+
+- install git on your server
+	- cf : [ docs 1 ](https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-18-04)	- basically : 
+		```
+		sudo apt-get update
+		sudo apt-get install git
+		git --version
+		```
+	- go to your directory and init git :
+		```
+		git init . 
+		git remote add origin https://github.com/entrepreneur-interet-general/solidata_backend.git
+		git pull origin master
+		```
+
+- same steps than for local installation (virtual env, install dependencies, config_prod.py file, ) ... 
+
+- run the app in production mode (with possibility to send email) : 
+
+	```
+	$ python appserver.py --mode=production
+	``` 
 
 ------
 

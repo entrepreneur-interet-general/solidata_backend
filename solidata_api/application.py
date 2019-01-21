@@ -93,7 +93,11 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 
 	### init mongodb client
 	log.debug("... init mongo ...")
-	mongo.init_app(app)
+	# cf : https://flask-pymongo.readthedocs.io/en/latest/#flask_pymongo.PyMongo.init_app 
+	# init_app(app, uri=None, *args, **kwargs)¶
+	# If uri is None, and a Flask config variable named MONGO_URI exists, use that as the uri as above.
+	# You must now use a MongoDB URI to configure Flask-PyMongo
+	mongo.init_app(app)  ### 
 
 	### init mail client
 	log.debug("... init mail ...")

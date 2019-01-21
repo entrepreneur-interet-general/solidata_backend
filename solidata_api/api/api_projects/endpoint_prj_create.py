@@ -15,8 +15,8 @@ ns = Namespace('create', description='Projects : create a new project')
 
 ### import models 
 from solidata_api._models.models_project import * 
-model_form_new_prj  	= NewPrj(ns).model
-mod_prj					= Prj_infos(ns)
+model_form_new_prj  = NewPrj(ns).model
+mod_prj							= Prj_infos(ns)
 model_project_in		= mod_prj.mod_complete_in
 model_project_out		= mod_prj.mod_complete_out
 
