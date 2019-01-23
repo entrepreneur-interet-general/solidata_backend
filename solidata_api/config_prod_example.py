@@ -108,9 +108,9 @@ class Preprod(DevEmail) :
 
 	""" HOST - real prod IP and domain name"""
 	DOMAIN_ROOT			= "XXX.XX.XX.XXX" 
-	DOMAIN_PORT			= "4000"
-	SERVER_NAME			= "XXX.XX.XX.XXX:4000"  		### if True need to set SESSION_COOKIE_DOMAIN + cf : https://stackoverflow.com/questions/47666210/cookies-not-saved-in-the-browser 
-	DOMAIN_NAME			= "http://your-solidata-instance.com"
+	DOMAIN_PORT			= "4001"
+	SERVER_NAME			= "XXX.XX.XX.XXX:4001"  		### if True need to set SESSION_COOKIE_DOMAIN + cf : https://stackoverflow.com/questions/47666210/cookies-not-saved-in-the-browser 
+	DOMAIN_NAME			= "http://your-solidata-preprod-instance.com"
 	SERVER_NAME_TEST	= "True" 
 
 	""" MONGODB """

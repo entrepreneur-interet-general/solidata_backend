@@ -238,7 +238,10 @@ class Login(Resource):
 		user = mongo_users.find_one( {"infos.email" : payload_email } ) #, {"_id": 0 })
 		log.debug("user : \n %s", pformat(user)) 
 
-		if user is None : 
+		if user == None : 
+
+			log.warning("no user found for - payload_email :%s", payload_email )
+			log.warning("no user found for - payload_pwd :%s", payload_pwd )
 
 			error_message = "no such user in db"
 			return {	

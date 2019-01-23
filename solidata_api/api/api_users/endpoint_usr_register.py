@@ -112,6 +112,7 @@ class Register(Resource):
 			}
 			new_user 															= marshal( new_user_infos , model_user_complete_in )
 			new_user["auth"]["pwd"] 							= hashpass
+			new_user["infos"]["email"]						= payload_email
 			new_user["infos"]["open_level_edit"]	= "private"
 			new_user["infos"]["open_level_show"]	= "commons"
 			new_user["specs"]["doc_type"] 				= "usr"
