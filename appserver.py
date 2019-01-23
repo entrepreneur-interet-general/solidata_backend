@@ -26,7 +26,7 @@ from log_config import log, pformat
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 @click.command()
-@click.option('--mode', default="dev", 	nargs=1,	help="The <mode> you need to run the app : dev, prod, dev_email" )
+@click.option('--mode', default="dev", 	nargs=1,	help="The <mode> you need to run the app : dev, dev_email, prod, preprod" )
 @click.option('--host', default="None", nargs=1,	help="The <host> name you want the app to run on : <IP_NUMBER> " )
 @click.option('--port', default="None", nargs=1,	help="The <port> number you want the app to run on : <PORT_NUMBER>")
 def app_runner(mode, host, port) : 

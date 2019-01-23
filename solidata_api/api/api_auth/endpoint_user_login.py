@@ -17,8 +17,8 @@ ns = Namespace('login', description='User : login related endpoints')
 ### import models 
 from solidata_api._models.models_user import LoginUser, User_infos, AnonymousUser
 model_login_user  		= LoginUser(ns).model
-model_user				= User_infos(ns)
-model_user_access		= model_user.model_access
+model_user						= User_infos(ns)
+model_user_access			= model_user.model_access
 model_user_login_out	= model_user.model_login_out
 
 

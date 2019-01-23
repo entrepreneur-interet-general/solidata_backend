@@ -47,6 +47,7 @@ class BaseConfig(object):
 
 	# JWT_RENEW_REFRESH_TOKEN_AT_LOGIN			= True 
 
+	REDIRECTION_FRONT		= "http://localhost:3000" 
 
 	""" HOST """
 	DOMAIN_ROOT				= "localhost" 
@@ -96,12 +97,53 @@ class DevEmail(BaseConfig) :
 	SECURITY_PASSWORD_SALT 	= 'my_precious_salt_security'
 
 
+class Preprod(DevEmail) : 
+
+	RUN_MODE			= "preprod"
+	DEBUG = False 
+	
+	JWT_RENEW_REFRESH_TOKEN_AT_LOGIN	= False 
+
+	REDIRECTION_FRONT		= "http://www.my-solidata-frontend-preprod.com" 
+
+	""" HOST - real prod IP and domain name"""
+	DOMAIN_ROOT			= "XXX.XX.XX.XXX" 
+	DOMAIN_PORT			= "4000"
+	SERVER_NAME			= "XXX.XX.XX.XXX:4000"  		### if True need to set SESSION_COOKIE_DOMAIN + cf : https://stackoverflow.com/questions/47666210/cookies-not-saved-in-the-browser 
+	DOMAIN_NAME			= "http://your-solidata-instance.com"
+	SERVER_NAME_TEST	= "True" 
+
+	""" MONGODB """
+	MONGO_DBNAME		= 'solidata_preprod'
+	MONGO_USER 			= "mongo_admin_user"
+	MONGO_PASS 			= "mongo_admin_user_password"
+	MONGO_URI			= 'mongodb://mongo_admin_user_password:mongo_admin_user@127.0.0.1:27017/solidata_preprod'
+
+
+	""" EMAILING """
+	# email server
+	MAIL_SERVER			= 'smtp.googlemail.com' 		# ... for instance
+	MAIL_PORT 			= 465
+	MAIL_USE_TLS 		= False
+	MAIL_USE_SSL 		= True
+	MAIL_USERNAME 		= "your.solidata-instance.email-contact@my_email.com" # os.environ.get('MAIL_USERNAME')
+	MAIL_PASSWORD 		= "email_password_here" 		# os.environ.get('MAIL_PASSWORD')
+	# administrator list
+	ADMINS				= ['your.app.email@my_email.com']
+	MAIL_DEFAULT_SENDER = 'your.app.email@my_email.com'
+
+	""" ENCRYPTION FOR CONFIRMATION EMAIL """
+	SECURITY_PASSWORD_SALT 	= 'my_precious_salt_security'
+
+
 class Prod(DevEmail) : 
 
 	RUN_MODE			= "prod"
 	DEBUG = False 
 	
 	JWT_RENEW_REFRESH_TOKEN_AT_LOGIN	= False 
+
+	REDIRECTION_FRONT		= "http://www.my-solidata-frontend.com" 
 
 	""" HOST - real prod IP and domain name"""
 	DOMAIN_ROOT			= "XXX.XX.XX.XXX" 
@@ -115,7 +157,6 @@ class Prod(DevEmail) :
 	MONGO_USER 			= "mongo_admin_user"
 	MONGO_PASS 			= "mongo_admin_user_password"
 	MONGO_URI			= 'mongodb://mongo_admin_user_password:mongo_admin_user@127.0.0.1:27017/solidata'
-	# MONGO_URI			= 'mongodb://mongo_admin_user_password:mongo_admin_user@localhost:27017/solidata'
 
 
 	""" EMAILING """

@@ -78,6 +78,8 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 	### load config 
 	if run_mode == "prod" : 	
 		app.config.from_object('solidata_api.config_prod.Prod')
+	elif run_mode == "preprod" : 
+		app.config.from_object('solidata_api.config_prod.Preprod')
 	elif run_mode == "dev_email" : 
 		app.config.from_object('solidata_api.config_prod.DevEmail')
 	else : 

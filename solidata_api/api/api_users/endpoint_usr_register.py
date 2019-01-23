@@ -15,11 +15,12 @@ ns = Namespace('register', description='Users : register related endpoints')
 
 ### import models 
 from solidata_api._models.models_user import *  
-model_register_user		= NewUser(ns).model
-model_user				= User_infos(ns)
+model_register_user			= NewUser(ns).model
+model_user							= User_infos(ns)
 model_register_user_out	= model_user.model_complete_out
 model_user_complete_in	= model_user.model_complete_in
-model_user_access		= model_user.model_access
+model_user_access				= model_user.model_access
+model_user_login_out		= model_user.model_login_out
 
 models 			= {
 	"model_doc_in" 			: model_user_complete_in ,
@@ -52,7 +53,6 @@ for dft_usr in default_system_user_list :
 ### cf : response codes : https://restfulapi.net/http-status-codes/ 
 
 
-
 @ns.doc(security='apikey')
 @ns.route('/')
 class Register(Resource):
@@ -83,12 +83,12 @@ class Register(Resource):
 		# log.debug("email : %s", payload_email )
 		# log.debug("password : %s", payload_pwd )
 		
-		payload_email_encrypted   	= ns.payload["email_encrypt"]
+		payload_email_encrypted = ns.payload["email_encrypt"]
 		log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
 		payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
 		log.debug("email_decoded    : %s", email_decoded )
 
-		payload_pwd_encrypted   	= ns.payload["pwd_encrypt"]
+		payload_pwd_encrypted = ns.payload["pwd_encrypt"]
 		log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
 		payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
 		log.debug("password_decoded    : %s", password_decoded )
@@ -108,16 +108,17 @@ class Register(Resource):
 				"infos" 	: ns.payload, 
 				# "auth" 	: ns.payload 
 				"log"		: { "created_at" 	: datetime.utcnow() },
-				"profile" 	: { "lang" 			: ns.payload["language"]}
+				"profile" 	: { "lang" 		: ns.payload["lang"]}
 			}
-			new_user 								= marshal( new_user_infos , model_user_complete_in )
-			new_user["auth"]["pwd"] 				= hashpass
+			new_user 															= marshal( new_user_infos , model_user_complete_in )
+			new_user["auth"]["pwd"] 							= hashpass
 			new_user["infos"]["open_level_edit"]	= "private"
 			new_user["infos"]["open_level_show"]	= "commons"
-			new_user["specs"]["doc_type"] 			= "usr"
+			new_user["specs"]["doc_type"] 				= "usr"
+			new_user["team"] 											= []
 
 			### agreement to terms and conditions
-			new_user["infos"]["agreement"]			= ns.payload["agreement"]
+			new_user["infos"]["agreement"]				= ns.payload["agreement"]
 
 			### temporary save new user in db 
 			_id = mongo_users.insert( new_user )
@@ -134,18 +135,18 @@ class Register(Resource):
 			### create refresh tokens
 			log.debug("... refresh_token")
 			### just create a temporary refresh token once / so it could be blacklisted
-			expires 		= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
+			expires 				= app.config["JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES"] # timedelta(days=7)
 			refresh_token 	= create_refresh_token( identity=new_user, expires_delta=expires )
 			
 			### add confirm_email to claims for access_token_confirm_email
-			new_user["confirm_email"]	= True
-			access_token_confirm_email 	= create_access_token( identity=new_user, expires_delta=expires )
+			new_user["confirm_email"]	 = True
+			access_token_confirm_email = create_access_token( identity=new_user, expires_delta=expires )
 			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
 
 			tokens = {
 					'access_token'		: access_token,
 					'refresh_token'		: refresh_token,
-					'salt_token' 		: public_key_str,
+					'salt_token' 			: public_key_str,
 					# 'access_token_confirm_email' 	: access_token_confirm_email
 			}
 			log.info("tokens : \n %s", pformat(tokens))
@@ -161,6 +162,7 @@ class Register(Resource):
 			### marshall output
 			new_user_out = marshal( new_user, model_register_user_out )
 
+			message = "new user has been created but no confirmation link has been sent"
 
 			### send a confirmation email if not RUN_MODE not 'dev'
 			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
@@ -176,14 +178,16 @@ class Register(Resource):
 					# send the mail
 					send_email( "Confirm your email", payload_email, template=html )
 
+					message = "new user has been created and a confirmation link has been sent, you have {} days to confirm your email, otherwise this account will be erased...".format(expires)
+			
 				except : 
-					pass
+					message = "new user has been created but error occured while sending confirmation link to the email"
 
 			return { 
-						"msg"		: "new user has been created and a confirmation link has been sent, you have {} days to confirm your email, otherwise this account will be erased...".format(expires),
+						"msg"			: message,
 						"expires"	: str(expires), 
 						"tokens"	: tokens,
-						"_id"		: str(user_created["_id"]),
+						"_id"			: str(user_created["_id"]),
 						"infos"		: user_created["infos"],
 						"data"		: new_user_out,
 					}, 200
@@ -224,8 +228,14 @@ class Confirm_email(Resource):
 		print("-+- "*40)
 		log.debug( "ROUTE class : %s", self.__class__.__name__ )
 
-		user_email 	= get_jwt_identity()
-		log.debug( "user_email : \n %s", user_email ) 
+		user_identity = get_jwt_identity()
+		log.debug( "user_identity : \n %s", user_identity ) 
+
+
+		### check client identity and claims
+		claims 				= get_jwt_claims() 
+		log.debug("claims : \n %s", pformat(claims) )
+
 
 		### !!! only works with access_token
 		# claims = get_jwt_claims() 
@@ -234,70 +244,81 @@ class Confirm_email(Resource):
 		# user_oid 		= claims["_id"]
 
 		### find user created in db 
-		# user_to_confirm 	= mongo_users.find_one({"_id" : ObjectId(user_oid)})
-		user_to_confirm 	= mongo_users.find_one({"infos.email" : user_email })
+		user_to_confirm 	= mongo_users.find_one({"_id" : ObjectId(user_identity)})
+		# user_to_confirm 	= mongo_users.find_one({"infos.email" : user_identity })
 
-		### marshal user infos to create token
-		user_light 			= marshal( user_to_confirm , model_user_access)
-		user_light["_id"] 	= str(user_to_confirm["_id"])
-		log.debug( "user_light : \n %s", pformat(user_light) ) 
+		if user_to_confirm : 
 
-		### create a new access token
-		access_token = create_access_token(identity=user_light)
+			### marshal user infos to create token
+			user_light 					= marshal( user_to_confirm , model_user_login_out)
+			user_light["_id"] 	= str(user_to_confirm["_id"])
+			log.debug( "user_light : \n %s", pformat(user_light) ) 
 
-		### check if user is already confirmed
-		is_confirmed 	= user_to_confirm["auth"]["conf_usr"] 
-		is_blacklisted 	= user_to_confirm["auth"]["is_blacklisted"] 
+			### create a new access token
+			access_token = create_access_token(identity=user_light)
 
-		### user is not confirmed yet
-		if is_confirmed == False and is_blacklisted == False :
+			### check if user is already confirmed
+			is_confirmed 		= user_to_confirm["auth"]["conf_usr"] 
+			is_blacklisted 	= user_to_confirm["auth"]["is_blacklisted"] 
 
-			### renew the existing refresh token as a more valid token 
-			refresh_token = create_refresh_token(identity=user_light)
+			### user is not confirmed yet
+			if is_confirmed == False and is_blacklisted == False :
+
+				### renew the existing refresh token as a more valid token 
+				refresh_token = create_refresh_token(identity=user_light)
+				
+				### confirm user's email and create a real refresh_token
+				user_to_confirm["auth"]["refr_tok"] = refresh_token
+				user_to_confirm["auth"]["role"] 	= "registred"
+				user_to_confirm["auth"]["conf_usr"] = True
+
+				### register as admin if user is the first to be created and confirmed in collection
+				count_users = mongo_users.count()
+				if count_users == 1 : 
+					user_to_confirm["auth"]["role"] 	= "admin"
+
+				### update modfication in user data
+				user_to_confirm = create_modif_log(doc=user_to_confirm, action="confirm_email" )
+
+				### save data
+				mongo_users.save(user_to_confirm)
+
+				### store tokens
+				tokens = {
+							'access_token'	: access_token,
+							'refresh_token'	: refresh_token,
+							'salt_token' 		: public_key_str,
+						}
+				log.info("tokens : \n%s", pformat(tokens))
+
+				return { 
+							"msg"								: "identity '{}' confirmed, new refresh token created...".format(user_identity),
+							"tokens"						: tokens,
+							"redirection_link" 	: app.config["REDIRECTION_FRONT"]
+						}, 200
 			
-			### confirm user's email and create a real refresh_token
-			user_to_confirm["auth"]["refr_tok"] = refresh_token
-			user_to_confirm["auth"]["role"] 	= "registred"
-			user_to_confirm["auth"]["conf_usr"] = True
+			### user is already confirmed
+			else : 
 
-			### register as admin if user is the first to be created and confirmed in collection
-			count_users = mongo_users.count()
-			if count_users == 1 : 
-				user_to_confirm["auth"]["role"] 	= "admin"
+				### retrieve the existing refresh_token
+				refresh_token = user_to_confirm["auth"]["refr_tok"]
 
-			### update modfication in user data
-			user_to_confirm = create_modif_log(doc=user_to_confirm, action="confirm_email" )
+				### store tokens
+				tokens = {
+							'access_token'	: access_token,
+							'refresh_token'	: refresh_token,
+							'salt_token' 		: public_key_str,
+						}
+				log.info("tokens : \n%s", pformat(tokens))
+				return { 
+							"msg" 							: "identity '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_identity),
+							"tokens"						: tokens,
+							"redirection_link" 	: app.config["REDIRECTION_FRONT"]
+						}, 201
 
-			### save data
-			mongo_users.save(user_to_confirm)
-
-			### store tokens
-			tokens = {
-						'access_token'	: access_token,
-						'refresh_token'	: refresh_token,
-						'salt_token' 	: public_key_str,
-					}
-			log.info("tokens : \n%s", pformat(tokens))
-
-			return { 
-						"msg"		: "email '{}' confirmed, new refresh token created...".format(user_email),
-						"tokens"	: tokens
-					}, 200
-		
-		### user is already confirmed
+		### user not found
 		else : 
 
-			### retrieve the existing refresh_token
-			refresh_token = user_to_confirm["auth"]["refr_tok"]
-
-			### store tokens
-			tokens = {
-						'access_token'	: access_token,
-						'refresh_token'	: refresh_token,
-						'salt_token' 	: public_key_str,
-					}
-			log.info("tokens : \n%s", pformat(tokens))
 			return { 
-						"msg" 		: "email '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_email),
-						"tokens"	: tokens
+						"msg" 		: "user to confirm was not found",
 					}, 401

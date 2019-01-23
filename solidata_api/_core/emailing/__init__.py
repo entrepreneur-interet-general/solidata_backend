@@ -34,6 +34,7 @@ def send_async_email(curr_app, msg):
   send an email asynchronously due to the decorator
 	"""
 	log.debug("... sending async email...")
+	log.debug("... msg : \n%s", pformat(msg))
 	
 	with curr_app.app_context():
 		mail.send(msg)
