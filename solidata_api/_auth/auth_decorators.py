@@ -71,7 +71,7 @@ def add_claims_to_access_token(user):
 
 	### common claims
 	claims_to_store_into_jwt =  {
-		'_id'				: user["_id"],
+		'_id'					: user["_id"],
 		'infos'				: user["infos"],
 		'auth'				: user["auth"],
 		'profile'			: user["profile"],

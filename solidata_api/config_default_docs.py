@@ -125,6 +125,25 @@ default_tag_list = [
 ### DEFAULT DMFs
 default_dmf_list = [
 
+	# USER RELATED
+	{
+		"infos" : {
+			"title" 		: "email",
+			"description" 	: "a person's email"
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "EMAIL",
+			"f_object" 	: "",
+			"f_type" 		: "email",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+
 	# GEOLOC RELATED
 	{
 		"infos" : {

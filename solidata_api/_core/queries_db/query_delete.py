@@ -86,7 +86,7 @@ def Query_db_delete (
 				query_resume["is_member_of_team"] = True
 
 			### check user's role in team
-			if user_role in roles_for_delete or team_oids[user_id] in auth_can_delete : 
+			if user_role in roles_for_delete or team_oids[user_oid] in auth_can_delete : 
 				user_allowed_to_delete = True
 
 			if user_allowed_to_delete : 
@@ -96,12 +96,14 @@ def Query_db_delete (
 				### TO DO - delete user info from all projects and other datasets 
 				### TO DO - OR choice to keep at least email / or / delete all data
 
-				message 		= "dear user, you just deleted the following {} with oid : {}".format(document_type_full, doc_id)
-				response_code 	= 204
+				message 				= "dear user, you just deleted the following %s with oid : %s" %(document_type_full, doc_id)
+				response_code 	= 200
 
 	else : 
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
 		response_code 	= 404
+
+	log.debug( "message : %s", message )
 
 	### return response
 	return {
