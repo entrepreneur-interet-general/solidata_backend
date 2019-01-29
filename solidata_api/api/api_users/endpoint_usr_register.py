@@ -166,7 +166,7 @@ class Register(Resource):
 			message = "new user has been created but no confirmation link has been sent"
 
 			### send a confirmation email if not RUN_MODE not 'dev'
-			if app.config["RUN_MODE"] in ["prod", "dev_email"] : 
+			if app.config["RUN_MODE"] in ["prod", "dev_email", "preprod"] : 
 				
 				try : 
 					# create url for confirmation to send in the mail

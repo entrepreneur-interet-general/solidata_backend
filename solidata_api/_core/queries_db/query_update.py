@@ -119,7 +119,7 @@ def Query_db_update (
 	response_code		= 200
 
 	if claims or claims!={}  :
-		user_role 		= claims["auth"]["role"]
+		user_role 	= claims["auth"]["role"]
 		user_id	 		= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 	= ObjectId(user_id)
@@ -137,8 +137,8 @@ def Query_db_update (
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: document_type,	
-		"doc_id" 			: doc_id,
+		"document_type"	: document_type,	
+		"doc_id" 				: doc_id,
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
 		"is_member_of_team" : False,
