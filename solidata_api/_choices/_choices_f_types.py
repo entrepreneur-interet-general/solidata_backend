@@ -19,12 +19,18 @@ dmf_types_list = [
 	'integer',
 	'date',
 	'price',
+
 	'address',
 	'geoloc',
+
 	'tag',
 	'category',
+
 	'media_link',
+	'hyperlink',
+
 	'boolean',
+	
 	'other'
 ]
 

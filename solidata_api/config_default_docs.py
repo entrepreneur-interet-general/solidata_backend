@@ -162,7 +162,6 @@ default_dmf_list = [
 			"f_is_required" : False,
 		}
 	},
-
 	{
 		"infos" : {
 			"title" 		: "latitude",
@@ -231,7 +230,110 @@ default_dmf_list = [
 			"f_is_required" : False,
 		}
 	},
-
+	# CATEGORIES RELATED
+	{
+		"infos" : {
+			"title" 		: "tag",
+			"description" 	: "Tags about a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "TAG",
+			"f_object" 		: "",
+			"f_type" 		: "tag",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "category",
+			"description" 	: "Category related a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "CATEGORY",
+			"f_object" 		: "",
+			"f_type" 		: "category",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	# MEDIA RELATED
+	{
+		"infos" : {
+			"title" 		: "website",
+			"description" : "Website related to a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "WEBSITE",
+			"f_object" 		: "",
+			"f_type" 		: "media_link",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "email",
+			"description" 	: "Email related to a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "EMAIL",
+			"f_object" 		: "",
+			"f_type" 		: "email",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "image",
+			"description" : "Image related to a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "IMAGE",
+			"f_object" 		: "",
+			"f_type" 		: "media_link",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "video",
+			"description" : "Image related to a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "VIDEO",
+			"f_object" 		: "",
+			"f_type" 		: "media_link",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
 	# PERSONNAL INFOS
 	{
 		"infos" : {
