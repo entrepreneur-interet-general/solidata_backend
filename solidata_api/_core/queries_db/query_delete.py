@@ -33,14 +33,15 @@ def Query_db_delete (
 	# marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection			= db_dict_by_type[document_type]
-	document_type_full 		= doc_type_dict[document_type]
-	user_id = user_oid		= None
-	user_role				= "anonymous"
-	document_out			= None
-	response_code			= 401
+	db_collection				= db_dict_by_type[document_type]
+	document_type_full 	= doc_type_dict[document_type]
+	user_id = user_oid	= None
+	user_role						= "anonymous"
+	doc_oid							= ObjectId(doc_id)
+	document_out				= None
+	response_code				= 401
 	user_allowed_to_delete 	= False
-	message 				= "dear user, you don't have the credentials to delete this {} with this oid : {}".format(document_type_full, doc_id) 
+	message 						= "dear user, you don't have the credentials to delete this {} with this oid : {}".format(document_type_full, doc_id) 
 
 	if claims or claims!={}  :
 		user_role 		= claims["auth"]["role"]
@@ -91,9 +92,11 @@ def Query_db_delete (
 
 			if user_allowed_to_delete : 
 				### delete doc from db
-				db_collection.delete_one({"_id" : ObjectId(doc_id) })
+				db_collection.delete_one({"_id" : doc_oid })
 
 				### TO DO - delete user info from all projects and other datasets 
+				
+				
 				### TO DO - OR choice to keep at least email / or / delete all data
 
 				message 				= "dear user, you just deleted the following %s with oid : %s" %(document_type_full, doc_id)

@@ -21,9 +21,9 @@ def prj_dsi_mapping_as_df(prj_dsi_mapping) :
 	print( "- prj_dsi_mapping " + "-\- "*40)
 	log.debug("... run prj_dsi_mapping_as_df ...")
 	
-	df_mapper_dsi_to_dmf = pd.DataFrame(prj_dsi_mapping)
-	dsi_mapped_list		 = list(set(df_mapper_dsi_to_dmf["oid_dsi"]))
-	df_mapper_dsi_to_dmf = df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"]).sort_index()
+	df_mapper_dsi_to_dmf 	= pd.DataFrame(prj_dsi_mapping)
+	dsi_mapped_list		 		= list(set(df_mapper_dsi_to_dmf["oid_dsi"]))
+	df_mapper_dsi_to_dmf 	= df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"]).sort_index()
 	print()
 	log.debug("... df_mapper_dsi_to_dmf ...")
 	print(df_mapper_dsi_to_dmf)
@@ -133,12 +133,13 @@ def dsi_remap (dsi_data, df_mapper_dsi_to_dmf, df_mapper_col_headers ) :
 	df_ 	= pd.DataFrame(dsi_data["data_raw"]["f_data"])
 	
 	### drop useless columns in df_
-	df_cols 			= list(df_.columns)
-	df_cols_to_drop 	= [ h for h in df_cols if h not in df_cols_to_keep ]
-	df_light 			= df_.drop( df_cols_to_drop, axis=1 )
+	df_cols 				= list(df_.columns)
+	df_cols_to_drop = [ h for h in df_cols if h not in df_cols_to_keep ]
+	df_light 				= df_.drop( df_cols_to_drop, axis=1 )
 	# print()
 	log.debug("... df_light (after columns drop) ...")
 	# print(df_light.head(3))
+
 
 	### convert Nan to None
 	df_light = df_light.replace({np.nan:None})
@@ -154,8 +155,12 @@ def dsi_remap (dsi_data, df_mapper_dsi_to_dmf, df_mapper_col_headers ) :
 	print(df_light.dtypes)
 	print(df_light.head(3))
 
+	### convert NaT to None
+	df_light = df_light.replace({pd.NaT:None})
+	print()
+
 	# ### rename columns dataframe
-	remapper_dict		= dict(df_map_['f_title'])
+	remapper_dict			= dict(df_map_['f_title'])
 	df_light.columns 	= df_light.columns.to_series().map(remapper_dict)
 	# print()
 	log.debug("... df_light (after renaming) ...")

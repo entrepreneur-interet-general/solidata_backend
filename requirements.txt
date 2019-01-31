@@ -13,8 +13,10 @@ Flask-JWT-Extended==3.15.0
 Flask-Mail==0.9.1
 Flask-PyMongo==2.2.0
 flask-restplus==0.12.1
+Flask-SocketIO==3.2.1
 geographiclib==1.49
 geopy==1.18.1
+gunicorn==19.9.0
 HeapDict==1.0.0
 idna==2.8
 itsdangerous==1.1.0
@@ -34,6 +36,8 @@ PyJWT==1.7.1
 pymongo==3.7.2
 python-dateutil==2.7.5
 python-dotenv==0.10.1
+python-engineio==3.3.0
+python-socketio==3.1.2
 pytz==2018.9
 PyYAML==3.13
 requests==2.21.0

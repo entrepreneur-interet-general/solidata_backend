@@ -67,7 +67,7 @@ def Query_db_list (
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: document_type,	
+		"document_type"	: document_type,	
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
 		"page_args"			: page_args,
@@ -77,7 +77,7 @@ def Query_db_list (
 	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
 	page 			= page_args.get('page', 	1 )
-	per_page 		= page_args.get('per_page', 10 )
+	per_page 	= page_args.get('per_page', 10 )
 	if page != 1 :
 		start_index		= ( page - 1 ) * per_page 
 		end_index 		= start_index + per_page

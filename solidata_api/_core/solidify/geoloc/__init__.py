@@ -79,11 +79,11 @@ process2.start()
 ### GENERIC DEFAULT VARIABLES
 ### - - - - - - - - - - - - - - ### 
 
-dft_delay        = 0.5
-dft_timeout      = 5
-full_address_col 	= "temp_solidata_full_address_"
+dft_delay        		= 0.5
+dft_timeout      		= 5
+full_address_col 		= "temp_solidata_full_address_"
 location_compl_col	= "temp_solidata_compl_location_"
-location_col     	= "temp_solidata_location_"
+location_col     		= "temp_solidata_location_"
 
 empty_location 	= {
 	"src_geocoder"	: None,
@@ -135,6 +135,21 @@ def info():
 ### GENERIC GEOLOC FUNCTIONS
 ### - - - - - - - - - - - - - - ### 
 
+def stringifyValue(raw_address) : 
+	""" 
+	convert raw address value to string
+	""" 
+	address = raw_address
+
+	# print()
+	# log.debug('address : %s', address)
+	# log.debug('type(address) is listtype(address) is list : %s', type(address) is list)
+
+	if type(address) is list : 
+		address = ", ".join(raw_address)
+	return address
+
+
 def LocToDict(location_raw, src_geocoder=None) : 
 	""" 
 	location formater
@@ -184,14 +199,14 @@ def concat_cols(row, columns_to_concat):
 
 ### TO DO  : prevent error 429 (too many requests) by using RateLimiter
 
-def geocode_with_Nominatim(		adress,
-								time_out	= dft_timeout, 
-							) :
+def geocode_with_Nominatim(	address,
+														time_out	= dft_timeout, 
+													) :
 	geocoder_nom = Nominatim(user_agent="solidata_app_to_Nominatim")
 	log.debug("- geocode_with_Nominatim - ")
 	try:
 		loc = geocoder_nom.geocode(
-							query=adress, 
+							query=address, 
 							timeout=time_out, 
 							# exactly_one=True,
 							extratags=True
@@ -199,31 +214,36 @@ def geocode_with_Nominatim(		adress,
 		log.debug("- loc : \n%s ", loc)
 		return loc
 	except GeocoderTimedOut:
-		return geocode_with_Nominatim(adress)	
+		return geocode_with_Nominatim(address)	
+	except : 
+		pass
 
-def geocode_with_Ban(	adress, 		
-						time_out	= dft_timeout, 
-					) :
+def geocode_with_Ban(	address, 
+											time_out	= dft_timeout, 
+										) :
 	geocoder_ban = BANFrance(user_agent="solidata_app_to_BAN")
 	log.debug("- geocode_with_Ban - ")
 	try:
 		loc = geocoder_ban.geocode(
-							query=adress, 
+							query=address, 
 							timeout=time_out, 
 							# exactly_one=True,
 		)
 		log.debug("- loc : \n%s ", loc)
 		return loc
 	except GeocoderTimedOut:
-		return geocode_with_Ban(adress)	
+		return geocode_with_Ban(address)	
+	except : 
+		pass
 
 ### main geolocalizing function for dataframe
 ### NOTE : try to slice dataframe by 100 rows 
 ###        + update doc after each slice so to show progress to user
 def geoloc_df_col( 
 		row_val, 
-		time_out	= dft_timeout, 
-		delay		= dft_delay, 
+		complement 	= "",
+		time_out 		= dft_timeout, 
+		delay		 		= dft_delay, 
 		apply_sleep = False
 	) : 
 
@@ -247,18 +267,19 @@ def geoloc_df_col(
 	location_raw = None
 
 	### add address complement to full_address_col value (in case it helps)
-	adress = row_val
+	address = row_val
+
 	# if complement != "" :
 	# 	if row_val != "" :
-	# 		adress = ", ".join( [ row_val, complement ] )
+	# 		address = ", ".join( [ row_val, complement ] )
 	# 	else : 
-	# 		adress = complement
+	# 		address = complement
 	
-	log.debug("- adress : %s", adress)
+	log.debug("- address : %s", address)
 	
 	# if pd.isna(row_val) == False : 
 	# if pd.notnull(row_val) : 
-	if adress != "" :
+	if address != "" :
 
 		print()
 
@@ -269,9 +290,9 @@ def geoloc_df_col(
 		### run geocoders
 		try :
 			### test with nominatim first
-			log.debug("- try Nominatim - ")
+			log.debug("- try Nominatim (1) - ")
 			src_geocoder = "nominatim"
-			location_raw = geocode_with_Nominatim(adress, time_out=time_out)
+			location_raw = geocode_with_Nominatim(address, time_out=time_out)
 			
 			# log.debug("- type(location_raw) : %s ", type(location_raw))
 
@@ -279,7 +300,13 @@ def geoloc_df_col(
 				### test just with BAN then
 				log.debug("- try BAN (1) - ")
 				src_geocoder = "BAN"
-				location_raw = geocode_with_Ban(adress, time_out=time_out)
+				location_raw = geocode_with_Ban(address, time_out=time_out)
+
+			if location_raw == None and complement != "" :
+				### test just with Nominatm then
+				log.debug("- try Nominatim (2) - ")
+				src_geocoder = "nominatim"
+				location_raw = geocode_with_Nominatim(complement, time_out=time_out)
 
 		except ValueError as error_message : 
 			log.error("ValueError : %s", ValueError)
@@ -367,7 +394,12 @@ def geoloc_dsi ( 	dsi_doc,
 	df_f_data = df_f_data.fillna(value="")
 	# df_f_data = df_f_data.replace({np.nan:None})
 
-	
+	### before concatenating columns convert lists to strings
+	log.debug("... df_f_data[ cols_to_concat ].head(3) - before converting lists to strings : %s", df_f_data[ cols_to_concat ].head(3) )
+	for col in cols_to_concat : 
+		df_f_data[ col ] = df_f_data[ col ].apply(lambda x: ', '.join(str(s) for s in x) )
+	log.debug("... df_f_data[ cols_to_concat ].head(3) - after converting lists to strings : %s", df_f_data[ cols_to_concat ].head(3) )
+
 	''' apply concat function to each row (axis=1) --> alternative LESS pythonic
 			### change type of every target column --> string 
 			df_f_data[cols_to_concat] 	= df_f_data[cols_to_concat].astype(str)
@@ -385,7 +417,7 @@ def geoloc_dsi ( 	dsi_doc,
 	df_f_data[location_compl_col] = params["address_complement"]
 
 	### merge the columns
-	df_f_data[full_address_col] = df_f_data[[full_address_col, location_compl_col]].apply(lambda x: ' '.join(x), axis=1)
+	df_f_data[full_address_col] = df_f_data[[full_address_col, location_compl_col]].apply(lambda x : ' '.join(x), axis=1)
 	df_f_data = df_f_data.drop([location_compl_col], axis=1)
 
 	log.debug("... df_f_data.shape - before test check : %s", df_f_data.shape )
@@ -420,16 +452,17 @@ def geoloc_dsi ( 	dsi_doc,
 			df_f_data[ location_col ] = df_f_data[ full_address_col ].swifter.apply( 
 				geoloc_df_col, 
 				complement	= params["address_complement"], 
-				time_out	= params["timeout"], 
-				delay		= params["delay"],
+				time_out		= params["timeout"], 
+				delay				= params["delay"],
 				apply_sleep = apply_sleep
 			)
 		else :
 			### without swifter
 			df_f_data[ location_col ] = df_f_data[ full_address_col ].apply( 
 				geoloc_df_col, 
-				time_out	= params["timeout"], 
-				delay		= params["delay"],
+				complement	= params["address_complement"], 
+				time_out		= params["timeout"], 
+				delay				= params["delay"],
 				apply_sleep = apply_sleep
 			)
 		# df_f_data[ location_col ] = df_f_data[ full_address_col ].apply( 

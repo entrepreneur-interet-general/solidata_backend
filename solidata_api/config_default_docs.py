@@ -278,7 +278,7 @@ default_dmf_list = [
 		"data_raw" : {
 			"f_code" 		: "WEBSITE",
 			"f_object" 		: "",
-			"f_type" 		: "media_link",
+			"f_type" 		: "hyperlink",
 			"f_comments" 	: "",
 			"f_is_required" : False,
 		}

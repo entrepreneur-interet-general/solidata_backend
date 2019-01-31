@@ -256,7 +256,7 @@ def Query_db_build_dso (
 							else : 
 								dso_f_data = []
 							log.debug("... dso_f_data is composed ...")
-							log.debug("... dso_f_data : \n%s", pformat(dso_f_data[:5]))
+							log.debug("... dso_f_data[:5] : \n%s", pformat(dso_f_data[:5]))
 
 							### copy f_data to dso_in
 							dso_in["data_raw"]["f_data"] 	= dso_f_data
@@ -284,6 +284,7 @@ def Query_db_build_dso (
 			value_test_f_data = dso_in["data_raw"]["f_data"][0]
 			log.debug( "value_test_f_data : \n%s", pformat(value_test_f_data) )
 			for k, v in value_test_f_data.items() : 
+				print()
 				log.debug("type(k) : %s", type(k))
 				log.debug("type(v) : %s", type(v))
 			log.debug("... preparing to replace / insert dso_in ...")
