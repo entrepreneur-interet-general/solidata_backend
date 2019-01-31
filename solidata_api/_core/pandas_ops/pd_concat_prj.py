@@ -20,8 +20,11 @@ def prj_dsi_mapping_as_df(prj_dsi_mapping) :
 	print()
 	print( "- prj_dsi_mapping " + "-\- "*40)
 	log.debug("... run prj_dsi_mapping_as_df ...")
+	log.debug("... prj_dsi_mapping :\n %s", prj_dsi_mapping)  
 	
 	df_mapper_dsi_to_dmf 	= pd.DataFrame(prj_dsi_mapping)
+	log.debug("... df_mapper_dsi_to_dmf :\n %s", df_mapper_dsi_to_dmf)  
+
 	dsi_mapped_list		 		= list(set(df_mapper_dsi_to_dmf["oid_dsi"]))
 	df_mapper_dsi_to_dmf 	= df_mapper_dsi_to_dmf.set_index(["oid_dsi","oid_dmf"]).sort_index()
 	print()

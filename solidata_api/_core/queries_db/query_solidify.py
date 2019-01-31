@@ -225,13 +225,13 @@ def Query_db_solidify (
 
 			module = globals()[recipe_func_class]( 
 				user_oid, 
-				src_docs			= documents, 
-				rec_params			= rec_params_,
+				src_docs						= documents, 
+				rec_params					= rec_params_,
 				use_multiprocessing	= False,
 				### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/
 				pool_or_process		= "process", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
 				async_or_starmap	= "starmap", 	### "async" | "starmap"
-				cpu_number			= 2
+				cpu_number				= 2
 			)
 
 			# Get the function (from the instance) that we need to call to run the function
@@ -248,7 +248,7 @@ def Query_db_solidify (
 
 			### send back updated document
 			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
-			document_out 		= marshal( document_updated, models["model_doc_out"] )
+			document_out 			= marshal( document_updated, models["model_doc_out"] )
 
 			
 			

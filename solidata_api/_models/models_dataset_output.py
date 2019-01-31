@@ -49,23 +49,23 @@ class Dso_infos :
 
 		### SELF MODULES
 		self._id 					= oid_field
-		self.basic_infos 			= create_model_basic_infos(	ns_, 	model_name=model_type+"_infos",			need_licence=True)
-		self.public_auth			= create_model_public_auth(	ns_, 	model_name=model_type+"_public_auth")
-		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs",  )
-		self.log					= create_model_log(			ns_, 	model_name=model_type+"_log",			include_is_running=True, include_is_loaded=True )
-		self.modif_log				= create_model_modif_log(	ns_, 	model_name=model_type+"_modif_log")
+		self.basic_infos 	= create_model_basic_infos(	ns_, 	model_name=model_type+"_infos",			need_licence=True)
+		self.public_auth	= create_model_public_auth(	ns_, 	model_name=model_type+"_public_auth")
+		self.specs				= create_model_specs(				ns_,	model_name=model_type+"_specs",  )
+		self.log					= create_model_log(					ns_, 	model_name=model_type+"_log",			include_is_running=True, include_is_loaded=True )
+		self.modif_log		= create_model_modif_log(		ns_, 	model_name=model_type+"_modif_log")
 		
-		self.uses					= create_model_uses(		ns_,	model_name=model_type+"_uses", 			schema_list=[ "usr", "prj" ])
-		self.uses_light				= create_model_uses(		ns_,	model_name=model_type+"_uses", 			schema_list=[ "prj" ])
+		self.uses					= create_model_uses(				ns_,	model_name=model_type+"_uses", 			schema_list=[ "usr", "prj" ])
+		self.uses_light		= create_model_uses(				ns_,	model_name=model_type+"_uses", 			schema_list=[ "prj" ])
 		
-		self.datasets 				= create_model_datasets(	ns_,	model_name=model_type+"_datasets", 		schema_list=[ "dsi","tag" ])
-		self.datasets_light			= create_model_datasets(	ns_,	model_name=model_type+"_datasets", 		schema_list=[ "dsi","tag" ], is_light=True )
+		self.datasets 			= create_model_datasets(	ns_,	model_name=model_type+"_datasets", 		schema_list=[ "dsi","tag" ])
+		self.datasets_light	= create_model_datasets(	ns_,	model_name=model_type+"_datasets", 		schema_list=[ "dsi","tag" ], is_light=True )
 
-		self.translations			= create_model_translations(ns_, 	model_name=model_type+"_translations")
-		self.team 					= create_model_team(		ns_,	model_name=model_type+"_team")
-		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", is_light=True)
+		self.translations		= create_model_translations(ns_, 	model_name=model_type+"_translations")
+		self.team 					= create_model_team(			ns_,	model_name=model_type+"_team")
+		self.team_light 		= create_model_team(			ns_,	model_name=model_type+"_team", is_light=True)
 
-		self.data_raw 				= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", 		schema="dso" )
+		self.data_raw 			= create_model_data_raw(	ns_, 	model_name=model_type+"_data_raw", 		schema="dso" )
 
 		
 
@@ -134,7 +134,8 @@ class Dso_infos :
 				**self.model_in, 
 				**self.model_id, 
 				**self.model_team_light, 
-				**self.model_uses_light 
+				**self.model_uses_light, 
+				**self.mod_data_raw, 
 			} 
 		)
 
@@ -144,7 +145,8 @@ class Dso_infos :
 				**self.model_min, 
 				**self.model_id, 
 				**self.model_uses_light,
-				**self.model_datasets_light
+				**self.model_datasets_light,
+				**self.mod_data_raw,
 			}
 		)
 

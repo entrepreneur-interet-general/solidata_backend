@@ -135,19 +135,19 @@ def info():
 ### GENERIC GEOLOC FUNCTIONS
 ### - - - - - - - - - - - - - - ### 
 
-def stringifyValue(raw_address) : 
+def stringifyList(rowVal) : 
 	""" 
 	convert raw address value to string
 	""" 
-	address = raw_address
+	rowVal_ = rowVal
 
 	# print()
-	# log.debug('address : %s', address)
-	# log.debug('type(address) is listtype(address) is list : %s', type(address) is list)
+	# log.debug('rowVal_ : %s', rowVal_)
+	# log.debug('type(rowVal_) is list : %s', type(rowVal_) is list)
 
-	if type(address) is list : 
-		address = ", ".join(raw_address)
-	return address
+	if type(rowVal) is list : 
+		rowVal_ = ", ".join(str(x) for x in rowVal)
+	return rowVal_
 
 
 def LocToDict(location_raw, src_geocoder=None) : 
@@ -351,10 +351,10 @@ def geoloc_dsi ( 	dsi_doc,
 	log.debug("... params : \n%s", pformat(params) )
 
 	### retrieve dsi_oid and check test
-	dsi_oid 		= dsi_doc["_id"]
-	test_geoloc 	= params["test_geoloc"]
-	new_dmfs_list	= params["new_dmfs_list"]
-	dft_test_trim	= params["test_rows"]
+	dsi_oid 				= dsi_doc["_id"]
+	test_geoloc 		= params["test_geoloc"]
+	new_dmfs_list		= params["new_dmfs_list"]
+	dft_test_trim		= params["test_rows"]
 	dsi_is_running 	= dsi_doc["log"].get( "is_running", False )
 
 	### locally open mongo client
@@ -390,6 +390,12 @@ def geoloc_dsi ( 	dsi_doc,
 	### just keep cols_to_concat we want to work on to save memory ?
 	df_f_data = df_f_data_src[ cols_to_concat ]
 
+	log.debug("... df_f_data.shape - before test check : %s", df_f_data.shape )
+	### slice only first n rows if test mode is activated : 
+	if test_geoloc : 
+		df_f_data = df_f_data.iloc[ 0 : dft_test_trim ]
+	log.debug("... df_f_data.shape - after test check : %s", df_f_data.shape )
+
 	### before concatenating columns clean cols_to_concat from NaN values
 	df_f_data = df_f_data.fillna(value="")
 	# df_f_data = df_f_data.replace({np.nan:None})
@@ -397,7 +403,8 @@ def geoloc_dsi ( 	dsi_doc,
 	### before concatenating columns convert lists to strings
 	log.debug("... df_f_data[ cols_to_concat ].head(3) - before converting lists to strings : %s", df_f_data[ cols_to_concat ].head(3) )
 	for col in cols_to_concat : 
-		df_f_data[ col ] = df_f_data[ col ].apply(lambda x: ', '.join(str(s) for s in x) )
+		# df_f_data[ col ] = df_f_data[ col ].apply(lambda x: ', '.join(str(s) for s in x) )
+		df_f_data[ col ] = df_f_data[ col ].apply(lambda x: stringifyList(x) )
 	log.debug("... df_f_data[ cols_to_concat ].head(3) - after converting lists to strings : %s", df_f_data[ cols_to_concat ].head(3) )
 
 	''' apply concat function to each row (axis=1) --> alternative LESS pythonic
@@ -420,13 +427,8 @@ def geoloc_dsi ( 	dsi_doc,
 	df_f_data[full_address_col] = df_f_data[[full_address_col, location_compl_col]].apply(lambda x : ' '.join(x), axis=1)
 	df_f_data = df_f_data.drop([location_compl_col], axis=1)
 
-	log.debug("... df_f_data.shape - before test check : %s", df_f_data.shape )
 
-	### slice only first n rows if test mode is activated : 
-	if test_geoloc : 
-		df_f_data = df_f_data.iloc[ 0 : dft_test_trim ]
 
-	log.debug("... df_f_data.shape - after test check : %s", df_f_data.shape )
 	print()
 	log.debug("... df_f_data.head(dft_test_trim) - after apply 'concat_cols' ... ")
 	print (df_f_data.head(dft_test_trim))
@@ -562,17 +564,20 @@ class geoloc_prj :
 
 		log.debug("... initiating geoloc_prj ...")
 
+		### for flagging errors 
+		self.is_error 						= False
+
 		### for multiprocessing / Pool 
 		self.use_multiprocessing 	= use_multiprocessing
-		self.pool_or_process 		= pool_or_process
+		self.pool_or_process 			= pool_or_process
 		self.async_or_starmap 		= async_or_starmap
-		self.cpu_number				= cpu_number
+		self.cpu_number						= cpu_number
 
 		### payload
-		self.user_oid		= user_oid
-		self.rec_params		= rec_params
-		self.run_time		= datetime.utcnow()
-		self.src_doc 		= src_docs["src_doc"]
+		self.user_oid				= user_oid
+		self.rec_params			= rec_params
+		self.run_time				= datetime.utcnow()
+		self.src_doc 				= src_docs["src_doc"]
 		self.src_doc_type 	= src_docs["src_doc"]["specs"]["doc_type"]
 
 		# log.debug("... rec_params : \n%s", pformat(rec_params) )
@@ -604,12 +609,12 @@ class geoloc_prj :
 
 		### geoloc a PRJ
 		if self.src_doc_type in ["prj"] : 	
-			self.is_complex_rec 	= True
-			self.dmt_doc 			= src_docs["dmt_doc"]
-			self.dmf_list 			= src_docs["dmf_list"]
-			self.dsi_list 			= src_docs["dsi_list"]
+			self.is_complex_rec 			= True
+			self.dmt_doc 							= src_docs["dmt_doc"]
+			self.dmf_list 						= src_docs["dmf_list"]
+			self.dsi_list 						= src_docs["dsi_list"]
 			self.prj_dmf_ols_mapping 	= src_docs["src_doc"]["mapping"]["dmf_to_open_level"]
-			self.prj_dsi_mapping 		= src_docs["src_doc"]["mapping"]["dsi_to_dmf"]
+			self.prj_dsi_mapping 			= src_docs["src_doc"]["mapping"]["dsi_to_dmf"]
 		
 		### only geoloc a DSI
 		else : 
@@ -633,7 +638,7 @@ class geoloc_prj :
 
 	def remap_prj (self) : 
 		""" 
-		update mapping of a RPJ and related DMT
+		update mapping of a PRJ and related DMT
 		""" 
 
 		print()
@@ -795,6 +800,7 @@ class geoloc_prj :
 
 		### loop dsi list
 		for dsi_doc in self.dsi_list : 
+			
 			
 			print() 
 			### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/

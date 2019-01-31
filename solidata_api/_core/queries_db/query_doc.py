@@ -39,6 +39,64 @@ def sort_list_of_dicts(list_to_sort, key_value, is_reverse=True) :
 	# return sorted(list_to_sort, key = lambda i: i[key_value]) 
 	return sorted(list_to_sort, key=lambda i:weighted(i[key_value]), reverse=is_reverse)
 
+def strip_f_data(	data_raw, 
+									doc_open_level_show, 
+									team_oids,
+									created_by_oid,
+									roles_for_complete, 
+									user_role, 
+									user_oid
+								):
+	""" 
+	TO DO 
+	strip f_data from fields not authorized for user
+	""" 
+
+	print()
+	print("-+- "*40)
+	log.debug( "... strip_f_data " )
+
+	f_col_headers = data_raw["f_col_headers"] 
+	f_data 				= data_raw["f_data"]
+
+	if user_role in roles_for_complete : 
+		pass
+
+	else :
+
+		### select f_col_headers given user auth
+		
+		if user_role == 'anonymous' : 
+			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data"] ]
+		
+		elif user_oid in team_oids and user_oid != created_by_oid :
+			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data", "commons", "collective"] ]
+		
+		elif user_oid == created_by_oid  : 
+			f_col_headers_selected = f_col_headers
+
+		else : 
+			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data", "commons"] ]
+
+		# log.debug('f_col_headers_selected : \n%s', pformat(f_col_headers_selected) )  
+
+  	### load f_data as dataframe
+		f_data_df 						= pd.DataFrame(f_data)
+		log.debug('f_data_df.head(5) : \n%s', f_data_df.head(5) )  
+		
+		f_data_cols						= list(f_data_df.columns.values)
+		log.debug('f_data_cols : \n%s', pformat(f_data_cols) )  
+
+		f_col_headers_for_df 	= [ h["f_title"] for h in f_col_headers_selected if h["f_title"] in f_data_cols ]
+		log.debug('f_col_headers_for_df : \n%s', pformat(f_col_headers_for_df) )  
+
+		f_data_df_out 				= f_data_df[ f_col_headers_for_df ]
+		f_data 								= f_data_df_out.to_dict('records')
+
+		del f_data_df_out, f_data_df
+
+	return f_data
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -65,18 +123,18 @@ def Query_db_doc (
 	# marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection		= db_dict_by_type[document_type]
+	db_collection				= db_dict_by_type[document_type]
 	document_type_full 	= doc_type_dict[document_type]
 	user_id = user_oid	= None
-	user_role			= "anonymous"
-	document_out		= None
-	message 			= None
+	user_role						= "anonymous"
+	document_out				= None
+	message 						= None
 	dft_open_level_show = ["open_data"]
-	response_code		= 200
+	response_code				= 200
 
 	if claims or claims!={}  :
 		user_role 	= claims["auth"]["role"]
-		user_id	 	= claims["_id"] ### get the oid as str
+		user_id	 		= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 		= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
@@ -84,8 +142,8 @@ def Query_db_doc (
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: document_type,	
-		"doc_id" 			: doc_id,
+		"document_type"	: document_type,	
+		"doc_id" 				: doc_id,
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
 		"page_args"			: page_args,
@@ -96,7 +154,7 @@ def Query_db_doc (
 
 	### get pagination arguments
 	log.debug('page_args : \n%s', pformat(page_args) )  
-	page 		= page_args.get('page', 	1 )
+	page 			= page_args.get('page', 	1 )
 	per_page 	= page_args.get('per_page', 10 )
 	if page != 1 :
 		start_index		= ( page - 1 ) * per_page 
@@ -115,7 +173,7 @@ def Query_db_doc (
 	only_f_data		= query_args.get('only_f_data',		False )
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
-	sort_by			= query_args.get('sort_by',			None )
+	sort_by				= query_args.get('sort_by',			None )
 	descending		= query_args.get('descending',		False )
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
 	q_normalize		= query_args.get('normalize',		False )
@@ -182,6 +240,9 @@ def Query_db_doc (
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
 			log.debug( "team_oids : \n%s", pformat(team_oids) )
 
+
+
+
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
 		if user_role in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid : 
@@ -202,15 +263,28 @@ def Query_db_doc (
 			if document_type in ["dsi", "dsr", "dsr", "dso"] :
 			
 				log.debug( '...document_type : %s', document_type )
+				log.debug( '...document["data_raw"]["f_data"][:3] : \n%s', document["data_raw"]["f_data"][:3] )
 
 				# if document_type == 'dsi' :
 				# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
 				# 	pass
 
 				### copy f_data
-				document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+				if document_type in ["dso"] :
+						### strip f_data from not allowed fields
+						# document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+						document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
+																				doc_open_level_show, 
+																				team_oids,
+																				created_by_oid,
+																				roles_for_complete, 
+																				user_role, 
+																				user_oid
+																			)
+				else :
+					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 				log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
-				
+
 				### sort results
 				if sort_by != None :
 					log.debug( 'sort_by : %s', sort_by )
@@ -255,7 +329,20 @@ def Query_db_doc (
 					# 	pass
 
 					### copy f_data
-					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+					if document_type in ["dso"] :
+  						### strip f_data from not allowed fields
+  						# document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+							document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
+																					doc_open_level_show, 
+																					team_oids,
+																					created_by_oid,
+																					roles_for_complete, 
+																					user_role, 
+																					user_oid
+																				)
+					else :
+						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+					
 					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 					
 					### sort results
