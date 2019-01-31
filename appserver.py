@@ -20,6 +20,10 @@ import click
 from log_config import log, pformat
 # log.debug('>>> TESTING LOGGER')
 
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+### FLASK-SOCKETIO
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+from flask_socketio import SocketIO
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### RUN APPSERVER
@@ -79,6 +83,8 @@ def app_runner(mode, host, port) :
 
 	app_debug = app.config["DEBUG"]
 
+	### initiate socketio
+	socketio = SocketIO(app)
 
 	# simple flask runner
 	print()

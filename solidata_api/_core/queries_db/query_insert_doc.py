@@ -49,12 +49,12 @@ def Query_db_insert (
 
 	### check if doc already exists 
 	document 		= db_collection.find_one( filter_doc )
-	log.debug('document : \n%s', pformat(document) )  
+	# log.debug('document : \n%s', pformat(document) )  
 
 
 	### retrieve system user's OID
 	system_user = db_dict_by_type['usr'].find_one( { 'auth.role' : user_role } )
-	log.debug('system_user : \n%s', pformat(system_user) )  
+	# log.debug('system_user : \n%s', pformat(system_user) )  
 
 	# check if system user exists
 	# system_user exists
@@ -75,7 +75,7 @@ def Query_db_insert (
 
 	### marshall infos with new_doc complete model
 	new_doc_in 		= marshal( new_doc , models["model_doc_in"])
-	log.debug('new_doc_in : \n%s', pformat(new_doc_in) )  
+	# log.debug('new_doc_in : \n%s', pformat(new_doc_in) )  
 	
 	### complete missing default fields
 	if document_type != "usr" :

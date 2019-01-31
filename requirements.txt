@@ -7,6 +7,8 @@ cloudpickle==0.6.1
 colorlog==4.0.2
 dask==1.1.0
 distributed==1.25.2
+dnspython==1.16.0
+eventlet==0.24.1
 Flask==1.0.2
 Flask-Cors==3.0.7
 Flask-JWT-Extended==3.15.0
@@ -16,6 +18,8 @@ flask-restplus==0.12.1
 Flask-SocketIO==3.2.1
 geographiclib==1.49
 geopy==1.18.1
+gevent==1.4.0
+greenlet==0.4.15
 gunicorn==19.9.0
 HeapDict==1.0.0
 idna==2.8
@@ -25,6 +29,7 @@ jsonschema==2.6.0
 llvmlite==0.27.0
 locket==0.2.0
 MarkupSafe==1.1.0
+monotonic==1.5
 msgpack==0.6.0
 numba==0.42.0
 numpy==1.16.0
