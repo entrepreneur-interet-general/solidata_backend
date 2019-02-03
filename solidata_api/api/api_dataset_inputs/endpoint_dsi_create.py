@@ -111,7 +111,6 @@ class DsiCreate(Resource):
 		log.debug("new_dsi : \n %s" , pformat(new_dsi))
 
 
-
 		### check for files (not an API reference)
 		if payload["src_type"] != 'API' : 
 
@@ -126,7 +125,6 @@ class DsiCreate(Resource):
 			if not uploaded_file : 
 				uploaded_file 	= files['form_file']  # This is a FileStorage instance
 				log.debug("uploaded_file (from files) : \n %s", uploaded_file )
-
 
 			### check extension and mimetype
 			if uploaded_file and allowed_file(uploaded_file.filename) : 
@@ -165,14 +163,14 @@ class DsiCreate(Resource):
 					new_dsi["specs"]["src_sep"] = payload['csv_sep']
 					new_dsr["specs"]["src_sep"] = payload['csv_sep']
 
-				### DSI already exists
+				### file not permited
 				else : 
 					log.info("-!- filename not permited...")
 					# existing_dsi_oid = existing_dsi["_id"]
 					return {
-								# "msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
+								# "msg"	: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
 								"msg"		: "your file '{}' format is not permited...".format(filename),
-								"data"		: {
+								"data"	: {
 									"filename" 	: filename,
 									# "_id" 		: str(existing_dsi_oid)
 								}
@@ -261,57 +259,61 @@ class DsiCreate(Resource):
 			log.debug('API / url : {}'.format(url) )  
 
 			### check if file already exists in db
-			existing_dsi = mongo_datasets_inputs.find_one({"specs.src_link" : filename})
+			# existing_dsi = mongo_datasets_inputs.find_one({"specs.src_link" : filename})
 
 			### save data if file is not already existing 
-			if existing_dsi is None : 
+			# if existing_dsi is None : 
 
-				### get the data
-				api_response = requests.get(url)
-				log.debug('API / api_response : %s', pformat(api_response))  
+			### get the data
+			api_response = requests.get(url)
+			log.debug('API / api_response : %s', pformat(api_response))  
 
-				if(api_response.ok):
-						
-					log.debug('API / api_response.ok : %s', api_response.ok )  
-					# api_data = json.loads(api_response.content)
-					api_data = api_response.json()
-					# log.debug('API / api_data : \n%s', pformat(api_data) )  
+			if(api_response.ok):
+					
+				log.debug('API / api_response.ok : %s', api_response.ok )  
+				# api_data = json.loads(api_response.content)
+				api_data = api_response.json()
+				# log.debug('API / api_data : \n%s', pformat(api_data) )  
 
-					### get to the field containing the records
-					api_parser = payload.get("src_parser", "/")
-					log.debug('API / api_parser : %s', api_parser )  
-					if api_parser != "/" : 
-						api_parser = api_parser.split("/")
-						for i in api_parser[1:] :
-							api_data = api_data[i]
-					log.debug('API / api_data[:2] : \n%s', pformat(api_data[:2]) )  
+				### get to the field containing the records
+				api_parser = payload.get("src_parser", "/")
+				log.debug('API / api_parser : %s', api_parser )  
+				if api_parser != "/" : 
+					api_parser = api_parser.split("/")
+					for i in api_parser[1:] :
+						api_data = api_data[i]
+				log.debug('API / api_data[:2] : \n%s', pformat(api_data[:2]) )  
 
-					### create dataframe
-					df = read_dict_with_pd(api_data)
-					df_is_created = True
+				### create dataframe
+				df = read_dict_with_pd(api_data)
+				df_is_created = True
 
-					### delete src_sep info
-					new_dsi["specs"]["src_sep"] = None
-					new_dsr["specs"]["src_sep"] = None
+				### delete src_sep info
+				new_dsi["specs"]["src_sep"] = None
+				new_dsr["specs"]["src_sep"] = None
 
-				### no data detected | API request failed
-				else : 
-					log.info("-!- request to API failed ...")
-					return {
-								"msg"		: "request to API failed",
-							}, 401
+				### add src_parser info
+				new_dsi["specs"]["src_parser"] = api_parser
+				new_dsr["specs"]["src_parser"] = api_parser
 
-			### DSI already exists
+			### no data detected | API request failed
 			else : 
-				log.info("-!- dsi already exists...")
-				existing_dsi_oid = existing_dsi["_id"]
+				log.info("-!- request to API failed ...")
 				return {
-							"msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
-							"data"		: {
-								"filename" 	: filename,
-								"_id" 		: str(existing_dsi_oid)
-							}
+							"msg"		: "request to API failed",
 						}, 401
+
+			# ### DSI already exists
+			# else : 
+			# 	log.info("-!- dsi already exists...")
+			# 	existing_dsi_oid = existing_dsi["_id"]
+			# 	return {
+			# 				"msg"		: "your file '{}' already exists in dsi db / try update instead ...".format(filename),
+			# 				"data"		: {
+			# 					"filename" 	: filename,
+			# 					"_id" 		: str(existing_dsi_oid)
+			# 				}
+			# 			}, 401
 
 
 		### manage dataframe, DSI, and DSR
@@ -351,14 +353,20 @@ class DsiCreate(Resource):
 			# log.debug("new_dsi : \n %s" , pformat(new_dsi))
 
 
+			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+			### upsert DSI and DSR  
+			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
 			### DSI - ORIGNAL VALUES - save dsi object to db 
 			new_dsi_doc = mongo_datasets_inputs.insert(new_dsi)
 			log.info("new_dsi is saved in db... ")
 			### keep track of new_dsi_doc oid 
 			oid_dsi_		= new_dsi_doc
-			log.info("oid_dsi_ : %s ", str(oid_dsi_) )
+			log.info("oid_dsi_ : %s ", oid_dsi_ )
+			log.info("str(oid_dsi_) : %s ", str(oid_dsi_) )
 
 			### DSR - VALUES COPIES - save dsr object to db 
+			# new_dsr_doc = mongo_datasets_raws.replace_one( {"_id" : oid_dsi_ }, new_dsr, upsert=True )
 			new_dsr_doc = mongo_datasets_raws.insert(new_dsr)
 			log.info("new_dsr is saved in db... ")
 			### keep track of new_dsr_doc oid 
@@ -366,30 +374,31 @@ class DsiCreate(Resource):
 			log.info("oid_dsr_ : %s ", str(oid_dsr_) )
 
 
-
 			### DSI - add dsi ref to user 
-			add_to_datasets(	coll			= "mongo_users", 
+			add_to_datasets(	coll		= "mongo_users", 
 								target_doc_oid	= oid_usr_, 
-								doc_type		= "dsi", 
-								oid_by			= oid_usr_, 
-								oid_to_add		= oid_dsi_, 
+								doc_type				= "dsi", 
+								oid_by					= oid_usr_, 
+								oid_to_add			= oid_dsi_, 
 								include_is_fav	= True
 							)
 
 			### DSI - add dsr ref to dsi 
-			add_to_datasets(	coll 			= "mongo_datasets_inputs", 
+			add_to_datasets(	coll 		= "mongo_datasets_inputs", 
 								target_doc_oid	= oid_dsi_, 
-								doc_type		= "dsr", 
-								oid_by			= oid_usr_, 
-								oid_to_add		= oid_dsr_, 
+								doc_type				= "dsr", 
+								oid_by					= oid_usr_, 
+								oid_to_add			= oid_dsr_, 
 							)
 
 			### DSR - add dsi ref to dsr 
 			add_to_uses(		coll 			= "mongo_datasets_raws", 
 								target_doc_oid	= oid_dsr_, 
-								doc_type		= "dsi", 
-								oid_by			= oid_dsi_, 
+								doc_type				= "dsi", 
+								oid_by					= oid_dsi_, 
 							)
+
+			### DEPRECATED / TO DECIDE IF NEED TO SAVE ORIGINAL FILE ON SERVER|DB
 
 			### save file in uploads folder if file doesn't exist
 			# destination = app.config["UPLOADS_DATA"]
@@ -407,10 +416,10 @@ class DsiCreate(Resource):
 			log.info("--- dsi and dsr are created...")
 			return {
 						"msg"		: "your file '{}' has been correctly uploaded...".format(filename),
-						"data"		: {
+						"data"	: {
 							"src_link" 	: payload["src_link"],
 							"filename" 	: filename,
-							"_id" 		: str(oid_dsi_)
+							"_id" 			: str(oid_dsi_)
 						}
 					}, 200
 

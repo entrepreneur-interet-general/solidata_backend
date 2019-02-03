@@ -130,7 +130,7 @@ def Query_db_update (
 	if ObjectId.is_valid(doc_id) : 
 		doc_oid			= ObjectId(doc_id)
 		document 		= db_collection.find_one( {"_id": doc_oid } )
-		log.debug( "document : \n%s", pformat(document) )
+		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
 		document		= None
@@ -390,7 +390,6 @@ def Query_db_update (
 							)
 
 
-
 				else : 
 					log.debug( "neither is_mapping nor add_to_list... " )
 					payload_ = { field_to_update : payload_data["field_value"] }
@@ -441,7 +440,7 @@ def Query_db_update (
 				else :
 					document_out = marshal( document, models["model_doc_guest_out"] )
 
-				log.debug( "document_out : \n %s", pformat(document_out) )
+				# log.debug( "document_out : \n %s", pformat(document_out) )
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 
 			else : 

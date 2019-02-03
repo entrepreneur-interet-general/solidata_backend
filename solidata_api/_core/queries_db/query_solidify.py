@@ -74,7 +74,7 @@ def Query_db_solidify (
 	if ObjectId.is_valid(doc_id) : 
 		doc_oid			= ObjectId(doc_id)
 		document 		= db_collection.find_one( {"_id": doc_oid } )
-		log.debug( "document : \n%s", pformat(document) )
+		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
 		document		= None

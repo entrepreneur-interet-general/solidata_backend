@@ -263,7 +263,7 @@ def Query_db_doc (
 			if document_type in ["dsi", "dsr", "dsr", "dso"] :
 			
 				log.debug( '...document_type : %s', document_type )
-				log.debug( '...document["data_raw"]["f_data"][:3] : \n%s', document["data_raw"]["f_data"][:3] )
+				log.debug( '...document["data_raw"]["f_data"][:1] : \n%s', pformat(document["data_raw"]["f_data"][:1]) )
 
 				# if document_type == 'dsi' :
 				# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
@@ -379,6 +379,8 @@ def Query_db_doc (
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
 		document_out    = None
 
+
+	log.debug('query_resume : \n%s', pformat(query_resume)) 
 
 	### return response
 	return {

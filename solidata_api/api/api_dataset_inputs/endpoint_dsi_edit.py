@@ -47,7 +47,6 @@ class Dsi_edit(Resource):
 	DELETE - Let you delete document
 	"""
 
-
 	@ns.doc('update_dsi')
 	@guest_required 
 	@ns.expect([model_update])
