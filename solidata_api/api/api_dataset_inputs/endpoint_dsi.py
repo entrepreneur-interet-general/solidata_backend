@@ -15,14 +15,14 @@ ns = Namespace('infos', description='Dataset inputs : request and list all dsi i
 
 ### import models 
 from solidata_api._models.models_dataset_input import * 
-mod_doc				= Dsi_infos(ns)
-model_doc_out		= mod_doc.mod_complete_out
+mod_doc							= Dsi_infos(ns)
+model_doc_out				= mod_doc.mod_complete_out
 model_doc_guest_out	= mod_doc.model_guest_out
-model_doc_min		= mod_doc.model_minimum
-models 				= {
-	"model_doc_out" 		: model_doc_out ,
-	"model_doc_guest_out" 	: model_doc_guest_out ,
-	"model_doc_min" 		: model_doc_min ,
+model_doc_min				= mod_doc.model_minimum
+models 							= {
+	"model_doc_out" 			: model_doc_out ,
+	"model_doc_guest_out" : model_doc_guest_out ,
+	"model_doc_min" 			: model_doc_min ,
 } 
 
 
@@ -52,7 +52,7 @@ class Dsi_infos_(Resource):
 		>
 			--- needs   : dsi's oid <doc_id>
 			--- pagination args : page / per_page 
-			--- query args : q_value_str / q_value_int / q_in_field / only_stats
+			--- query args : search_for / search_in / only_stats / ...
 			>>> returns : dsi data
 
 		"""
@@ -124,7 +124,7 @@ class Dsi_List(Resource):
 
 
 		### query db from generic function 		
-		query_args				= query_arguments.parse_args(request)
+		query_args			= query_arguments.parse_args(request)
 		page_args				= pagination_arguments.parse_args(request)
 		results, response_code	= Query_db_list (
 			ns, 

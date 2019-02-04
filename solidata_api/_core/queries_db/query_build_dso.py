@@ -36,24 +36,25 @@ def Query_db_build_dso (
 	log.debug("... _core.queries_db.query_build_doc.py ..." )
 
 	### get mongodb collections
-	prj_collection		= db_dict_by_type['prj']
-	dmt_collection		= db_dict_by_type['dmt']
-	dmf_collection		= db_dict_by_type['dmf']
-	dsi_collection		= db_dict_by_type['dsi']
-	dso_collection		= db_dict_by_type['dso']
+	prj_collection			= db_dict_by_type['prj']
+	dmt_collection			= db_dict_by_type['dmt']
+	dmf_collection			= db_dict_by_type['dmf']
+	dsi_collection			= db_dict_by_type['dsi']
+	dso_collection			= db_dict_by_type['dso']
+	dso_doc_collection	= db_dict_by_type['dso_doc']
 
-	prj_type_full 		= doc_type_dict['prj']
-	dso_type_full 		= doc_type_dict['dso']
+	prj_type_full 			= doc_type_dict['prj']
+	dso_type_full 			= doc_type_dict['dso']
 
 	user_id = user_oid	= None
-	user_role			= "anonymous"
-	document_out		= None
-	message 			= None
-	response_code		= 200
+	user_role						= "anonymous"
+	document_out				= None
+	message 						= None
+	response_code				= 200
 
 	if claims or claims!={}  :
-		user_role 		= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role = claims["auth"]["role"]
+		user_id	 	= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 	= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
@@ -69,12 +70,12 @@ def Query_db_build_dso (
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: 'prj',	
-		"doc_id" 			: doc_id,
-		"user_id" 			: user_id,
-		"user_role"			: user_role,
+		"document_type"			: 'prj',	
+		"doc_id" 						: doc_id,
+		"user_id" 					: user_id,
+		"user_role"					: user_role,
 		"is_member_of_team" : False,
-		"payload" 			: payload
+		"payload" 					: payload
 	}
 
 	### if prj exists
@@ -108,11 +109,11 @@ def Query_db_build_dso (
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 			### copy main infos from PRJ
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-			dso_in['_id'] 			= doc_oid
-			dso_in['infos'] 		= doc_prj["infos"]
+			dso_in['_id'] 				= doc_oid
+			dso_in['infos'] 			= doc_prj["infos"]
 			dso_in['public_auth']	= doc_prj["public_auth"]
 			dso_in['datasets'] 		= doc_prj["datasets"]
-			dso_in['team'] 			= doc_prj["team"]
+			dso_in['team'] 				= doc_prj["team"]
 			dso_in['mapping'] 		= doc_prj["mapping"]
 
 			### update auto_fields 
@@ -175,16 +176,16 @@ def Query_db_build_dso (
 					### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 					### get prj's dmfs' mapping (if not empty) - from prj/mapping/dmf_to_open_level
-					prj_dmf_mapping 		= doc_prj["mapping"]["dmf_to_open_level"]
+					prj_dmf_mapping = doc_prj["mapping"]["dmf_to_open_level"]
 					log.debug( "prj_dmf_mapping - from prj/mapping/dmf_to_open_level : \n%s", pformat(prj_dmf_mapping) )
 					if len(prj_dmf_mapping) > 0 : 
 
 						### lighten prj_dmf_mapping_ list (referenced dmf for prj' dmt ) -> just oid_dmf and open_level_show fields if dmf in dmf_list_light
-						prj_dmf_mapping_ 		= [ { "oid_dmf" : d["oid_dmf"] , "open_level_show" : d["open_level_show"] } for d in prj_dmf_mapping if d["oid_dmf"] in dmf_list_light ]
+						prj_dmf_mapping_ = [ { "oid_dmf" : d["oid_dmf"] , "open_level_show" : d["open_level_show"] } for d in prj_dmf_mapping if d["oid_dmf"] in dmf_list_light ]
 						log.debug( "prj_dmf_mapping_ - exclude dmf not in dmf_list_light : \n%s", pformat(prj_dmf_mapping_) )
 						
 						### lighten prj_dmf_mapping_ list (referenced dmf for prj' dmt ) -> just list of pure oid_dmf
-						dmf_list_from_map 		= [ d['oid_dmf'] for d in prj_dmf_mapping_ ]
+						dmf_list_from_map = [ d['oid_dmf'] for d in prj_dmf_mapping_ ]
 						log.debug( "dmf_list_from_map : \n%s", pformat(dmf_list_from_map) )
 
 						### get prj's dmfs' headers (if not empty) - from dmf_list (aka prj's dmt)
@@ -246,8 +247,11 @@ def Query_db_build_dso (
 							# log.debug( "dsi_raw_data_list : \n%s", pformat(dsi_raw_data_list) )
 
 							### reindex and concatenate all f_data from headers_dso and df_mapper_dsi_to_dmf with pandas
-							if len(dsi_raw_data_list)> 0 :
+							if len(dsi_raw_data_list) > 0 :
 								df_data_concat = concat_dsi_list(headers_dso, df_mapper_dsi_to_dmf, dsi_raw_data_list)
+
+								### add PRJ/DSO oid entry to dso_f_data
+								df_data_concat['oid_dso'] = doc_oid
 
 								### get df_data_concat as a list
 								dso_f_data = df_data_concat.to_dict('records')
@@ -259,7 +263,7 @@ def Query_db_build_dso (
 							log.debug("... dso_f_data[:5] : \n%s", pformat(dso_f_data[:5]))
 
 							### copy f_data to dso_in
-							dso_in["data_raw"]["f_data"] 	= dso_f_data
+							# dso_in["data_raw"]["f_data"] 	= dso_f_data
 
 							### flag dso as loaded
 							dso_in["log"]["is_loaded"] 		= True
@@ -281,7 +285,8 @@ def Query_db_build_dso (
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 			### replace / upsert DSO built 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
-			value_test_f_data = dso_in["data_raw"]["f_data"][0]
+			# value_test_f_data = dso_in["data_raw"]["f_data"][0]
+			value_test_f_data = dso_f_data[0]
 			log.debug( "value_test_f_data : \n%s", pformat(value_test_f_data) )
 			for k, v in value_test_f_data.items() : 
 				print()
@@ -292,9 +297,28 @@ def Query_db_build_dso (
 			_id = dso_collection.replace_one( {"_id" : doc_oid }, dso_in, upsert=True )
 			log.info("dso_in has been created and stored in DB ...")
 			log.info("_id : \n%s", pformat(str(_id) ) )
+			
+
+
+
+			### delete previous documents from dso_doc_collection
+			log.info("deleting documents related to prj in dso_doc_collection ...")
+			try :
+				dso_doc_collection.delete_many({ 'oid_dso' : doc_oid })
+			except : 
+				pass
+
+			### insert many docs in dso_docs for every entry of dso_f_data
+			log.info("inserting documents related to prj in dso_doc_collection ...")
+			if len(dso_f_data) > 0 and len(dso_f_data) < 2 :
+				dso_doc_collection.insert_one( dso_f_data )
+			else :
+				dso_doc_collection.insert_many( dso_f_data )
+
+
 
 			document_out 	= marshal( dso_in, models["model_doc_out"] )
-			message 		= "the {} corresponding to the {} has been rebuilt".format(dso_type_full, prj_type_full) 
+			message 			= "the {} corresponding to the {} has been rebuilt".format(dso_type_full, prj_type_full) 
 
 
 		# TO DO 

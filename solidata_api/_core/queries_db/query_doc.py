@@ -97,6 +97,48 @@ def strip_f_data(	data_raw,
 
 	return f_data
 
+
+def search_for_str( search_str, row) :
+
+	print() 
+	log.debug( "search_str : %s", search_str )
+	log.debug( "row : \n%s", row )
+
+	return row
+
+def search_f_data (data_raw, query_args) :
+	"""
+	apply search filters to f_data 
+	"""
+	print()
+	print("-+- "*40)
+	log.debug( "... search_f_data " )
+
+	f_data = data_raw["f_data"]
+
+	log.debug('query_args : \n%s', pformat(query_args) )  
+	search_for 		= query_args.get('search_for',	 	None )
+	search_in 		= query_args.get('search_in', 		None )
+	search_int 		= query_args.get('search_int', 		None )
+	search_float 	= query_args.get('search_float', 	None )
+	item_id 			= query_args.get('item_id', 			None )
+	is_complete 	= query_args.get('is_complete', 	None )
+
+	### use pandas to retrieve search results from 
+	f_data_df = pd.DataFrame(f_data)
+	f_data_df_cols = list(f_data_df.columns.values)
+	log.debug( "... f_data_df_cols : \n%s", pformat(f_data_df_cols) )
+	log.debug( "... f_data_df : \n%s", f_data_df.head(5) )
+	
+	if search_for is not None and search_for != [''] : 
+		# f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row), axis=1 ).any(axis=1)]
+		f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row) ).any(axis=1)]
+
+	f_data_out = f_data_df.to_dict('records')
+
+	return f_data_out
+
+
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### GLOBAL FUNCTION TO QUERY ONE DOC FROM DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -167,9 +209,6 @@ def Query_db_doc (
 
 	### get query arguments
 	log.debug('query_args : \n%s', pformat(query_args) )  
-	q_value_str 	= query_args.get('q_value_str', 	None )
-	q_value_int 	= query_args.get('q_value_int', 	None )
-	q_in_field		= query_args.get('q_in_field',		None )
 	only_f_data		= query_args.get('only_f_data',		False )
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
@@ -285,6 +324,12 @@ def Query_db_doc (
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 				log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
+
+				### SEARCH QUERIES
+				document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args)
+
+
+
 				### sort results
 				if sort_by != None :
 					log.debug( 'sort_by : %s', sort_by )
@@ -345,6 +390,11 @@ def Query_db_doc (
 					
 					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 					
+
+					### SEARCH QUERIES
+					document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args)
+
+
 					### sort results
 					if sort_by != None :
 						log.debug( 'sort_by : %s', sort_by )
@@ -376,8 +426,8 @@ def Query_db_doc (
 	else : 
 		### no document / empty response
 		response_code	= 404
-		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
-		document_out    = None
+		message 			= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
+		document_out  = None
 
 
 	log.debug('query_resume : \n%s', pformat(query_resume)) 
