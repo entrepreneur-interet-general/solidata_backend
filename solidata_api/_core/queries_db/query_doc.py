@@ -8,6 +8,7 @@ import re
 import random
 
 import pandas as pd
+import 	numpy as np
 from pandas.io.json import json_normalize
 
 from log_config import log, pformat
@@ -217,7 +218,11 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
 		if search_for is not None and search_for != [''] : 
 			f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row) ).any(axis=1)]
 
+		### convert Nan to None
+		f_data_df = f_data_df.replace({np.nan:None})
+
 		f_data = f_data_df.to_dict('records')
+		log.debug( "... f_data[0] : \n%s ", pformat(f_data[0]) )
 
 	return f_data
 
@@ -514,6 +519,8 @@ def Query_db_doc (
 
 
 	log.debug('query_resume : \n%s', pformat(query_resume)) 
+	# log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
+	log.debug( 'document_out : \n%s', pformat(document_out) )
 
 	### return response
 	return {
