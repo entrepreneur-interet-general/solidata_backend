@@ -164,27 +164,25 @@ def strip_f_data(	data_raw,
 
 def search_for_str( search_str, row) :
 
-	print ()
-	print ("= = =")
-	log.debug( "search_str : %s", search_str )
 
 	### TO DO : TREAT strings within "" and commas here 
-	
+
 	search_split = []
 	for s in search_str :
 		search_split += s.split() 
 	search_reg = "|".join(search_split)
-	log.debug( "search_reg : %s" , search_reg )
+	# log.debug( "search_reg : %s" , search_reg )
 
 	### change series type as string
 	row = row.astype(str)
 
 	row_check = row.str.contains(search_reg, case=False, regex=True)
 	
-	if row.dtype.kind == 'O' : 
-		log.debug( "row : \n%s", row )
-		print ("- - -")
-		log.debug( "row_check : \n%s", row_check )
+	# if row.dtype.kind == 'O' : 
+	# 	log.debug( "search_str : %s", search_str )
+	# 	log.debug( "row : \n%s", row )
+	# 	print ("- - -")
+	# 	log.debug( "row_check : \n%s", row_check )
 
 	return row_check
 
@@ -423,13 +421,13 @@ def Query_db_doc (
 					document_out["data_raw"]["f_data"] = sort_list_of_dicts(document_out["data_raw"]["f_data"], sort_by)
 					log.debug( '...document_out sorted' )
 
+				# add total of items within f_data in response
+				document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
+			
 				# slice f_data
 				if slice_f_data == True :
 					log.debug( 'slice_f_data : %s', slice_f_data )
 					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
-
-				# add total of items within f_data in response
-				document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
 
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
@@ -488,12 +486,12 @@ def Query_db_doc (
 						document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
 						log.debug( '...document_out sorted' )
 
-					### slice f_data by default
-					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
-				
 					# add total of items within f_data in response
 					document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
-						
+				
+					### slice f_data by default
+					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
+			
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 
 			else : 
