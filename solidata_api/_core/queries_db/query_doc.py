@@ -5,6 +5,8 @@ _core/queries_db/query_doc.py
 """
 
 import re
+import random
+
 import pandas as pd
 from pandas.io.json import json_normalize
 
@@ -38,6 +40,68 @@ def weighted(nb):
 def sort_list_of_dicts(list_to_sort, key_value, is_reverse=True) :
 	# return sorted(list_to_sort, key = lambda i: i[key_value]) 
 	return sorted(list_to_sort, key=lambda i:weighted(i[key_value]), reverse=is_reverse)
+
+def build_first_term_query(dso_oid, query_args) : 
+	""" 
+	build query understandable by mongodb
+	inspired by work on openscraper 
+	""" 
+
+	print()
+	print("-+- "*40)
+	log.debug( "... build_first_term_query " )
+
+	log.debug('query_args : \n%s', pformat(query_args) )  
+
+	search_for 		= query_args.get('search_for',	 	None )
+	search_in 		= query_args.get('search_in', 		None )
+	search_int 		= query_args.get('search_int', 		None )
+	search_float 	= query_args.get('search_float', 	None )
+	item_id 			= query_args.get('item_id', 			None )
+	is_complete 	= query_args.get('is_complete', 	None )
+
+	query = {'oid_dso' : dso_oid}
+
+	### TO DO / TO FINISH ...
+
+	# search by item_id
+	if item_id != None :
+		q_item = { "_id" : ObjectId(item_id)  } 
+		query.update(q_item)
+
+	### search by content --> collection need to be indexed
+	# cf : https://stackoverflow.com/questions/6790819/searching-for-value-of-any-field-in-mongodb-without-explicitly-naming-it
+	if search_for != None and search_for != [] and search_for != [''] :
+		search_words = [ "\""+word+"\"" for word in search_for ]
+		q_search_for = { "$text" : 
+							{ "$search" : u" ".join(search_words) } # doable because text fields are indexed at main.py
+		}
+		query.update(q_search_for)
+	
+	return query
+
+
+def get_dso_docs(doc_oid, query_args) : 
+	"""
+	get_dso_docs + search filters to f_data 
+	"""
+
+	print()
+	print("-+- "*40)
+	log.debug( "... get_dso_docs " )
+
+	dso_doc_collection	= db_dict_by_type['dso_doc']
+
+	query = build_first_term_query(doc_oid, query_args)
+	log.debug('query : \n%s', pformat(query) )  
+
+	# results = dso_doc_collection.find({'oid_dso' : doc_oid })
+	cursor = dso_doc_collection.find(query)
+
+	results = list(cursor)
+
+	return results
+
 
 def strip_f_data(	data_raw, 
 									doc_open_level_show, 
@@ -100,13 +164,32 @@ def strip_f_data(	data_raw,
 
 def search_for_str( search_str, row) :
 
-	print() 
+	print ()
+	print ("= = =")
 	log.debug( "search_str : %s", search_str )
-	log.debug( "row : \n%s", row )
 
-	return row
+	### TO DO : TREAT strings within "" and commas here 
+	
+	search_split = []
+	for s in search_str :
+		search_split += s.split() 
+	search_reg = "|".join(search_split)
+	log.debug( "search_reg : %s" , search_reg )
 
-def search_f_data (data_raw, query_args) :
+	### change series type as string
+	row = row.astype(str)
+
+	row_check = row.str.contains(search_reg, case=False, regex=True)
+	
+	if row.dtype.kind == 'O' : 
+		log.debug( "row : \n%s", row )
+		print ("- - -")
+		log.debug( "row_check : \n%s", row_check )
+
+	return row_check
+
+
+def search_f_data (data_raw, query_args, not_filtered=True) :
 	"""
 	apply search filters to f_data 
 	"""
@@ -116,27 +199,29 @@ def search_f_data (data_raw, query_args) :
 
 	f_data = data_raw["f_data"]
 
-	log.debug('query_args : \n%s', pformat(query_args) )  
-	search_for 		= query_args.get('search_for',	 	None )
-	search_in 		= query_args.get('search_in', 		None )
-	search_int 		= query_args.get('search_int', 		None )
-	search_float 	= query_args.get('search_float', 	None )
-	item_id 			= query_args.get('item_id', 			None )
-	is_complete 	= query_args.get('is_complete', 	None )
+	if not_filtered :
+  	### f_data is not a filtered result from direct db query
 
-	### use pandas to retrieve search results from 
-	f_data_df = pd.DataFrame(f_data)
-	f_data_df_cols = list(f_data_df.columns.values)
-	log.debug( "... f_data_df_cols : \n%s", pformat(f_data_df_cols) )
-	log.debug( "... f_data_df : \n%s", f_data_df.head(5) )
-	
-	if search_for is not None and search_for != [''] : 
-		# f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row), axis=1 ).any(axis=1)]
-		f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row) ).any(axis=1)]
+		log.debug('query_args : \n%s', pformat(query_args) )  
+		search_for 		= query_args.get('search_for',	 	None )
+		search_in 		= query_args.get('search_in', 		None )
+		search_int 		= query_args.get('search_int', 		None )
+		search_float 	= query_args.get('search_float', 	None )
+		item_id 			= query_args.get('item_id', 			None )
+		is_complete 	= query_args.get('is_complete', 	None )
 
-	f_data_out = f_data_df.to_dict('records')
+		### use pandas to retrieve search results from 
+		f_data_df = pd.DataFrame(f_data)
+		f_data_df_cols = list(f_data_df.columns.values)
+		log.debug( "... f_data_df_cols : \n%s", pformat(f_data_df_cols) )
+		log.debug( "... f_data_df : \n%s", f_data_df.head(5) )
+		
+		if search_for is not None and search_for != [''] : 
+			f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row) ).any(axis=1)]
 
-	return f_data_out
+		f_data = f_data_df.to_dict('records')
+
+	return f_data
 
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -165,6 +250,7 @@ def Query_db_doc (
 	# marshaller = Marshaller(ns, models)
 
 	### default values
+	not_filtered 				= True
 	db_collection				= db_dict_by_type[document_type]
 	document_type_full 	= doc_type_dict[document_type]
 	user_id = user_oid	= None
@@ -212,10 +298,10 @@ def Query_db_doc (
 	only_f_data		= query_args.get('only_f_data',		False )
 	only_stats		= query_args.get('only_stats',		False )
 	slice_f_data	= query_args.get('slice_f_data',	True )
-	sort_by				= query_args.get('sort_by',			None )
+	sort_by				= query_args.get('sort_by',				None )
 	descending		= query_args.get('descending',		False )
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
-	q_normalize		= query_args.get('normalize',		False )
+	q_normalize		= query_args.get('normalize',			False )
 
 
 	### TO FINISH !!!
@@ -255,12 +341,13 @@ def Query_db_doc (
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
-		document 		= db_collection.find_one( {"_id": ObjectId(doc_id) })
+		doc_oid		= ObjectId(doc_id)
+		document	= db_collection.find_one( {"_id": doc_oid })
 		log.debug( "document._id : %s", str(document["_id"]) )
 		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
-		document		= None
+		document			= None
 
 
 
@@ -278,9 +365,6 @@ def Query_db_doc (
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
 			log.debug( "team_oids : \n%s", pformat(team_oids) )
-
-
-
 
 		### marshal out results given user's claims / doc's public_auth / doc's team ... 
 		# for admin or members of the team --> complete infos model
@@ -304,14 +388,11 @@ def Query_db_doc (
 				log.debug( '...document_type : %s', document_type )
 				log.debug( '...document["data_raw"]["f_data"][:1] : \n%s', pformat(document["data_raw"]["f_data"][:1]) )
 
-				# if document_type == 'dsi' :
-				# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 
-				# 	pass
-
 				### copy f_data
 				if document_type in ["dso"] :
 						### strip f_data from not allowed fields
-						# document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+						not_filtered = False
+						document_out["data_raw"]["f_data"] = get_dso_docs(doc_oid, query_args)
 						document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
 																				doc_open_level_show, 
 																				team_oids,
@@ -322,13 +403,17 @@ def Query_db_doc (
 																			)
 				else :
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
-				log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
+				if len(document_out["data_raw"]["f_data"]) > 0 : 
+					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
 				### SEARCH QUERIES
-				document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args)
+				document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args, not_filtered=not_filtered)
 
-
+				### shuffle results
+				if shuffle_seed != None :
+					random.seed(shuffle_seed)
+					random.shuffle(document_out["data_raw"]["f_data"])
 
 				### sort results
 				if sort_by != None :
@@ -337,7 +422,6 @@ def Query_db_doc (
 					# NOT WORKING WITH MISSING FIELDS : document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
 					document_out["data_raw"]["f_data"] = sort_list_of_dicts(document_out["data_raw"]["f_data"], sort_by)
 					log.debug( '...document_out sorted' )
-					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
 				# slice f_data
 				if slice_f_data == True :
@@ -345,7 +429,7 @@ def Query_db_doc (
 					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
 
 				# add total of items within f_data in response
-				document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
+				document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
 
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
@@ -369,14 +453,11 @@ def Query_db_doc (
 
 					log.debug( '...document_type : %s', document_type )
 
-					# if document_type == 'dsi' :
-					# 	### TO DO --> GET dsr.data_raw.f_data instead of dsi.data_raw.f_data 	
-					# 	pass
-
 					### copy f_data
 					if document_type in ["dso"] :
   						### strip f_data from not allowed fields
-  						# document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
+							not_filtered = False
+							document_out["data_raw"]["f_data"] = get_dso_docs(doc_oid, query_args)
 							document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
 																					doc_open_level_show, 
 																					team_oids,
@@ -388,12 +469,17 @@ def Query_db_doc (
 					else :
 						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 					
-					log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
+					if len(document_out["data_raw"]["f_data"]) > 0 : 
+						log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 					
 
 					### SEARCH QUERIES
-					document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args)
+					document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args, not_filtered=not_filtered)
 
+					### shuffle results
+					if shuffle_seed != None :
+						random.seed(shuffle_seed)
+						random.shuffle(document_out["data_raw"]["f_data"])
 
 					### sort results
 					if sort_by != None :
@@ -401,13 +487,12 @@ def Query_db_doc (
 						# NOT WORKING : document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"].sort(key=operator.itemgetter(sort_by))
 						document_out["data_raw"]["f_data"] = sorted(document_out["data_raw"]["f_data"], key = lambda i: i[sort_by]) 
 						log.debug( '...document_out sorted' )
-						log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
 					### slice f_data by default
 					document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
 				
 					# add total of items within f_data in response
-					document_out["data_raw"]["f_data_count"] = len(document["data_raw"]["f_data"])
+					document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
 						
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 

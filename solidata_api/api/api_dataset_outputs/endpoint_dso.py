@@ -40,12 +40,12 @@ models 							= {
 class Dso_infos_(Resource):
 	
 	"""
-	PRJ infos
+	DSO infos
 	GET    - Shows a document's infos 
 	"""
 
 	@ns.doc('dso_infos')
-	# @ns.expect(query_arguments)
+	@ns.expect(query_data_dso_arguments)
 	@jwt_optional
 	def get(self, doc_id):
 		"""
@@ -92,6 +92,7 @@ class Dso_infos_(Resource):
 		log.debug("len(results['data']['data_raw']['f_data']) : %s", len(results['data']['data_raw']['f_data']) )
 
 		return results, response_code
+
 
 
 @ns.route('/list')

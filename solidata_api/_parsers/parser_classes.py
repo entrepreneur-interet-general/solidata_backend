@@ -347,3 +347,7 @@ pagination_arguments	= q_pagination.get_parser
 
 q_pag_args 						= RequestParserBuilder(add_pagination=True, add_queries=True)
 query_pag_args				= q_pag_args.get_parser
+
+
+q_data_dso 								= RequestParserBuilder(add_pagination=True, add_data_query=True)
+query_data_dso_arguments	= q_data_dso.get_parser
