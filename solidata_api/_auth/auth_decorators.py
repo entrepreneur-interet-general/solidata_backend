@@ -168,16 +168,21 @@ def anonymous_required(func):
 		
 		log.debug("-@- anonymous checker")
 
-		verify_jwt_in_request()
-		claims = get_jwt_claims()
-		log.debug("claims : \n %s", pformat(claims) )
-		
-		log.debug("kwargs : \n %s", pformat(kwargs) )
-
-		if claims["auth"]["role"] != 'anonymous' :
-			return { "msg" : "Anonymous users only !!! " }, 403
-		else :
+		### ignore JWT / anonymous required if ANOJWT_MODE is disabled
+		if app.config["ANOJWT_MODE"] == "no" : 
 			return func(*args, **kwargs)
+
+		else :
+			verify_jwt_in_request()
+			claims = get_jwt_claims()
+			log.debug("claims : \n %s", pformat(claims) )
+			
+			log.debug("kwargs : \n %s", pformat(kwargs) )
+
+			if claims["auth"]["role"] != 'anonymous' :
+				return { "msg" : "Anonymous users only !!! " }, 403
+			else :
+				return func(*args, **kwargs)
 	
 	return wrapper
 

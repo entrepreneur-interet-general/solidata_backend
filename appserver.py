@@ -30,10 +30,12 @@ from flask_socketio import SocketIO
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 @click.command()
-@click.option('--mode', default="dev", 	nargs=1,	help="The <mode> you need to run the app : dev, dev_email, prod, preprod" )
-@click.option('--host', default="None", nargs=1,	help="The <host> name you want the app to run on : <IP_NUMBER> " )
-@click.option('--port', default="None", nargs=1,	help="The <port> number you want the app to run on : <PORT_NUMBER>")
-def app_runner(mode, host, port) : 
+@click.option('--mode', 	default="dev", 	nargs=1,	help="The <mode> you need to run the app : dev, dev_email, prod, preprod" )
+@click.option('--host', 	default="None", nargs=1,	help="The <host> name you want the app to run on : <IP_NUMBER> " )
+@click.option('--port', 	default="None", nargs=1,	help="The <port> number you want the app to run on : <PORT_NUMBER>")
+@click.option('--rsa', 		default="yes", 	nargs=1,	help="The <rsa> mode (RSA encrypt/decrypt for forms) : no, yes" )
+@click.option('--anojwt', default="yes", 	nargs=1,	help="The <anojwt> mode (needs an anonymous JWT for login and register routes) : no, yes" )
+def app_runner(mode, host, port, rsa, anojwt) : 
 
 	""" 
 	runner for the SOLIDATA backend Flask app 
@@ -42,9 +44,11 @@ def app_runner(mode, host, port) :
 	"python appserver.py"
 
 	you can also enter some arguments in command line : 
-	--mode 	: dev | prod | dev_email 
-	--host	: 
-	--port	: 
+	--mode 		: dev | prod | dev_email 
+	--host		: localhost | <your_IP>
+	--port		: <your_favorite_port>
+	--rsa 		: yes | no
+	--anojwt 	: yes | no
 
 	"""
 
@@ -57,9 +61,11 @@ def app_runner(mode, host, port) :
 
 	### WARNING : CLIck will treat every input as string as defaults values are string too
 	log.debug("\n=== CUSTOM CONFIG FROM CLI ===\n")
-	log.debug("=== mode : %s", mode)
-	log.debug("=== host : %s", host)
-	log.debug("=== port : %s", port)
+	log.debug("=== mode 	: %s", mode)
+	log.debug("=== host 	: %s", host)
+	log.debug("=== port 	: %s", port)
+	log.debug("=== rsa 		: %s", rsa)
+	log.debug("=== anojwt : %s", anojwt)
 	print()
 
 
@@ -67,7 +73,7 @@ def app_runner(mode, host, port) :
 
 	from solidata_api.application import create_app
 
-	app = create_app( app_name='SOLIDATA_API', run_mode=mode )
+	app = create_app( app_name='SOLIDATA_API', run_mode=mode, RSA_mode=rsa, anojwt_mode=anojwt )
 	
 	### apply / overwrites host configuration
 	if host == "None" : 

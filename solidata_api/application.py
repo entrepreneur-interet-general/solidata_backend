@@ -69,7 +69,12 @@ log.debug("... mail : \n%s", pformat(mail.__dict__))
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 # application factory, see: http://flask.pocoo.org/docs/patterns/appfactories/
 
-def create_app( app_name='SOLIDATA_API', run_mode="dev" ):  
+def create_app( 
+	app_name='SOLIDATA_API', 
+	run_mode="dev",
+	RSA_mode="yes", 
+	anojwt_mode="yes"
+	):  
 
 	log.debug ("... creating app ...")
 
@@ -85,6 +90,10 @@ def create_app( app_name='SOLIDATA_API', run_mode="dev" ):
 		app.config.from_object('solidata_api.config_prod.DevEmail')
 	else : 
 		app.config.from_object('solidata_api.config.BaseConfig')
+
+	### append SALT and ANOJWT env vars to config 
+	app.config["RSA_MODE"] 		= RSA_mode
+	app.config["ANOJWT_MODE"] = anojwt_mode
 
 	print()
 	log.debug("... app.config :\n %s", pformat(app.config))

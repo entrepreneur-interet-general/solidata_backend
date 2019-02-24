@@ -10,6 +10,7 @@ log.debug("... loading models_users.py ...")
 
 
 from flask_restplus import fields
+from solidata_api.api import app
 
 ### import data serializers
 from solidata_api._serializers.schema_logs import *  
@@ -111,8 +112,14 @@ class NewUser :
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "User_register", user_register )
-	
+
+		# self.mod = ns_.model( "User_register", user_register )
+		if app.config["RSA_MODE"] == "yes" : 
+			self.mod = ns_.model( "User_register", user_register )
+		else : 
+			self.mod = ns_.model( "User_register", user_register_nosalt )
+
+
 	@property
 	def model(self): 
 		return self.mod
@@ -124,8 +131,13 @@ class LoginUser :
 	"""
 
 	def __init__(self, ns_):
-		self.mod = ns_.model( "User_login", user_login )
-	
+
+		# self.mod = ns_.model( "User_login", user_login )
+		if app.config["RSA_MODE"] == "yes" : 
+			self.mod = ns_.model( "User_login", user_login )
+		else : 
+			self.mod = ns_.model( "User_login", user_login_nosalt )
+
 	@property
 	def model(self): 
 		return self.mod
@@ -143,28 +155,28 @@ class User_infos :
 		model_type 					= "Usr"
 
 		### SELF MODULES
-		self._id 					= oid_field
-		self.basic_infos 			= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True)
-		self.basic_infos_light		= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True, is_user_light=True)
-		self.public_auth			= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
-		self.specs					= create_model_specs(		ns_,	model_name=model_type+"_specs")
-		self.log					= create_model_log(			ns_,	model_name=model_type+"_log", 		include_counts=True, counts_name="login_count")
-		self.modif_log				= create_model_modif_log(	ns_,	model_name=model_type+"_modif_log")
+		self._id 								= oid_field
+		self.basic_infos 				= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True)
+		self.basic_infos_light	= create_model_basic_infos(	ns_,	model_name=model_type+"_infos", 	is_user_infos=True, is_user_light=True)
+		self.public_auth				= create_model_public_auth(	ns_,	model_name=model_type+"_public_auth")
+		self.specs							= create_model_specs(				ns_,	model_name=model_type+"_specs")
+		self.log								= create_model_log(					ns_,	model_name=model_type+"_log", 		include_counts=True, counts_name="login_count")
+		self.modif_log					= create_model_modif_log(		ns_,	model_name=model_type+"_modif_log")
 		
-		self.datasets 				= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
-		self.datasets_light			= create_model_datasets(	ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"], is_light=True )
+		self.datasets 					= create_model_datasets(		ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"])
+		self.datasets_light			= create_model_datasets(		ns_, 	model_name=model_type+"_datasets", 	include_fav=True, 	schema_list=["prj","dmt", "dmf","dsi","rec","tag"], is_light=True )
 		
-		self.team 					= create_model_team( 		ns_,	model_name=model_type+"_team")
-		self.team_light 			= create_model_team(		ns_,	model_name=model_type+"_team", 		is_light=True)
+		self.team 							= create_model_team( 				ns_,	model_name=model_type+"_team")
+		self.team_light 				= create_model_team(				ns_,	model_name=model_type+"_team", 		is_light=True)
 		
-		self.profile 				= create_model_profile( 	ns_,	model_name=model_type+"_profile")
+		self.profile 							= create_model_profile( 	ns_,	model_name=model_type+"_profile")
 		self.professional_infos 	= create_professional_infos(ns_, 	model_name=model_type+"_professionnal_infos")
 
-		self.auth_in				= create_model_auth(		ns_,	model_type+"_authorizations", 	schema=user_auth_in)
+		self.auth_in						= create_model_auth(				ns_,	model_type+"_authorizations", 	schema=user_auth_in)
 		# self.auth_in				= fields.Nested(
 		# 			ns_.model(model_type+"_authorizations",  	user_auth_in  )
 		# 		)
-		self.auth_out				= create_model_auth(		ns_,	model_type+"_authorizations", 	schema=user_auth_out)
+		self.auth_out						= create_model_auth(				ns_,	model_type+"_authorizations", 	schema=user_auth_out)
 		# self.auth_out				= fields.Nested(
 		# 			ns_.model(model_type+"_authorizations",  	user_auth_out  )
 		# 		)
@@ -189,9 +201,9 @@ class User_infos :
 			'professional_infos' 	: self.professional_infos,		
 		}
 		self.spec_auth_log = {
-			'public_auth' 			: self.public_auth,
+			'public_auth' 	: self.public_auth,
 			'specs'					: self.specs , 
-			'log'					: self.log , 
+			'log'						: self.log , 
 		}
 		self.model_min = { 
 				**self.model_infos , 
@@ -231,6 +243,7 @@ class User_infos :
 			{ 
 				**self.model_min, 
 				**self.model_in, 
+				**self.model_auth_out,
 				**self.model_id 
 			} 
 		)

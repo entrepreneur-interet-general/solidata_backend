@@ -20,14 +20,14 @@ from .schema_logs import *
 ### basic informations about a user
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 name 				= fields.String(
-										description		= "name of the user",
+										description	= "name of the user",
 										attribute		= "name",
 										example			= "Elinor",
 										default			= 'Anonymous User',
 										required		= False,
 									)
 pseudo 				= fields.String(
-										description		= "pseudo of the user",
+										description	= "pseudo of the user",
 										attribute		= "pseudo",
 										example			= "Coco",
 										default			= 'Anonymous User',
@@ -46,7 +46,7 @@ email 				= fields.String(
 										required		= True,
 									)
 agreement			= fields.Boolean(
-										description		= "user has agreed to terms and conditions",
+										description	= "user has agreed to terms and conditions",
 										attribute		= "agreement",
 										example			= False,
 										required		= False,
@@ -74,14 +74,14 @@ pwd_encrypt			= fields.String(
 										required		= False,
 									)
 confirmed_usr		= fields.Boolean(
-										description		= "user has confirmed its account from his email",
+										description	= "user has confirmed its account from his email",
 										attribute		= "conf_usr",
 										example			= False,
 										required		= False,
 										default			= False,
 									)
 is_blacklisted		= fields.Boolean(
-										description		= "user has confirmed its account from his email",
+										description	= "user has confirmed its account from his email",
 										attribute		= "is_blacklisted",
 										example			= False,
 										required		= False,
@@ -102,13 +102,13 @@ acc_tok				= fields.String(
 										default			= "no_access_token",
 									)
 refr_tok			= fields.String(
-										description		= "refresh token of user",
+										description	= "refresh token of user",
 										attribute		= "refr_tok",
 										example			= "a-json-web-refresh-token",
 										default			= "no_refresh_token",
 									)
 old_refr_tok		= fields.String(
-										description		= "expired refresh token of user",
+										description	= "expired refresh token of user",
 										attribute		= "old_refr_tok",
 										example			= "an-old-json-web-refresh-token",
 										default			= "no_old_refresh_token",
@@ -143,7 +143,7 @@ language			= fields.String(
 										required		= True,
 									)
 is_fav				= fields.Boolean(
-										description		= "is the document a favorite ?",
+										description	= "is the document a favorite ?",
 										attribute		= "is_fav",
 										example			= False,
 										required		= True,
@@ -154,19 +154,19 @@ is_fav				= fields.Boolean(
 ### professional infos
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 struct_name			= fields.String(
-										description		= "name of the user's structure",
+										description	= "name of the user's structure",
 										attribute		= "struct_name",
 										required		= True,
 									)
 struct_profile		= fields.String(
-										description		= "profile of the structure",
+										description	= "profile of the structure",
 										attribute		= "struct_profile",
 										example			= "public_state",
 										enum			= user_structure,
 										required		= False,
 									)
 struct_url 			= fields.String(
-										description		= "structure url link",
+										description	= "structure url link",
 										attribute		= "struct_url",
 										example			= "my-url-link",
 										default			= '',
@@ -174,7 +174,7 @@ struct_url 			= fields.String(
 									)
 
 usr_profile			= fields.String(
-										description		= "profiles of the user",
+										description	= "profiles of the user",
 										enum			= user_profiles,
 									)
 usr_profiles		= fields.List(
@@ -185,7 +185,7 @@ usr_profiles		= fields.List(
 									)
 
 usr_view			= fields.String(
-										description		= "view of the user : which collections are visible in front",
+										description	= "view of the user : which collections are visible in front",
 										enum			= user_view,
 										attribute		= "usr_view",
 										default			= 'minimal',
@@ -209,16 +209,24 @@ user_pwd_encrypted = {
 	"pwd_encrypt"		: pwd_encrypt,
 }
 
+# user_login = {
+# 	# "email" 			: email,
+# 	# "pwd"				: pwd,
+# 	"email_encrypt" 	: email_encrypt,
+# 	"pwd_encrypt"		: pwd_encrypt,
+# }
 user_login = {
-	# "email" 			: email,
-	# "pwd"				: pwd,
-	"email_encrypt" 	: email_encrypt,
+	"email_encrypt" : email_encrypt,
 	"pwd_encrypt"		: pwd_encrypt,
+}
+user_login_nosalt = {
+	"email" 		: email,
+	"pwd"				: pwd,
 }
 
 user_basics = {
 	"name" 				: name,
-	"surname" 			: surname,
+	"surname" 		: surname,
 	"email" 			: email,
 	"pseudo"			: pseudo,
 }
@@ -226,15 +234,31 @@ user_basics_light = {
 	"pseudo"			: name,
 }
 
+# user_register = {
+# 	"name" 				: name,
+# 	"surname" 			: surname,
+# 	# "email" 			: email,
+# 	"email_encrypt" 	: email_encrypt,
+# 	# "pwd"				: pwd,
+# 	"pwd_encrypt"		: pwd_encrypt,
+# 	"lang"				: language,
+# 	"agreement"			: agreement,
+# }
 user_register = {
-	"name" 				: name,
+	"name" 					: name,
 	"surname" 			: surname,
-	# "email" 			: email,
-	"email_encrypt" 	: email_encrypt,
-	# "pwd"				: pwd,
+	"email_encrypt" : email_encrypt,
 	"pwd_encrypt"		: pwd_encrypt,
-	"lang"				: language,
+	"lang"					: language,
 	"agreement"			: agreement,
+}
+user_register_nosalt = {
+	"name" 				: name,
+	"surname" 		: surname,
+	"email" 			: email,
+	"pwd"					: pwd,
+	"lang"				: language,
+	"agreement"		: agreement,
 }
 
 old_refresh_token = {
@@ -246,19 +270,19 @@ old_refresh_token = {
 ### FOR MODELS TO INSERT IN DB
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 user_auth_in = {
-	"pwd"					: pwd,
+	"pwd"							: pwd,
 	"conf_usr"				: confirmed_usr,
-	"role"					: role,
+	"role"						: role,
 	# "acc_tok"				: acc_tok,
 	"refr_tok"				: refr_tok,
-	"is_blacklisted"		: is_blacklisted,
+	"is_blacklisted"	: is_blacklisted,
 }
 
 usr_profile_ = {
 	"lang"  				: language,
-	"agreement"				: agreement,
-	"usr_view"				: usr_view,
-	"usr_profiles"			: usr_profiles,
+	"agreement"			: agreement,
+	"usr_view"			: usr_view,
+	"usr_profiles"	: usr_profiles,
 }
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -267,12 +291,12 @@ usr_profile_ = {
 user_auth_out = {
 	# "pwd"					: pwd,
 	"role"					: role,
-	"conf_usr"				: confirmed_usr,
-	# "acc_tok"				: acc_tok,
+	"conf_usr"			: confirmed_usr,
+	# "acc_tok"			: acc_tok,
 }
 
 user_struct = {
-	"struct_name" 			: struct_name,
-	"struct_profile"		: struct_profile,
+	"struct_name" 		: struct_name,
+	"struct_profile"	: struct_profile,
 	"struct_url"			: struct_url,
 }

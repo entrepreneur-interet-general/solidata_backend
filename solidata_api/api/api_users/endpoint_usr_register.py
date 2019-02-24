@@ -83,15 +83,35 @@ class Register(Resource):
 		# log.debug("email : %s", payload_email )
 		# log.debug("password : %s", payload_pwd )
 		
-		payload_email_encrypted = ns.payload["email_encrypt"]
-		log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
-		payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
-		log.debug("email_decoded    : %s", email_decoded )
+		# payload_email_encrypted = ns.payload["email_encrypt"]
+		# log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
+		# payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
+		# log.debug("email_decoded    : %s", email_decoded )
 
-		payload_pwd_encrypted = ns.payload["pwd_encrypt"]
-		log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
-		payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
-		log.debug("password_decoded    : %s", password_decoded )
+		# payload_pwd_encrypted = ns.payload["pwd_encrypt"]
+		# log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
+		# payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
+		# log.debug("password_decoded    : %s", password_decoded )
+
+		### retrieve infos from form 
+		if app.config["RSA_MODE"] == "yes" : 
+			payload_email_encrypted = ns.payload["email_encrypt"]
+			log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
+			payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
+			log.debug("email_decoded    : %s", email_decoded )
+
+			payload_pwd_encrypted = ns.payload["pwd_encrypt"]
+			log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
+			payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
+			log.debug("password_decoded    : %s", password_decoded )
+
+		else : 
+			payload_email= ns.payload["email"]
+			log.debug("payload_email : \n%s", payload_email )
+
+			payload_pwd = ns.payload["pwd"]
+			log.debug("payload_pwd : \n%s", payload_pwd )
+
 
 		### chek if user already exists in db
 		existing_user = mongo_users.find_one({"infos.email" : payload_email})
@@ -144,12 +164,19 @@ class Register(Resource):
 			access_token_confirm_email = create_access_token( identity=new_user, expires_delta=expires )
 			log.debug("access_token_confirm_email : \n %s", access_token_confirm_email )
 
+			# tokens = {
+			# 		'access_token'		: access_token,
+			# 		'refresh_token'		: refresh_token,
+			# 		'salt_token' 			: public_key_str,
+			# 		# 'access_token_confirm_email' 	: access_token_confirm_email
+			# }
 			tokens = {
 					'access_token'		: access_token,
 					'refresh_token'		: refresh_token,
-					'salt_token' 			: public_key_str,
 					# 'access_token_confirm_email' 	: access_token_confirm_email
 			}
+			if app.config["RSA_MODE"]=="yes" : 
+				tokens["salt_token"] = public_key_str
 			log.info("tokens : \n %s", pformat(tokens))
 
 			### update new user in db		
@@ -270,7 +297,7 @@ class Confirm_email(Resource):
 				
 				### confirm user's email and create a real refresh_token
 				user_to_confirm["auth"]["refr_tok"] = refresh_token
-				user_to_confirm["auth"]["role"] 	= "registred"
+				user_to_confirm["auth"]["role"] 		= "registred"
 				user_to_confirm["auth"]["conf_usr"] = True
 
 				### register as admin if user is the first to be created and confirmed in collection
@@ -285,12 +312,19 @@ class Confirm_email(Resource):
 				mongo_users.save(user_to_confirm)
 
 				### store tokens
+				# tokens = {
+				# 			'access_token'	: access_token,
+				# 			'refresh_token'	: refresh_token,
+				# 			'salt_token' 		: public_key_str,
+				# 		}
 				tokens = {
-							'access_token'	: access_token,
-							'refresh_token'	: refresh_token,
-							'salt_token' 		: public_key_str,
-						}
-				log.info("tokens : \n%s", pformat(tokens))
+						'access_token'		: access_token,
+						'refresh_token'		: refresh_token,
+						# 'access_token_confirm_email' 	: access_token_confirm_email
+				}
+				if app.config["RSA_MODE"]=="yes" : 
+					tokens["salt_token"] : public_key_str
+					log.info("tokens : \n%s", pformat(tokens))
 
 				return { 
 							"msg"								: "identity '{}' confirmed, new refresh token created...".format(user_identity),
@@ -305,11 +339,20 @@ class Confirm_email(Resource):
 				refresh_token = user_to_confirm["auth"]["refr_tok"]
 
 				### store tokens
+				# tokens = {
+				# 			'access_token'	: access_token,
+				# 			'refresh_token'	: refresh_token,
+				# 			'salt_token' 		: public_key_str,
+				# 		}
 				tokens = {
-							'access_token'	: access_token,
-							'refresh_token'	: refresh_token,
-							'salt_token' 		: public_key_str,
-						}
+						'access_token'		: access_token,
+						'refresh_token'		: refresh_token,
+						# 'access_token_confirm_email' 	: access_token_confirm_email
+				}
+				if app.config["RSA_MODE"]=="yes" : 
+					tokens["salt_token"] : public_key_str
+					log.info("tokens : \n%s", pformat(tokens))
+
 				log.info("tokens : \n%s", pformat(tokens))
 				return { 
 							"msg" 							: "identity '{}' is already confirmed OR user is blacklisted, existing refresh token is returned...".format(user_identity),

@@ -14,9 +14,9 @@ ns = Namespace('tokens', description='User : tokens freshening related endpoints
 
 ### import models 
 from solidata_api._models.models_user import * #User_infos, AnonymousUser
-model_user				= User_infos(ns)
-model_user_access		= model_user.model_access
-model_user_login_out	= model_user.model_login_out
+model_user							= User_infos(ns)
+model_user_access				= model_user.model_access
+model_user_login_out		= model_user.model_login_out
 model_old_refresh_token = ExpiredRefreshToken(ns).model
 
 
@@ -142,15 +142,17 @@ class NewAccessToken(Resource) :
 			log.debug("new_access_token : \n %s ", new_access_token)
 
 			### store tokens
-			token = {
-					'access_token'	: new_access_token,
-					'salt_token' 	: public_key_str,
+			tokens = {
+				'access_token'	: new_access_token,
+				# 'salt_token' 		: public_key_str,
 			}
+			if app.config["RSA_MODE"] == "yes":
+				tokens["salt_token"] = public_key_str
 
 			return {	
 						"msg" 		: "new access token for user : {} ".format(user_identity) , 
 						"data"		: user_light,
-						"tokens"	: token
+						"tokens"	: tokens
 					}, 200 		### indicates to redirect to other URL
 	
 		else : 
@@ -200,7 +202,9 @@ class FreshAccessToken(Resource):
 			tokens = {
 				"access_token" : fresh_access_token,
 			}
-
+			if app.config["RSA_MODE"] == "yes":
+				tokens["salt_token"] = public_key_str
+			
 			return {	
 								"msg" 							: "fresh access_token created for user '{}' ".format(user_identity) , 
 								"is_user_confirmed" : user["auth"]["conf_usr"],
@@ -291,6 +295,8 @@ class NewRefreshToken(Resource) :
 						"access_token" 	: new_access_token,
 						"refresh_token" : new_refresh_token
 					}
+					if app.config["RSA_MODE"] == "yes":
+						tokens["salt_token"] = public_key_str
 					
 					### return new tokens 
 					return {	

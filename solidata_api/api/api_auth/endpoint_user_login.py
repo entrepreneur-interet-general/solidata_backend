@@ -155,19 +155,28 @@ class AnonymousLogin(Resource):
 		salt_token 		= public_key_str #.decode("utf-8")
 
 		### create corresponding refresh token
-		expires 					= app.config["JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES"]
+		expires 									= app.config["JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES"]
 		anonymous_refresh_token		= create_refresh_token(identity=anonymous_user, expires_delta=expires)
 
 		log.debug("anonymous_access_token 	: \n %s", anonymous_access_token )
 		log.debug("anonymous_refresh_token 	: \n %s", anonymous_refresh_token )
-		log.debug("salt_token 					: \n %s", salt_token )
+		log.debug("salt_token 							: \n %s", salt_token )
 
 		### store tokens in dict
+		# tokens = {
+		# 			'access_token' 	: anonymous_access_token,
+		# 			'refresh_token' : anonymous_refresh_token,
+		# 			'salt_token' 	: salt_token,
+		# 		}
 		tokens = {
 					'access_token' 	: anonymous_access_token,
 					'refresh_token' : anonymous_refresh_token,
-					'salt_token' 	: salt_token,
+					# 'salt_token' 		: salt_token,
 				}
+		if app.config["RSA_MODE"]=="yes" : 
+			# salt_token 		= salt_token #.decode("utf-8")
+			log.debug("salt_token : \n %s", salt_token )
+			tokens["salt_token"] = salt_token
 
 		return {	
 					"msg" 		: "anonymous user - an anonymous access_token has been created + a valid refresh_token for {} hours".format(expires) , 
@@ -213,23 +222,38 @@ class Login(Resource):
 		claims 			= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 		
-		### retrieve infos from form
-		# payload_email 				= ns.payload["email"]
-		# log.debug("payload_email  : %s", payload_email )
-		payload_email_encrypted   	= ns.payload["email_encrypt"]
-		log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
-		payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
-		log.debug("email_decoded    : %s", email_decoded )
 
-		# payload_pwd   				= ns.payload["pwd"]
-		# log.debug("payload_pwd    : %s", payload_pwd )
+		### retrieve infos from form
+		# payload_email_encrypted   	= ns.payload["email_encrypt"]
+		# log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
+		# payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
+		# log.debug("email_decoded    : %s", email_decoded )
 		
-		### DECYPHERING THE STRING FROM RSA JSENCRYPT IN FRONT !!!!!!
-		### get hashed password from pwd_encrypt encoded with salt_key / public_key
-		payload_pwd_encrypted   	= ns.payload["pwd_encrypt"]
-		log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
-		payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
-		log.debug("password_decoded    : %s", password_decoded )
+		# ### DECYPHERING THE STRING FROM RSA JSENCRYPT IN FRONT !!!!!!
+		# ### get hashed password from pwd_encrypt encoded with salt_key / public_key
+		# payload_pwd_encrypted   	= ns.payload["pwd_encrypt"]
+		# log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
+		# payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
+		# log.debug("password_decoded    : %s", password_decoded )
+
+		### retrieve infos from form
+		if app.config["RSA_MODE"] == "yes" : 
+			### DECYPHERING THE STRINGS FROM RSA JSENCRYPT IN FRONT !!!!!!
+			payload_email_encrypted   	= ns.payload["email_encrypt"]
+			log.debug("payload_email_encrypted : \n%s", payload_email_encrypted )
+			payload_email = email_decoded = RSAdecrypt(payload_email_encrypted)
+			log.debug("email_decoded    : %s", email_decoded )
+			### get hashed password from pwd_encrypt encoded with salt_key / public_key
+			payload_pwd_encrypted   	= ns.payload["pwd_encrypt"]
+			log.debug("payload_pwd_encrypted : \n%s", payload_pwd_encrypted )
+			payload_pwd = password_decoded = RSAdecrypt(payload_pwd_encrypted)
+			log.debug("password_decoded    : %s", password_decoded )
+		else : 
+			payload_email   = ns.payload["email"]
+			log.debug("payload_email : \n%s", payload_email )
+			payload_pwd   	= ns.payload["pwd"]
+			log.debug("payload_pwd : \n%s", payload_pwd )
+
 
 		payload_renew_refr_token   	= ns.payload.get("renew_refresh_token", app.config["JWT_RENEW_REFRESH_TOKEN_AT_LOGIN"] )
 		log.debug("payload_renew_refr_token    : %s", payload_renew_refr_token )
@@ -270,7 +294,7 @@ class Login(Resource):
 				if payload_renew_refr_token and user["auth"]["conf_usr"] == True :
 					log.debug("... refresh_token")
 					expires 					= app.config["JWT_REFRESH_TOKEN_EXPIRES"] 
-					refresh_token 				= create_refresh_token( identity=user_light, expires_delta=expires )
+					refresh_token 		= create_refresh_token( identity=user_light, expires_delta=expires )
 					user["auth"]["refr_tok"] 	= refresh_token
 				
 				### retrieve existing refresh_token from db
@@ -279,16 +303,25 @@ class Login(Resource):
 					refresh_token 		= user["auth"]["refr_tok"]  
 
 				### store tokens in dict
+				# tokens = {
+				# 		'access_token'	: new_access_token,
+				# 		'refresh_token' : refresh_token,
+				# 		'salt_token' 	: public_key_str,
+				# }
 				tokens = {
-						'access_token'	: new_access_token,
-						'refresh_token' : refresh_token,
-						'salt_token' 	: public_key_str,
-				}
+							'access_token' 	: new_access_token,
+							'refresh_token' : refresh_token,
+						}
+				if app.config["RSA_MODE"]=="yes" : 
+					salt_token 		= public_key_str #.decode("utf-8")
+					log.debug("salt_token 	: \n %s", salt_token )
+					tokens["salt_token"] = salt_token
+
 				print()
-				log.debug("user_light['_id'] : %s", user_light["_id"] )
-				log.debug("user_light 		 : \n%s", user_light )
-				log.debug("new_access_token  : \n%s", new_access_token )
-				log.debug("refresh_token 	 : \n%s", refresh_token )
+				log.debug("user_light['_id'] 	: %s", user_light["_id"] )
+				log.debug("user_light 		 		: \n%s", user_light )
+				log.debug("new_access_token  	: \n%s", new_access_token )
+				log.debug("refresh_token 	 		: \n%s", refresh_token )
 				print()
 
 				### update user log in db
@@ -300,7 +333,7 @@ class Login(Resource):
 							"msg"				: "user '{}' is logged".format(payload_email),
 
 							# "is_user_confirmed" : user["auth"]["conf_usr"],
-							# "_id"				: str(user["_id"]),
+							# "_id"					: str(user["_id"]),
 							# "infos"				: user["infos"],
 							# "profile"			: user["profile"],
 							
