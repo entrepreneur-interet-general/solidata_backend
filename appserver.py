@@ -30,12 +30,13 @@ from flask_socketio import SocketIO
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 @click.command()
-@click.option('--mode', 	default="dev", 	nargs=1,	help="The <mode> you need to run the app : dev, dev_email, prod, preprod" )
-@click.option('--host', 	default="None", nargs=1,	help="The <host> name you want the app to run on : <IP_NUMBER> " )
-@click.option('--port', 	default="None", nargs=1,	help="The <port> number you want the app to run on : <PORT_NUMBER>")
-@click.option('--rsa', 		default="yes", 	nargs=1,	help="The <rsa> mode (RSA encrypt/decrypt for forms) : no, yes" )
-@click.option('--anojwt', default="yes", 	nargs=1,	help="The <anojwt> mode (needs an anonymous JWT for login and register routes) : no, yes" )
-def app_runner(mode, host, port, rsa, anojwt) : 
+@click.option('--mode', 	default="dev", 				nargs=1,	help="The <mode> you need to run the app : dev, dev_email, prod, preprod" )
+@click.option('--host', 	default="localhost", 	nargs=1,	help="The <host> name you want the app to run on : <IP_NUMBER> " )
+@click.option('--port', 	default="4000", 			nargs=1,	help="The <port> number you want the app to run on : <PORT_NUMBER>")
+@click.option('--https', 	default="yes", 				nargs=1,	help="The <https> mode you want the app to run on : yes | no")
+@click.option('--rsa', 		default="yes", 				nargs=1,	help="The <rsa> mode (RSA encrypt/decrypt for forms) : no, yes" )
+@click.option('--anojwt', default="yes", 				nargs=1,	help="The <anojwt> mode (needs an anonymous JWT for login and register routes) : no, yes" )
+def app_runner(mode, host, port, https, rsa, anojwt) : 
 
 	""" 
 	runner for the SOLIDATA backend Flask app 
@@ -47,6 +48,8 @@ def app_runner(mode, host, port, rsa, anojwt) :
 	--mode 		: dev | prod | dev_email 
 	--host		: localhost | <your_IP>
 	--port		: <your_favorite_port>
+	--https 	: yes | no
+	--rsa 		: yes | no
 	--rsa 		: yes | no
 	--anojwt 	: yes | no
 
@@ -58,15 +61,26 @@ def app_runner(mode, host, port, rsa, anojwt) :
 	print("=== "*40)
 	print()
 	
+	if https == "yes" : 
+		http_mode = "https"
+	else : 
+		http_mode = "http"
 
 	### WARNING : CLIck will treat every input as string as defaults values are string too
 	log.debug("\n=== CUSTOM CONFIG FROM CLI ===\n")
 	log.debug("=== mode 	: %s", mode)
 	log.debug("=== host 	: %s", host)
 	log.debug("=== port 	: %s", port)
+	log.debug("=== https 	: %s", https)
 	log.debug("=== rsa 		: %s", rsa)
 	log.debug("=== anojwt : %s", anojwt)
 	print()
+
+	### SET UP ENV VARS FROM CLI 
+	os.environ["DOMAIN_ROOT"]	= host
+	os.environ["DOMAIN_PORT"]	= port
+	os.environ["SERVER_NAME"]	= host + ":" + port
+	os.environ["DOMAIN_NAME"]	= http_mode + "://" + host + ":" + port
 
 
 	log.debug("\n--- STARTING SOLIDATA API ---\n")
@@ -76,16 +90,16 @@ def app_runner(mode, host, port, rsa, anojwt) :
 	app = create_app( app_name='SOLIDATA_API', run_mode=mode, RSA_mode=rsa, anojwt_mode=anojwt )
 	
 	### apply / overwrites host configuration
-	if host == "None" : 
-		app_host 	= app.config["DOMAIN_ROOT"]
-	else : 
-		app_host 	= host
+	# if host == "None" : 
+	# 	app_host 	= app.config["DOMAIN_ROOT"]
+	# else : 
+	# 	app_host 	= host
 
-	### apply / overwrites port configuration
-	if port == "None" : 
-		app_port 	= int(app.config["DOMAIN_PORT"])
-	else : 
-		app_port 	= port
+	# ### apply / overwrites port configuration
+	# if port == "None" : 
+	# 	app_port 	= int(app.config["DOMAIN_PORT"])
+	# else : 
+	# 	app_port 	= port
 
 	app_debug = app.config["DEBUG"]
 
@@ -98,7 +112,7 @@ def app_runner(mode, host, port, rsa, anojwt) :
 	print("=== "*40)
 	print("=== "*40)
 	print()
-	app.run( debug=app_debug, host=app_host, port=app_port, threaded=True )
+	app.run( debug=app_debug, host=host, port=port, threaded=True )
 
 
 

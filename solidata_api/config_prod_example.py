@@ -108,10 +108,14 @@ class Preprod(DevEmail) :
 	REDIRECTION_FRONT		= "http://www.my-solidata-frontend-preprod.com" 
 
 	""" HOST - real prod IP and domain name"""
-	DOMAIN_ROOT			= "XXX.XX.XX.XXX" 
-	DOMAIN_PORT			= "4001"
-	SERVER_NAME			= "XXX.XX.XX.XXX:4001"  		### if True need to set SESSION_COOKIE_DOMAIN + cf : https://stackoverflow.com/questions/47666210/cookies-not-saved-in-the-browser 
-	DOMAIN_NAME			= "http://your-solidata-preprod-instance.com"
+	# DOMAIN_ROOT			= "XXX.XX.XX.XXX" 
+	# DOMAIN_PORT			= "4001"
+	# SERVER_NAME			= "XXX.XX.XX.XXX:4001"  		### if True need to set SESSION_COOKIE_DOMAIN + cf : https://stackoverflow.com/questions/47666210/cookies-not-saved-in-the-browser 
+	# DOMAIN_NAME			= "http://your-solidata-preprod-instance.com"
+	DOMAIN_ROOT				=  os.getenv("DOMAIN_ROOT")
+	DOMAIN_PORT				=  os.getenv("DOMAIN_PORT")	
+	SERVER_NAME  			=  os.getenv("SERVER_NAME")
+	DOMAIN_NAME				=  os.getenv("DOMAIN_NAME")
 	SERVER_NAME_TEST	= "True" 
 
 	""" MONGODB """
