@@ -288,9 +288,9 @@ def Query_db_list (
 		if cursor_in_team_count > 0 : 
 			# log.debug("f_data_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
 			for i in documents_in_team :
-				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
 				doc_id = i["_id"]
 				f_data_count = db_col_docs.count({ identifier : doc_id})
+				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
 				stats = { 
 					"f_data_count" : f_data_count ,
 					# "f_data_count" : len(i["data_raw"]["f_data"]) ,
@@ -300,9 +300,9 @@ def Query_db_list (
 
 		if cursor_not_team_count > 0 : 
 			for i in documents_not_team :
-				i_out = next(item for item in documents_out_not_team if item["_id"] == str(i["_id"]))
 				doc_id = i["_id"]
 				f_data_count = db_col_docs.count({ identifier : doc_id})
+				i_out = next(item for item in documents_out_not_team if item["_id"] == str(i["_id"]))
 				stats = { 
 					"f_data_count" : f_data_count ,
 					# "f_data_count" : len(i["data_raw"]["f_data"]) ,
