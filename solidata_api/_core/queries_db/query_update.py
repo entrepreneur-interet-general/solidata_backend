@@ -7,85 +7,87 @@ _core/queries_db/query_update.py
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_update.py ..." )
 
-from  	datetime import datetime, timedelta
+from  datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
 from 	flask_restplus 	import  marshal
 
-from 	. 	import db_dict_by_type, Marshaller
+from 	. import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 
+from .query_utils import * 
 
-def check_if_prj_is_buildable (doc_prj) :
-	""" 
-	check if prj has enough mapping to be buildable
-	"""
 
-	print("-+- "*40)
-	log.debug( "... check_if_prj_is_buildable ... " )
+# def check_if_prj_is_buildable (doc_prj) :
+# 	""" 
+# 	check if prj has enough mapping to be buildable
+# 	"""
 
-	is_buildable = False
+# 	print("-+- "*40)
+# 	log.debug( "... check_if_prj_is_buildable ... " )
 
-	prj_dmt 		= doc_prj["datasets"]["dmt_list"]
-	prj_dsi 		= doc_prj["datasets"]["dsi_list"]
-	prj_map_open 	= doc_prj["mapping"]["dmf_to_open_level"]
-	prj_map_dsi 	= doc_prj["mapping"]["dsi_to_dmf"]
+# 	is_buildable = False
 
-	### check if prj contains dmt and dsi
-	if len(prj_dmt)>0 and len(prj_dsi)>0 :
+# 	prj_dmt 		= doc_prj["datasets"]["dmt_list"]
+# 	prj_dsi 		= doc_prj["datasets"]["dsi_list"]
+# 	prj_map_open 	= doc_prj["mapping"]["dmf_to_open_level"]
+# 	prj_map_dsi 	= doc_prj["mapping"]["dsi_to_dmf"]
 
-		log.debug( "... lengths prj_dmt & prj_map_dsi : OK ... " )
+# 	### check if prj contains dmt and dsi
+# 	if len(prj_dmt)>0 and len(prj_dsi)>0 :
 
-		### check if prj contains dmt and dsi
-		if len(prj_map_open)>0 and len(prj_map_dsi)>0 :
+# 		log.debug( "... lengths prj_dmt & prj_map_dsi : OK ... " )
 
-			log.debug( "... lengths prj_map_open & prj_map_dsi : OK ... " )
+# 		### check if prj contains dmt and dsi
+# 		if len(prj_map_open)>0 and len(prj_map_dsi)>0 :
 
-			### set of unique values of dmf from prj_map_open
-			prj_dsi_set 	= { d['oid_dsi'] for d in prj_dsi }
-			log.debug( "... prj_dsi_set : \n%s : ", pformat(prj_dsi_set) )
+# 			log.debug( "... lengths prj_map_open & prj_map_dsi : OK ... " )
 
-			### set of unique values of dmf from prj_map_open
-			prj_map_dmf_set 		= { d['oid_dmf'] for d in prj_map_open }
-			log.debug( "... prj_map_dmf_set : \n%s : ", pformat(prj_map_dmf_set) )
+# 			### set of unique values of dmf from prj_map_open
+# 			prj_dsi_set 	= { d['oid_dsi'] for d in prj_dsi }
+# 			log.debug( "... prj_dsi_set : \n%s : ", pformat(prj_dsi_set) )
 
-			### unique values of dsi from prj_map_dsi
-			prj_map_dsi_dict 		= { d['oid_dsi'] : { "dmf_list" : [] } for d in prj_map_dsi }
-			for d in prj_map_dsi : 
-				prj_map_dsi_dict[ d['oid_dsi'] ]["dmf_list"].append( d["oid_dmf"] )
-			log.debug( "... prj_map_dsi_dict : \n%s : ", pformat(prj_map_dsi_dict) )
+# 			### set of unique values of dmf from prj_map_open
+# 			prj_map_dmf_set 		= { d['oid_dmf'] for d in prj_map_open }
+# 			log.debug( "... prj_map_dmf_set : \n%s : ", pformat(prj_map_dmf_set) )
 
-			### set of unique values of dmf for each dsi from prj_map_dsi_dict
-			prj_map_dsi_sets 		= { k : set(v['dmf_list']) for k,v in prj_map_dsi_dict.items() }
-			log.debug( "... prj_map_dsi_sets : \n%s : ", pformat(prj_map_dsi_sets) )
+# 			### unique values of dsi from prj_map_dsi
+# 			prj_map_dsi_dict 		= { d['oid_dsi'] : { "dmf_list" : [] } for d in prj_map_dsi }
+# 			for d in prj_map_dsi : 
+# 				prj_map_dsi_dict[ d['oid_dsi'] ]["dmf_list"].append( d["oid_dmf"] )
+# 			log.debug( "... prj_map_dsi_dict : \n%s : ", pformat(prj_map_dsi_dict) )
 
-			### check if dmf in prj_map_dsi are in prj_map_open
-			dsi_mapped_not_in_prj 					= 0
-			dsi_mapped_but_no_dmf_mapped_in_prj_map = 0
+# 			### set of unique values of dmf for each dsi from prj_map_dsi_dict
+# 			prj_map_dsi_sets 		= { k : set(v['dmf_list']) for k,v in prj_map_dsi_dict.items() }
+# 			log.debug( "... prj_map_dsi_sets : \n%s : ", pformat(prj_map_dsi_sets) )
 
-			for dsi_oid, dsi_dmf_mapped_set in prj_map_dsi_sets.items() : 
+# 			### check if dmf in prj_map_dsi are in prj_map_open
+# 			dsi_mapped_not_in_prj 					= 0
+# 			dsi_mapped_but_no_dmf_mapped_in_prj_map = 0
+
+# 			for dsi_oid, dsi_dmf_mapped_set in prj_map_dsi_sets.items() : 
 				
-				log.debug( "... dsi_oid : %s ", dsi_oid )
+# 				log.debug( "... dsi_oid : %s ", dsi_oid )
 				
-				if dsi_oid in prj_dsi_set :
-					### check if dsi_dmf_mapped_set contains at least 1 dmf from prj_map_dmf_set
-					log.debug( "... dsi_dmf_mapped_set : \n%s ", pformat(dsi_dmf_mapped_set) )
-					log.debug( "... prj_map_dmf_set : \n%s ", pformat(prj_map_dmf_set) )
-					intersection 		= dsi_dmf_mapped_set & prj_map_dmf_set
-					log.debug( "... intersection : %s ", intersection )
-					len_intersection 	= len(intersection)
-					if len_intersection == 0 :
-						dsi_mapped_but_no_dmf_mapped_in_prj_map += 1
+# 				if dsi_oid in prj_dsi_set :
+# 					### check if dsi_dmf_mapped_set contains at least 1 dmf from prj_map_dmf_set
+# 					log.debug( "... dsi_dmf_mapped_set : \n%s ", pformat(dsi_dmf_mapped_set) )
+# 					log.debug( "... prj_map_dmf_set : \n%s ", pformat(prj_map_dmf_set) )
+# 					intersection 		= dsi_dmf_mapped_set & prj_map_dmf_set
+# 					log.debug( "... intersection : %s ", intersection )
+# 					len_intersection 	= len(intersection)
+# 					if len_intersection == 0 :
+# 						dsi_mapped_but_no_dmf_mapped_in_prj_map += 1
 
-				else :
-					dsi_mapped_not_in_prj += 1
+# 				else :
+# 					dsi_mapped_not_in_prj += 1
 			
-			log.debug( "... dsi_mapped_not_in_prj : %s ", dsi_mapped_not_in_prj )
-			log.debug( "... dsi_mapped_but_no_dmf_mapped_in_prj_map : %s ", dsi_mapped_but_no_dmf_mapped_in_prj_map )
+# 			log.debug( "... dsi_mapped_not_in_prj : %s ", dsi_mapped_not_in_prj )
+# 			log.debug( "... dsi_mapped_but_no_dmf_mapped_in_prj_map : %s ", dsi_mapped_but_no_dmf_mapped_in_prj_map )
 
-			if dsi_mapped_but_no_dmf_mapped_in_prj_map == 0 :
-				is_buildable = True
+# 			if dsi_mapped_but_no_dmf_mapped_in_prj_map == 0 :
+# 				is_buildable = True
 
-	return is_buildable
+# 	return is_buildable
 
 
 
@@ -100,8 +102,10 @@ def Query_db_update (
 		document_type,
 		doc_id,
 		claims,
-		roles_for_complete 	= ["admin"],
-		payload 			= {}
+		roles_for_complete = ["admin"],
+		payload = {},
+		page_args = {} ,
+		query_args = {},
 	):
 
 	print()
@@ -109,18 +113,20 @@ def Query_db_update (
 	log.debug("... _core.queries_db.query_update.py ... %s", document_type )
 
 	### default values
-	db_collection		= db_dict_by_type[document_type]
-	document_type_full 	= doc_type_dict[document_type]
-	user_id = user_oid	= None
-	user_role			= "anonymous"
-	document_out		= None
-	message 			= None
+	not_filtered = True
+	db_collection	= db_dict_by_type[document_type]
+	document_type_full = doc_type_dict[document_type]
+	user_id = user_oid= None
+	user_role	= "anonymous"
+	document_out = None
+	message = None
+	can_access_complete = True
 	# dft_open_level_show = ["open_data"]
 	response_code		= 200
 
 	if claims or claims!={}  :
-		user_role 	= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role = claims["auth"]["role"]
+		user_id	= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 	= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
@@ -128,8 +134,8 @@ def Query_db_update (
 
 	### retrieve from db
 	if ObjectId.is_valid(doc_id) : 
-		doc_oid			= ObjectId(doc_id)
-		document 		= db_collection.find_one( {"_id": doc_oid } )
+		doc_oid = ObjectId(doc_id)
+		document = db_collection.find_one( {"_id": doc_oid } )
 		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
@@ -141,6 +147,8 @@ def Query_db_update (
 		"doc_id" 				: doc_id,
 		"user_id" 			: user_id,
 		"user_role"			: user_role,
+		"page_args"			: page_args,
+		"query_args"		: query_args,
 		"is_member_of_team" : False,
 		"payload" 			: payload
 	}
@@ -153,6 +161,9 @@ def Query_db_update (
 		doc_open_level_edit = document["public_auth"]["open_level_edit"]
 		log.debug( "doc_open_level_show : %s", doc_open_level_show )
 
+		### get doc's owner infos
+		created_by_oid = document["log"]["created_by"]
+		
 		### get doc's team infos
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
@@ -186,15 +197,15 @@ def Query_db_update (
 					# cf : https://stackoverflow.com/questions/10522347/mongodb-update-objects-in-a-documents-array-nested-updating 
 
 					if field_to_update == "mapping.dmf_to_open_level" : 
-						selector_f 								= field_to_update+".oid_dmf"
-						selector_v 	= payload_map["oid_dmf"] 	= ObjectId( payload_data["id_dmf"] )
-						selector 	= { selector_f : selector_v }
-						payload_map["open_level_show"] 			= payload_data["open_level_show"]
+						selector_f = field_to_update+".oid_dmf"
+						selector_v = payload_map["oid_dmf"] = ObjectId( payload_data["id_dmf"] )
+						selector = { selector_f : selector_v }
+						payload_map["open_level_show"] = payload_data["open_level_show"]
 
 					elif field_to_update == "mapping.dsi_to_dmf" : 
-						selector_f 								= field_to_update+".dsi_header"
-						selector_v 	= payload_map["dsi_header"] = payload_data["dsi_header"]
-						selector_f_ 							= field_to_update+".oid_dsi"
+						selector_f = field_to_update+".dsi_header"
+						selector_v = payload_map["dsi_header"] = payload_data["dsi_header"]
+						selector_f_ = field_to_update+".oid_dsi"
 						selector_v_ = payload_map["oid_dsi"] 	= ObjectId ( payload_data["id_dsi"] )
 						selector 	= { selector_f : selector_v, selector_f_ : selector_v_ }
 						if payload_data["id_dmf"] == "_ignore_" or delete_from_mapping : 
@@ -265,9 +276,9 @@ def Query_db_update (
 					oid_item_field	= "oid_" + doc_added_type
 
 					### update child document too in uses field ... 
-					doc_added_oid 			= ObjectId( payload_data["field_value"] )
-					db_collection_added 	= db_dict_by_type[ doc_added_type ]
-					doc_added 				= db_collection_added.find_one( {"_id": doc_added_oid } )
+					doc_added_oid = ObjectId( payload_data["field_value"] )
+					db_collection_added = db_dict_by_type[ doc_added_type ]
+					doc_added = db_collection_added.find_one( {"_id": doc_added_oid } )
 					field_to_update_added 	= "uses.by_" + document_type
 					
 					### paylod for item 
@@ -389,7 +400,6 @@ def Query_db_update (
 								upsert=True 
 							)
 
-
 				else : 
 					log.debug( "neither is_mapping nor add_to_list... " )
 					payload_ = { field_to_update : payload_data["field_value"] }
@@ -407,8 +417,8 @@ def Query_db_update (
 			if document_type == "prj" :
 
 				### get updated doc directly from db
-				document_updated 	= db_collection.find_one( {"_id": doc_oid } )
-				document_out 		= marshal( document_updated, models["model_doc_out"] )
+				document_updated = db_collection.find_one( {"_id": doc_oid } )
+				document_out = marshal( document_updated, models["model_doc_out"] )
 
 				### update needs_rebuild
 				db_collection.update_one( {"_id": doc_oid }, { "$set" : {"log.needs_rebuild" : True} } )
@@ -420,8 +430,18 @@ def Query_db_update (
 
 
 			### get updated doc directly from db
-			document_updated 	= db_collection.find_one( {"_id": doc_oid } )
-			document_out 		= marshal( document_updated, models["model_doc_out"] )
+			document_updated = db_collection.find_one( {"_id": doc_oid } )
+			document_out = marshal( document_updated, models["model_doc_out"] )
+
+			### append "f_data" if doc is in ["dsi", "dsr", "dsr"]
+			document_out = GetFData( document_type, 
+						can_access_complete, not_filtered,
+						document, document_out, doc_oid, doc_open_level_show,
+						team_oids, created_by_oid, roles_for_complete, user_role, user_oid,
+						page_args, query_args,
+						# shuffle_seed, sort_by, slice_f_data, 
+						# start_index, end_index
+			)
 
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
@@ -435,10 +455,22 @@ def Query_db_update (
 				# for anonymous users --> minimum infos model
 				if user_id == None or user_role == "anonymous" : 
 					document_out = marshal( document, models["model_doc_min"] )
-				
+					if doc_open_level_show != "open_data" : 
+						can_access_complete = False
+
 				# for registred users (guests) --> guest infos model
 				else :
 					document_out = marshal( document, models["model_doc_guest_out"] )
+
+				### append "f_data" if doc is in ["dsi", "dsr", "dsr"]
+				document_out = GetFData( document_type, 
+							can_access_complete, not_filtered,
+							document, document_out, doc_oid, doc_open_level_show,
+							team_oids, created_by_oid, roles_for_complete, user_role, user_oid,
+							page_args, query_args,
+							# shuffle_seed, sort_by, slice_f_data, 
+							# start_index, end_index
+				)
 
 				# log.debug( "document_out : \n %s", pformat(document_out) )
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
@@ -456,7 +488,7 @@ def Query_db_update (
 	else : 
 		### no document / empty response
 		response_code	= 404
-		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
+		message = "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
 
 	### return response
 	return {

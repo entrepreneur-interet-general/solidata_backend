@@ -13,7 +13,7 @@ from . import pd
 
 def cleanColumnName(colname, charsToReplace = u"°.[]", replaceWith="-" ): 
 	log.debug("cleanColumnName / colname : %s", colname )
-	colname_clean = colname
+	colname_clean = colname.replace( '"' , "'")
 	for char in charsToReplace:
 		colname_clean = colname_clean.replace( char ,replaceWith)
 	log.debug("cleanColumnName / colname_clean : %s\n", colname_clean )
@@ -37,6 +37,10 @@ def read_file_with_pd ( uploaded_file, file_extension, sep="," ) :
 	df_cols	= list(df.columns.values)
 	df_cols_clean = { colname : cleanColumnName(colname) for colname in df_cols }
 	df = df.rename( index=str, columns = df_cols_clean)
+
+	### erase all -"- occurence  
+	# df = df 
+
 
 	return df 
 

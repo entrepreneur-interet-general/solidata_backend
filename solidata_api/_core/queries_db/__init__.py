@@ -229,6 +229,7 @@ class Marshaller :
 ### FINAL IMPORTS FOR QUERIES
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
+from .query_utils import *
 from .query_doc import *
 from .query_list import *
 from .query_delete import *
