@@ -42,7 +42,7 @@ def sort_list_of_dicts(list_to_sort, key_value, is_reverse=True) :
 	# return sorted(list_to_sort, key = lambda i: i[key_value]) 
 	return sorted(list_to_sort, key=lambda i:weighted(i[key_value]), reverse=is_reverse)
 
-def build_first_term_query(dso_oid, query_args) : 
+def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") : 
 	""" 
 	build query understandable by mongodb
 	inspired by work on openscraper 
@@ -61,7 +61,7 @@ def build_first_term_query(dso_oid, query_args) :
 	item_id 			= query_args.get('item_id', 			None )
 	is_complete 	= query_args.get('is_complete', 	None )
 
-	query = {'oid_dso' : dso_oid}
+	query = { field_to_query : ds_oid}
 
 	### TO DO / TO FINISH ...
 
@@ -82,22 +82,27 @@ def build_first_term_query(dso_oid, query_args) :
 	return query
 
 
-def get_dso_docs(doc_oid, query_args) : 
+def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") : 
 	"""
-	get_dso_docs + search filters to f_data 
+	get_ds_docs + search filters to f_data 
 	"""
 
 	print()
 	print("-+- "*40)
-	log.debug( "... get_dso_docs " )
+	log.debug( "... get_ds_docs " )
 
-	dso_doc_collection	= db_dict_by_type['dso_doc']
+	if db_coll == "dso_doc" :
+		field_to_query = "oid_dso"
+	if db_coll == "dsi_doc" :
+		field_to_query = "oid_dsi"
 
-	query = build_first_term_query(doc_oid, query_args)
+	ds_doc_collection	= db_dict_by_type[db_coll]
+
+	query = build_first_term_query(doc_oid, query_args, field_to_query=field_to_query)
 	log.debug('query : \n%s', pformat(query) )  
 
-	# results = dso_doc_collection.find({'oid_dso' : doc_oid })
-	cursor = dso_doc_collection.find(query)
+	# results = ds_doc_collection.find({'oid_dso' : doc_oid })
+	cursor = ds_doc_collection.find(query)
 
 	results = list(cursor)
 
@@ -110,7 +115,8 @@ def strip_f_data(	data_raw,
 									created_by_oid,
 									roles_for_complete, 
 									user_role, 
-									user_oid
+									user_oid,
+									document_type="dso"
 								):
 	""" 
 	TO DO 
@@ -124,41 +130,48 @@ def strip_f_data(	data_raw,
 	f_col_headers = data_raw["f_col_headers"] 
 	f_data 				= data_raw["f_data"]
 
-	if user_role in roles_for_complete : 
-		pass
+	### load f_data as dataframe
+	f_data_df = pd.DataFrame(f_data)
+	log.debug('f_data_df.head(5) : \n%s', f_data_df.head(5) )  
 
-	else :
 
-		### select f_col_headers given user auth
-		
+	### select f_col_headers given user auth
+	if document_type == "dso" : 
+
 		if user_role == 'anonymous' : 
 			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data"] ]
-		
+
 		elif user_oid in team_oids and user_oid != created_by_oid :
 			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data", "commons", "collective"] ]
-		
+
 		elif user_oid == created_by_oid  : 
 			f_col_headers_selected = f_col_headers
+
+		elif user_role in roles_for_complete : 
+			f_col_headers_selected = f_col_headers 
 
 		else : 
 			f_col_headers_selected = [ h for h in f_col_headers if h["open_level_show"] in ["open_data", "commons"] ]
 
-		# log.debug('f_col_headers_selected : \n%s', pformat(f_col_headers_selected) )  
+			# log.debug('f_col_headers_selected : \n%s', pformat(f_col_headers_selected) )  
 
-  	### load f_data as dataframe
-		f_data_df 						= pd.DataFrame(f_data)
-		log.debug('f_data_df.head(5) : \n%s', f_data_df.head(5) )  
+	elif document_type == "dsi" : 
+		f_col_headers_selected = f_col_headers 
 		
-		f_data_cols						= list(f_data_df.columns.values)
-		log.debug('f_data_cols : \n%s', pformat(f_data_cols) )  
+	f_data_cols						= list(f_data_df.columns.values)
+	log.debug('f_data_cols : \n%s', pformat(f_data_cols) )  
 
+	if document_type == "dsi" : 
+		f_col_headers_for_df 	= [ h["f_coll_header_val"] for h in f_col_headers_selected ]
+	elif document_type == "dso" : 
 		f_col_headers_for_df 	= [ h["f_title"] for h in f_col_headers_selected if h["f_title"] in f_data_cols ]
-		log.debug('f_col_headers_for_df : \n%s', pformat(f_col_headers_for_df) )  
 
-		f_data_df_out 				= f_data_df[ f_col_headers_for_df ]
-		f_data 								= f_data_df_out.to_dict('records')
+	log.debug('f_col_headers_for_df : \n%s', pformat(f_col_headers_for_df) )  
 
-		del f_data_df_out, f_data_df
+	f_data_df_out 				= f_data_df[ f_col_headers_for_df ]
+	f_data 								= f_data_df_out.to_dict('records')
+
+	del f_data_df_out, f_data_df
 
 	return f_data
 
@@ -386,23 +399,30 @@ def Query_db_doc (
 				query_resume["is_member_of_team"] = True
 
 			# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
-			if document_type in ["dsi", "dsr", "dsr", "dso"] :
+			if document_type in ["dsi", "dsr", "dso"] :
 			
 				log.debug( '...document_type : %s', document_type )
-				log.debug( '...document["data_raw"]["f_data"][:1] : \n%s', pformat(document["data_raw"]["f_data"][:1]) )
+				# log.debug( '...document["data_raw"]["f_data"][:1] : \n%s', pformat(document["data_raw"]["f_data"][:1]) )
+				log.debug( '...document["data_raw"] : \n%s', pformat(document["data_raw"]) )
 
 				### copy f_data
-				if document_type in ["dso"] :
+				if document_type in ["dso", "dsi"] :
 						### strip f_data from not allowed fields
 						not_filtered = False
-						document_out["data_raw"]["f_data"] = get_dso_docs(doc_oid, query_args)
+						if document_type == "dso" :	
+							db_coll="dso_doc"
+						elif document_type == "dsi" : 
+							db_coll="dsi_doc"
+							document_out["data_raw"] = {"f_col_headers" : document["data_raw"]["f_col_headers"]}
+						document_out["data_raw"]["f_data"] = get_ds_docs(doc_oid, query_args, db_coll=db_coll)
 						document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
 																				doc_open_level_show, 
 																				team_oids,
 																				created_by_oid,
 																				roles_for_complete, 
 																				user_role, 
-																				user_oid
+																				user_oid,
+																				document_type=document_type
 																			)
 				else :
 					document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
@@ -457,17 +477,23 @@ def Query_db_doc (
 					log.debug( '...document_type : %s', document_type )
 
 					### copy f_data
-					if document_type in ["dso"] :
+					if document_type in ["dso", "dsi"] :
   						### strip f_data from not allowed fields
 							not_filtered = False
-							document_out["data_raw"]["f_data"] = get_dso_docs(doc_oid, query_args)
+							if document_type == "dso" :	
+								db_coll="dso_doc"
+							elif document_type == "dsi" : 
+								db_coll="dsi_doc"
+								document_out["data_raw"] = {"f_col_headers" : document["data_raw"]["f_col_headers"]}
+							document_out["data_raw"]["f_data"] = get_ds_docs(doc_oid, query_args, db_coll=db_coll)
 							document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
 																					doc_open_level_show, 
 																					team_oids,
 																					created_by_oid,
 																					roles_for_complete, 
 																					user_role, 
-																					user_oid
+																					user_oid,
+																					document_type=document_type
 																				)
 					else :
 						document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]

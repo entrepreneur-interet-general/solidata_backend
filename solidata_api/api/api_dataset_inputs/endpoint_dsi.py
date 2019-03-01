@@ -44,6 +44,7 @@ class Dsi_infos_(Resource):
 	
 	@ns.doc('dsi_infos')
 	# @ns.expect(query_arguments)
+	@ns.expect(query_data_dsi_arguments)
 	@jwt_optional
 	def get(self, doc_id):
 		"""

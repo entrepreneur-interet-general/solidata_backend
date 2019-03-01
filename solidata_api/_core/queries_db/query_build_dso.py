@@ -40,6 +40,7 @@ def Query_db_build_dso (
 	dmt_collection			= db_dict_by_type['dmt']
 	dmf_collection			= db_dict_by_type['dmf']
 	dsi_collection			= db_dict_by_type['dsi']
+	dsi_doc_collection	= db_dict_by_type['dsi_doc']
 	dso_collection			= db_dict_by_type['dso']
 	dso_doc_collection	= db_dict_by_type['dso_doc']
 
@@ -238,12 +239,29 @@ def Query_db_build_dso (
 							# print(df_mapper_dsi_to_dmf)
 							dsi_mapped_list, df_mapper_dsi_to_dmf = prj_dsi_mapping_as_df(prj_dsi_mapping)
 
+							### TO DO --> REFACTOR (cf query_solidify.py )
 							### get all dsis' f_data
 							dsi_raw_data_list = []
 							for dsi in dsi_list :
 								### check if at least one field of this dsi is mapped in df_mapper_dsi_to_dmf
-								if dsi["_id"] in  dsi_mapped_list : 
-									dsi_raw_data_list.append( { "oid_dsi" : dsi["_id"], "data_raw" : dsi["data_raw"]} )
+								if dsi["_id"] in dsi_mapped_list : 
+									# initiate dsi_data_raw
+									dsi_data_raw = { 
+										"f_col_headers" : dsi["data_raw"]["f_col_headers"], 
+										"f_data" : [] 
+									}
+									# get corresponding docs in dsi_doc_collection
+									dsi_docs = list(dsi_doc_collection.find({"oid_dsi" : dsi["_id"] }))
+									# store as dataframe
+									dsi_f_data = pd.DataFrame(dsi_docs)
+									dsi_f_data_cols	= list(dsi_f_data.columns.values)
+									f_col_headers_for_df = [ h for h in dsi_f_data_cols if h != "_id" ]
+									dsi_f_data = dsi_f_data[ f_col_headers_for_df ]
+									f_data = dsi_f_data.to_dict('records')
+									dsi_data_raw["f_data"] = f_data
+
+									# dsi_data_raw = dsi["data_raw"]
+									dsi_raw_data_list.append( { "oid_dsi" : dsi["_id"], "data_raw" : dsi_data_raw } )
 							# log.debug( "dsi_raw_data_list : \n%s", pformat(dsi_raw_data_list) )
 
 							### reindex and concatenate all f_data from headers_dso and df_mapper_dsi_to_dmf with pandas

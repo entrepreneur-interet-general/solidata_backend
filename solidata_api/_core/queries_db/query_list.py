@@ -32,25 +32,25 @@ def Query_db_list (
 		claims,
 		page_args,
 		query_args,
-		roles_for_complete 	= ["admin"],
-		check_teams			= True
+		roles_for_complete = ["admin"],
+		check_teams = True
 	):
 
 	### prepare marshaller 
 	marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection			= db_dict_by_type[document_type]
-	document_type_full 		= doc_type_dict[document_type]
-	user_id = user_oid		= None
-	user_role				= "anonymous"
+	db_collection	= db_dict_by_type[document_type]
+	document_type_full = doc_type_dict[document_type]
+	user_id = user_oid = None
+	user_role = "anonymous"
 	documents_out_in_team	= None
-	documents_out_not_team	= None
-	message 				= None
-	dft_open_level_show		= ["open_data"]
-	response_code			= 200
-	cursor_in_team_count	= 0
-	cursor_not_team_count	= 0
+	documents_out_not_team= None
+	message = None
+	dft_open_level_show	= ["open_data"]
+	response_code	= 200
+	cursor_in_team_count = 0
+	cursor_not_team_count = 0
 
 	### get user's role and _id
 	# user_id 	= get_jwt_identity() ### get the oid as str
@@ -116,13 +116,13 @@ def Query_db_list (
 		if q_oid_list != [] and q_oid_list != [''] :  
 			
 			log.debug('q_oid_list : %s', q_oid_list) 
-			do_query_pipe 		= True
+			do_query_pipe = True
 
-			q_oid_list_ 		= [ ObjectId(oid) for oid in q_oid_list ]
+			q_oid_list_ = [ ObjectId(oid) for oid in q_oid_list ]
 			log.debug('q_oid_list_ : %s', q_oid_list_) 
 
-			pipe_oids 			= { "_id" : { "$in" : q_oid_list_ } }
-			# pipe_oids 			= { "_id" : { "$in" : q_oid_list } }
+			pipe_oids = { "_id" : { "$in" : q_oid_list_ } }
+			# pipe_oids = { "_id" : { "$in" : q_oid_list } }
 			log.debug('pipe_oids : %s', pipe_oids) 
 
 			pipe_concat.append(pipe_oids)
@@ -267,14 +267,21 @@ def Query_db_list (
 
 	### count results
 	counts 		= {
-		"all_docs_in_db" 			: db_collection.count() ,
-		"docs_you_can_access" 		: cursor_accessible_count ,
-		"docs_you_are_in_team" 		: cursor_in_team_count ,
-		"docs_you_are_not_in_team" 	: cursor_not_team_count ,
+		"all_docs_in_db" : db_collection.count() ,
+		"docs_you_can_access" : cursor_accessible_count ,
+		"docs_you_are_in_team" : cursor_in_team_count ,
+		"docs_you_are_not_in_team" : cursor_not_team_count ,
 	}
 
 	### add data_raw counts if collection is in ['dsi', 'dso', 'dsr']
-	if document_type in ['dsi', 'dso', 'dsr'] :
+	if document_type in ['dsi', 'dso'] :
+
+		if document_type == "dsi" : 
+			identifier = "oid_dsi"
+			db_col_docs = db_dict_by_type["dsi_doc"]
+		elif document_type == "dso" : 
+			identifier = "oid_dso"
+			db_col_docs = db_dict_by_type["dso_doc"]
 
 		log.debug('f_data_counts - document_type : %s', document_type) 
 
@@ -282,18 +289,24 @@ def Query_db_list (
 			# log.debug("f_data_counts - documents_in_team[0] : \n%s ", pformat(documents_in_team[0]) )
 			for i in documents_in_team :
 				i_out = next(item for item in documents_out_in_team if item["_id"] == str(i["_id"]))
+				doc_id = i["_id"]
+				f_data_count = db_col_docs.count({ identifier : doc_id})
 				stats = { 
-					"f_data_count" 			: len(i["data_raw"]["f_data"]) ,
-					"f_col_headers_count" 	: len(i["data_raw"]["f_col_headers"]) ,
+					"f_data_count" : f_data_count ,
+					# "f_data_count" : len(i["data_raw"]["f_data"]) ,
+					"f_col_headers_count" : len(i["data_raw"]["f_col_headers"]) ,
 				}
 				i_out["stats"] = stats
 
 		if cursor_not_team_count > 0 : 
 			for i in documents_not_team :
 				i_out = next(item for item in documents_out_not_team if item["_id"] == str(i["_id"]))
+				doc_id = i["_id"]
+				f_data_count = db_col_docs.count({ identifier : doc_id})
 				stats = { 
-					"f_data_count" 			: len(i["data_raw"]["f_data"]) ,
-					"f_col_headers_count" 	: len(i["data_raw"]["f_col_headers"]) ,
+					"f_data_count" : f_data_count ,
+					# "f_data_count" : len(i["data_raw"]["f_data"]) ,
+					"f_col_headers_count" : len(i["data_raw"]["f_col_headers"]) ,
 				}
 				i_out["stats"] = stats
 

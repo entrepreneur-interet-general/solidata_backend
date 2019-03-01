@@ -7,11 +7,11 @@ _core/queries_db/query_solidify.py
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_solidify.py ..." )
 
-from  	datetime import datetime, timedelta
+from  datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
 from 	flask_restplus 	import  marshal
 
-from 	. 	import db_dict_by_type, Marshaller
+from 	. import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
 from 	solidata_api._core.solidify import *
 
@@ -34,7 +34,7 @@ def Query_db_solidify (
 		doc_id,
 		claims,
 		roles_for_complete 	= ["admin"],
-		payload 			= {}
+		payload = {}
 	):
 
 	print()
@@ -46,6 +46,7 @@ def Query_db_solidify (
 	dmt_collection		= db_dict_by_type['dmt']
 	dmf_collection		= db_dict_by_type['dmf']
 	dsi_collection		= db_dict_by_type['dsi']
+	dsi_doc_collection = db_dict_by_type['dsi_doc']
 	rec_collection		= db_dict_by_type['rec']
 
 
@@ -53,18 +54,18 @@ def Query_db_solidify (
 	# marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection		= db_dict_by_type[document_type]
-	document_type_full 	= doc_type_dict[document_type]
-	user_id = user_oid	= None
-	user_role			= "anonymous"
+	db_collection	= db_dict_by_type[document_type]
+	document_type_full = doc_type_dict[document_type]
+	user_id = user_oid = None
+	user_role	= "anonymous"
 	document_out		= None
-	message 			= None
+	message = None
 	dft_open_level_show = ["open_data"]
-	response_code		= 200
+	response_code	= 200
 
 	if claims or claims!={}  :
-		user_role 		= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role = claims["auth"]["role"]
+		user_id	= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
 			user_oid 	= ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
@@ -72,21 +73,21 @@ def Query_db_solidify (
 
 	### retrieve doc (PRJ f.e.) from db
 	if ObjectId.is_valid(doc_id) : 
-		doc_oid			= ObjectId(doc_id)
-		document 		= db_collection.find_one( {"_id": doc_oid } )
+		doc_oid	= ObjectId(doc_id)
+		document = db_collection.find_one( {"_id": doc_oid } )
 		# log.debug( "document : \n%s", pformat(document) )
 	else :
 		response_code	= 400
-		document		= None
+		document = None
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: document_type,	
-		"doc_id" 			: doc_id,
-		"user_id" 			: user_id,
-		"user_role"			: user_role,
+		"document_type"	: document_type,	
+		"doc_id" : doc_id,
+		"user_id"	: user_id,
+		"user_role" : user_role,
 		"is_member_of_team" : False,
-		"payload" 			: payload
+		"payload"	: payload
 	}
 
 	if document : 
@@ -135,28 +136,43 @@ def Query_db_solidify (
 				dsi_refs = datasets["dsi_list"]
 
 				### load DMT from db
-				dmt_doc 				= dmt_collection.find_one( {"_id" : dmt_refs[0]["oid_dmt"] } )
-				documents["dmt_doc"]	= dmt_doc
+				dmt_doc = dmt_collection.find_one( {"_id" : dmt_refs[0]["oid_dmt"] } )
+				documents["dmt_doc"] = dmt_doc
 				log.debug( "dmt_doc loaded ... " )
 
 				### load DMFs from db
-				dmt_dmf_refs 			= dmt_doc["datasets"]["dmf_list"]
-				dmf_oids 				= [ dmf_ref["oid_dmf"] for dmf_ref in dmt_dmf_refs ]
-				dmf_list_cursor 		= dmf_collection.find({"_id" : {"$in" : dmf_oids} })
-				dmf_list 				= list(dmf_list_cursor)
+				dmt_dmf_refs = dmt_doc["datasets"]["dmf_list"]
+				dmf_oids = [ dmf_ref["oid_dmf"] for dmf_ref in dmt_dmf_refs ]
+				dmf_list_cursor = dmf_collection.find({"_id" : {"$in" : dmf_oids} })
+				dmf_list = list(dmf_list_cursor)
 				documents["dmf_list"]	= dmf_list
 				log.debug( "dmf_list loaded ... " )
 
 				### load DSIs from db
-				dsi_oids 		= [ dsi_ref["oid_dsi"] for dsi_ref in dsi_refs ]
+				dsi_oids = [ dsi_ref["oid_dsi"] for dsi_ref in dsi_refs ]
 				dsi_list_cursor = dsi_collection.find({"_id" : {"$in" : dsi_oids} })
-				dsi_list 		= list(dsi_list_cursor)
-				documents["dsi_list"]	= dsi_list
+				dsi_list = list(dsi_list_cursor)
+
+				### TO DO --> REFACTOR (cf same function in query_build_dso)
+				dsi_list_with_f_data = []
+				for dsi in dsi_list : 
+					dsi_data_raw = { 
+						"f_col_headers" : dsi["data_raw"]["f_col_headers"], 
+						"f_data" : [] 
+					}
+					# get corresponding docs in dsi_doc_collection
+					dsi_docs = list(dsi_doc_collection.find({"oid_dsi" : dsi["_id"] }))
+					dsi_data_raw["f_data"] = dsi_docs
+					dsi["data_raw"] = dsi_data_raw
+					dsi_list_with_f_data.append(dsi)
+
+				# documents["dsi_list"]	= dsi_list
+				documents["dsi_list"]	= dsi_list_with_f_data
 				log.debug( "dsi_list loaded ... " )
 
 				### check if related dsi are already running
-				is_running_dsi 		= [ dsi["log"].get("is_running", False) for dsi in dsi_list ]
-				is_running_dsi_set 	= set(is_running_dsi)
+				is_running_dsi = [ dsi["log"].get("is_running", False) for dsi in dsi_list ]
+				is_running_dsi_set = set(is_running_dsi)
 				log.debug( "is_running_dsi_set : %s", is_running_dsi_set )
 
 				are_dsi_running = True
@@ -166,9 +182,9 @@ def Query_db_solidify (
 				log.debug( "are_dsi_running : %s", are_dsi_running )
 
 				if are_dsi_running == False and is_doc_running == True : 
-					document_ 				= prj_collection.update_one( {"_id" : doc_oid }, { "$set" : { "log.is_running" : False } } )
-					document 				= prj_collection.find_one( {"_id" : doc_oid } )
-					documents["src_doc"]	= document
+					document_ = prj_collection.update_one( {"_id" : doc_oid }, { "$set" : { "log.is_running" : False } } )
+					document  = prj_collection.find_one( {"_id" : doc_oid } )
+					documents["src_doc"] = document
 
 
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -191,9 +207,9 @@ def Query_db_solidify (
 
 			need_add_dmf = rec_params_.get('new_dmfs_list', False)
 			if need_add_dmf : 
-				new_dmf_oids 					= [ ObjectId(dmf_ref["oid_dmf"]) for dmf_ref in need_add_dmf ]
-				new_dmf_list_cursor 			= dmf_collection.find({"_id" : {"$in" : new_dmf_oids} })
-				new_dmf_list 					= list(new_dmf_list_cursor)
+				new_dmf_oids = [ ObjectId(dmf_ref["oid_dmf"]) for dmf_ref in need_add_dmf ]
+				new_dmf_list_cursor = dmf_collection.find({"_id" : {"$in" : new_dmf_oids} })
+				new_dmf_list = list(new_dmf_list_cursor)
 				rec_params_["new_dmfs_list"]	= new_dmf_list
 
 			### retrieve recipe from db
@@ -202,12 +218,12 @@ def Query_db_solidify (
 			documents["rec_doc"]	= recipe_doc
 
 			### choose the function to run from recipe_doc in db
-			recipe_map			= recipe_doc["mapping"]["map_func"][0]
+			recipe_map = recipe_doc["mapping"]["map_func"][0]
 
-			recipe_func_class 	= recipe_map["function_class"]
+			recipe_func_class = recipe_map["function_class"]
 			log.debug( "recipe_func_class : %s", recipe_func_class )
 
-			recipe_func_runner 	= recipe_map["function_runner"]
+			recipe_func_runner = recipe_map["function_runner"]
 			log.debug( "recipe_func_runner : %s", recipe_func_runner )
 
 
@@ -225,13 +241,13 @@ def Query_db_solidify (
 
 			module = globals()[recipe_func_class]( 
 				user_oid, 
-				src_docs						= documents, 
-				rec_params					= rec_params_,
+				src_docs   = documents, 
+				rec_params = rec_params_,
 				use_multiprocessing	= False,
 				### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/
-				pool_or_process		= "process", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
-				async_or_starmap	= "starmap", 	### "async" | "starmap"
-				cpu_number				= 2
+				pool_or_process	 = "process", 	### dft = "pool" | "process"  --> "pool" : wait for process to finish | "process" : launch 
+				async_or_starmap = "starmap", 	### "async" | "starmap"
+				cpu_number = 2
 			)
 
 			# Get the function (from the instance) that we need to call to run the function
@@ -247,8 +263,8 @@ def Query_db_solidify (
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
 			### send back updated document
-			document_updated 	= db_collection.find_one( {"_id": ObjectId(doc_id) } )
-			document_out 			= marshal( document_updated, models["model_doc_out"] )
+			document_updated = db_collection.find_one( {"_id": ObjectId(doc_id) } )
+			document_out = marshal( document_updated, models["model_doc_out"] )
 
 			
 			
@@ -275,11 +291,11 @@ def Query_db_solidify (
 	else : 
 		### no document / empty response
 		response_code	= 404
-		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
+		message = "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 
 
 	### return the response
 	return {
-				"msg" 	: message ,
-				"data"	: document_out,
-				"query"	: query_resume,
+				"msg"   : message ,
+				"data"  : document_out,
+				"query" : query_resume,
 			}, response_code

@@ -55,7 +55,7 @@ class DsiReload(Resource):
 	@ns.expect(file_parser)   ### from "solidata_api._parsers.__init__.file_parser" loaded from "solidata.api.__init__"
 	def post(self, doc_id):
 		"""
-		upload a file or external API value and create a new dsi in db
+		upload a file or external API value and reload an existing dsi in db
 		"""
 
 		### DEBUGGING
@@ -67,7 +67,7 @@ class DsiReload(Resource):
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		df_is_created = False 
-		roles_for_complete 	= ["admin"]
+		roles_for_complete = ["admin"]
 
 		### TO DO : reuse this function in all endpoints POST / GET / DELETE ...
 		payload, is_form, files = return_payload(request, ns.payload)
@@ -79,16 +79,16 @@ class DsiReload(Resource):
 		claims 	= get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 		
-		user_role 	= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role = claims["auth"]["role"]
+		user_id = claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
-			user_oid 		= ObjectId(user_id)
+			user_oid = ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
 
 		### retrieve DSI from db
 		if ObjectId.is_valid(doc_id) : 
-			doc_oid			= ObjectId(doc_id)
-			document 		= mongo_datasets_inputs.find_one( {"_id": doc_oid } )
+			doc_oid	= ObjectId(doc_id)
+			document = mongo_datasets_inputs.find_one( {"_id": doc_oid } )
 			# log.debug( "document : \n%s", pformat(document) )
 		else :
 			response_code	= 400
@@ -130,13 +130,13 @@ class DsiReload(Resource):
 			if user_role in roles_for_complete or user_oid in team_oids or user_oid == created_by_oid : 
 
 				### marshall existing DSI with dsi complete model
-				# dsi_to_reload 		= marshal( document , model_dsi_in )
-				dsi_to_reload 		= document
+				# dsi_to_reload = marshal( document , model_dsi_in )
+				dsi_to_reload = document
 				log.debug('dsi_to_reload (START): \n%s', pformat(dsi_to_reload) )  
 
 				### DSR - copy dsr to prepare a dsr_to_reload
 				# dsr_to_reload 		= marshal( document , model_dsr_in )
-				dsr_to_reload 		= document
+				# dsr_to_reload 		= document
 				# log.debug('dsr_to_reload : \n%s', pformat(dsr_to_reload) )  
 
 				### check for files (not an API reference)
@@ -172,11 +172,11 @@ class DsiReload(Resource):
 							### correct file_extension if different
 							if file_extension != payload["src_type"] :
 								dsi_to_reload["specs"]["src_type"] = file_extension
-								dsr_to_reload["specs"]["src_type"] = file_extension
+								# dsr_to_reload["specs"]["src_type"] = file_extension
 
 							### delete scr_parser info
 							dsi_to_reload["specs"]["src_parser"] = None
-							dsr_to_reload["specs"]["src_parser"] = None
+							# dsr_to_reload["specs"]["src_parser"] = None
 
 							### create dataframe by reading file with pandas
 							sep = payload['src_sep']
@@ -186,7 +186,7 @@ class DsiReload(Resource):
 							
 							### add src_sep info
 							dsi_to_reload["specs"]["src_sep"] = payload['src_sep']
-							dsr_to_reload["specs"]["src_sep"] = payload['src_sep']
+							# dsr_to_reload["specs"]["src_sep"] = payload['src_sep']
 
 						### file not permited
 						else : 
@@ -238,18 +238,18 @@ class DsiReload(Resource):
 
 						### delete src_sep info
 						dsi_to_reload["specs"]["src_sep"] = None
-						dsr_to_reload["specs"]["src_sep"] = None
+						# dsr_to_reload["specs"]["src_sep"] = None
 
 						### add src_parser info
 						dsi_to_reload["specs"]["src_parser"] = api_parser
-						dsr_to_reload["specs"]["src_parser"] = api_parser
+						# dsr_to_reload["specs"]["src_parser"] = api_parser
 
 					### no data detected | API request failed
 					else : 
 						log.info("-!- request to API failed ...")
 						response_code	= 401
-						message 			=  "request to API failed"
-						document_out  = None
+						message = "request to API failed"
+						document_out = None
 
 				### manage dataframe, DSI, and DSR
 				if df_is_created : 
@@ -277,12 +277,11 @@ class DsiReload(Resource):
 					log.debug("df_col_dict (head(3)) : \n %s", pformat(df.head(3).to_dict(orient="records")) )
 
 					### copy records to DSI and DSR : ["data_raw"]["f_data"]
-					dsi_to_reload["data_raw"]["f_data"] = df_col_dict
+					# dsi_to_reload["data_raw"]["f_data"] = df_col_dict
 					dsi_to_reload["data_raw"]["f_col_headers"] = df_headers
 
-					dsr_to_reload["data_raw"]["f_data"] = df_col_dict
-					dsr_to_reload["data_raw"]["f_col_headers"] = df_headers
-
+					# dsr_to_reload["data_raw"]["f_data"] = df_col_dict
+					# dsr_to_reload["data_raw"]["f_col_headers"] = df_headers
 
 					### UPDATE DSI IN DB
 					log.info("dsi_to_reload (END): \n%s", pformat(dsi_to_reload))
@@ -290,11 +289,29 @@ class DsiReload(Resource):
 					log.info("dsi_to_reload is saved in db... ")
 
 					### UPDATE DSR IN DB (FOR FURTHER RESET)
-					# 
 					# mongo_datasets_raws.replace_one({'_id': doc_oid}, dsr_to_reload)
-					log.info("dsr_to_reload is saved in db... ")
-
+					# log.info("dsr_to_reload is saved in db... ")
 					# document_out  = marshal( document , model_dsr_out_min )
+
+					### DSI_DOCS - INSERT MANY
+					df_ = df.copy()
+					df_["oid_dsi"] = doc_oid
+					df_col_dict_ = df_.to_dict(orient="records")
+					
+					### delete previous documents from mongo_datasets_inputs_docs
+					log.info("deleting documents related to dsi in mongo_datasets_inputs_docs ...")
+					try :
+						mongo_datasets_inputs_docs.delete_many({ 'oid_dsi' : oid_dsi_ })
+					except : 
+						pass
+
+					### insert many docs in dso_docs for every entry of df_col_dict
+					log.info("inserting documents related to dsi in mongo_datasets_inputs_docs ...")
+					if len(df_col_dict_) > 0 and len(df_col_dict_) < 2 :
+						mongo_datasets_inputs_docs.insert_one( df_col_dict_ )
+					else :
+						mongo_datasets_inputs_docs.insert_many( df_col_dict_ )
+
 
 					response_code	= 200
 					message				= "your file '{}' has been correctly uploaded...".format(filename)
@@ -314,15 +331,15 @@ class DsiReload(Resource):
 					message				= "dataframe failed to be created"
 					document_out  = None
 
-
+			### no credentials
 			else : 
 				### send message
 				response_code	= 401
 				message				= "dear user, you don't have the credentials to reload this document"
 				document_out  = None
 
+		### no document / empty response
 		else : 
-			### no document / empty response
 			response_code	= 404
 			message 			= "dear user, there is no document with this oid "
 			document_out  = None

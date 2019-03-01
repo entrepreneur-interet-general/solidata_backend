@@ -16,15 +16,15 @@ ns = Namespace('create', description='Dsi : create a new dataset_input')
 ### import models 
 from solidata_api._models.models_dataset_input import * 
 from solidata_api._models.models_dataset_raw import * 
-model_new_dsi  	= NewDsi(ns).model
+model_new_dsi = NewDsi(ns).model
 
-model_dsi		= Dsi_infos(ns)
-model_dsi_in	= model_dsi.mod_complete_in
-model_dsi_out	= model_dsi.mod_complete_out
+model_dsi     = Dsi_infos(ns)
+model_dsi_in  = model_dsi.mod_complete_in
+model_dsi_out = model_dsi.mod_complete_out
 
-model_dsr		= Dsr_infos(ns)
-model_dsr_in	= model_dsr.mod_complete_in
-model_dsr_out	= model_dsr.mod_complete_out
+model_dsr     = Dsr_infos(ns)
+model_dsr_in  = model_dsr.mod_complete_in
+model_dsr_out = model_dsr.mod_complete_out
 
 # model_dsi_ref		= create_model_dataset(ns, model_name="Dsi_ref", include_fav=True,schema="dsi")
 
@@ -69,45 +69,45 @@ class DsiCreate(Resource):
 
 		### DSI - get data from form and preload for marshalling
 		new_dsi_infos = { 
-			"infos" 		: payload,
-			"public_auth" 	: payload,
-			"specs"			: {
-				"doc_type" : "dsi",
-				"src_type" : payload["src_type"],
-				"src_link" : payload["src_link"],
+			"infos"       : payload,
+			"public_auth" : payload,
+			"specs"       : {
+				"doc_type"  : "dsi",
+				"src_type"  : payload["src_type"],
+				"src_link"  : payload["src_link"],
 			},
 		}
 		### marshall infos with dsi complete model
-		new_dsi 		= marshal( new_dsi_infos , model_dsi_in )
+		new_dsi = marshal( new_dsi_infos , model_dsi_in )
 		log.debug('new_dsi : \n%s', pformat(new_dsi) )  
 
 		### DSR - copy dsi to prepare a new_dsr
-		new_dsr 		= marshal( new_dsi_infos , model_dsr_in )
-		new_dsr["specs"]["doc_type"] = "dsr"
-		log.debug('new_dsr : \n%s', pformat(new_dsr) )  
+		# new_dsr 		= marshal( new_dsi_infos , model_dsr_in )
+		# new_dsr["specs"]["doc_type"] = "dsr"
+		# log.debug('new_dsr : \n%s', pformat(new_dsr) )  
 
 
 		### check if client is an admin or if is the current user
 		### needs decorator @guest_required or @admin_required
-		claims 	= get_jwt_claims() 
+		claims = get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 		oid_usr_ = ObjectId(claims["_id"])
 
 		### add log infos
 		log_ds =  {
-			"created_at" 	: datetime.utcnow(),
-			"created_by" 	: oid_usr_,
+			"created_at" : datetime.utcnow(),
+			"created_by" : oid_usr_,
 		}
 		team_ds	= [ 
 			{
-				'oid_usr'	: oid_usr_,
-				'edit_auth'	: "owner",
+				'oid_usr'   : oid_usr_,
+				'edit_auth' : "owner",
 				'added_at'  : datetime.utcnow(),
 				'added_by'  : oid_usr_,
 			}
 		]
-		new_dsi["log"] = new_dsr["log"] = log_ds
-		new_dsi["team"] = new_dsr["team"] = team_ds
+		new_dsi["log"] = log_ds
+		new_dsi["team"] = team_ds
 		log.debug("new_dsi : \n %s" , pformat(new_dsi))
 
 
@@ -117,13 +117,13 @@ class DsiCreate(Resource):
 			log.debug('payload contains a file... ' )  
 
 			### load file from request - data_file
-			args 			= file_parser.parse_args()
-			uploaded_file 	= args['data_file']  # This is a FileStorage instance
+			args = file_parser.parse_args()
+			uploaded_file = args['data_file']  # This is a FileStorage instance
 			log.debug("uploaded_file (from args['data_file']) : \n %s", uploaded_file )
 			
 			### load file from request - form_file
 			if not uploaded_file : 
-				uploaded_file 	= files['form_file']  # This is a FileStorage instance
+				uploaded_file = files['form_file']  # This is a FileStorage instance
 				log.debug("uploaded_file (from files) : \n %s", uploaded_file )
 
 			### check extension and mimetype
@@ -147,11 +147,11 @@ class DsiCreate(Resource):
 					### correct file_extension if different
 					if file_extension != payload["src_type"] :
 						new_dsi["specs"]["src_type"] = file_extension
-						new_dsr["specs"]["src_type"] = file_extension
+						# new_dsr["specs"]["src_type"] = file_extension
 
 					### delete scr_parser info
 					new_dsi["specs"]["src_parser"] = None
-					new_dsr["specs"]["src_parser"] = None
+					# new_dsr["specs"]["src_parser"] = None
 
 					### create dataframe by reading file with pandas
 					sep = payload['csv_sep']
@@ -161,7 +161,7 @@ class DsiCreate(Resource):
 					
 					### add src_sep info
 					new_dsi["specs"]["src_sep"] = payload['csv_sep']
-					new_dsr["specs"]["src_sep"] = payload['csv_sep']
+					# new_dsr["specs"]["src_sep"] = payload['csv_sep']
 
 				### file not permited
 				else : 
@@ -177,66 +177,64 @@ class DsiCreate(Resource):
 							}, 401
 
 				"""
-				### loop through df_col_dict to save each column in mongo_datasets_raws
-				for col_key, col_values in df_col_dict.items() : 
+					### loop through df_col_dict to save each column in mongo_datasets_raws
+					for col_key, col_values in df_col_dict.items() : 
 
-				### create new empty dsr object
-				new_dsr_infos = {
-					"infos" : {
-						"title" 		: col_key,
-						"licence"		: "private_use_only",
-						"description"	: "column '{}' of '{}' file".format(col_key,filename)
-					},
-					"public_auth" : {
-						"guests_can_see" : False,
-					},
-					"log" : {
-						"created_at" 	: datetime.utcnow(),
-						"created_by" 	: oid_usr_,
-					},
-					"specs" : { 
-						"doc_type"		: "dsr",
-						"src_type"		: get_file_extension(filename), 
-						"src_link"		: filename,
-					},
-					"uses"	: {
-						"by_dsi" 			: {
-							"used_by" : oid_dsi_ 
+					### create new empty dsr object
+					new_dsr_infos = {
+						"infos" : {
+							"title" 		: col_key,
+							"licence"		: "private_use_only",
+							"description"	: "column '{}' of '{}' file".format(col_key,filename)
+						},
+						"public_auth" : {
+							"guests_can_see" : False,
+						},
+						"log" : {
+							"created_at" 	: datetime.utcnow(),
+							"created_by" 	: oid_usr_,
+						},
+						"specs" : { 
+							"doc_type"		: "dsr",
+							"src_type"		: get_file_extension(filename), 
+							"src_link"		: filename,
+						},
+						"uses"	: {
+							"by_dsi" 			: {
+								"used_by" : oid_dsi_ 
+							}
 						}
 					}
-				}
-				### fill new_dsi_info with the data
-				new_dsr 			= marshal( new_dsr_infos , model_dsr_in)
-				new_dsr["data_raw"] = col_values
+					### fill new_dsi_info with the data
+					new_dsr 			= marshal( new_dsr_infos , model_dsr_in)
+					new_dsr["data_raw"] = col_values
 
-				### save dsr object to db 
-				new_dsr_doc 		= mongo_datasets_raws.insert(new_dsr)
+					### save dsr object to db 
+					new_dsr_doc 		= mongo_datasets_raws.insert(new_dsr)
 
-				### keep track of new_dsr_doc oid 
-				oid_dsr_			= str(new_dsr_doc)
-				
-				log.info("new_dsr '{}' is saved in db... / oid_dsr_ : {} ".format(col_key, oid_dsr_) )
+					### keep track of new_dsr_doc oid 
+					oid_dsr_			= str(new_dsr_doc)
+					
+					log.info("new_dsr '{}' is saved in db... / oid_dsr_ : {} ".format(col_key, oid_dsr_) )
 
 
-				### add dsr ref to dsi 
-				add_to_datasets(	coll 			= "mongo_datasets_inputs", 
-									target_doc_oid	= oid_dsi_, 
-									doc_type		= "dsr", 
-									oid_by			= oid_usr_, 
-									oid_to_add		= oid_dsr_, 
-								)
+					### add dsr ref to dsi 
+					add_to_datasets(	coll 			= "mongo_datasets_inputs", 
+										target_doc_oid	= oid_dsi_, 
+										doc_type		= "dsr", 
+										oid_by			= oid_usr_, 
+										oid_to_add		= oid_dsr_, 
+									)
 
-				# args = file_parser.parse_args()
-				# if args['data_file'].mimetype in authorized_mimetype :
-				# 		destination = os.path.join(app.config.get('DATA_FOLDER'), 'uploads/data_files/')
-				# 		if not os.path.exists(destination):
-				# 				os.makedirs(destination)
-				# 		xls_file = '%s%s' % (destination, 'data_file.xls')
-				# 		args['data_file'].save(xls_file)
-				# else:
-				# 		abort(404)
-
-			
+					# args = file_parser.parse_args()
+					# if args['data_file'].mimetype in authorized_mimetype :
+					# 		destination = os.path.join(app.config.get('DATA_FOLDER'), 'uploads/data_files/')
+					# 		if not os.path.exists(destination):
+					# 				os.makedirs(destination)
+					# 		xls_file = '%s%s' % (destination, 'data_file.xls')
+					# 		args['data_file'].save(xls_file)
+					# else:
+					# 		abort(404)
 				""" 
 			
 
@@ -244,8 +242,8 @@ class DsiCreate(Resource):
 			else : 
 				log.info("-!- no file detected ...")
 				return {
-							"msg"		: " no file detected",
-						}, 401
+							"msg" : " no file detected",
+				}, 401
 			
 
 		### get data from API 
@@ -290,11 +288,11 @@ class DsiCreate(Resource):
 
 				### delete src_sep info
 				new_dsi["specs"]["src_sep"] = None
-				new_dsr["specs"]["src_sep"] = None
+				# new_dsr["specs"]["src_sep"] = None
 
 				### add src_parser info
 				new_dsi["specs"]["src_parser"] = api_parser
-				new_dsr["specs"]["src_parser"] = api_parser
+				# new_dsr["specs"]["src_parser"] = api_parser
 
 			### no data detected | API request failed
 			else : 
@@ -343,11 +341,11 @@ class DsiCreate(Resource):
 			log.debug("df_col_dict (head(3)) : \n %s", pformat(df.head(3).to_dict(orient="records")) )
 
 			### copy records to DSI and DSR : ["data_raw"]["f_data"]
-			new_dsi["data_raw"]["f_data"] = df_col_dict
+			# new_dsi["data_raw"]["f_data"] = df_col_dict
 			new_dsi["data_raw"]["f_col_headers"] = df_headers
 
-			new_dsr["data_raw"]["f_data"] = df_col_dict
-			new_dsr["data_raw"]["f_col_headers"] = df_headers
+			# new_dsr["data_raw"]["f_data"] = df_col_dict
+			# new_dsr["data_raw"]["f_col_headers"] = df_headers
 
 			# new_dsi 	= marshal( new_dsi_infos , model_dsi_in)
 			# log.debug("new_dsi : \n %s" , pformat(new_dsi))
@@ -361,44 +359,66 @@ class DsiCreate(Resource):
 			new_dsi_doc = mongo_datasets_inputs.insert(new_dsi)
 			log.info("new_dsi is saved in db... ")
 			### keep track of new_dsi_doc oid 
-			oid_dsi_		= new_dsi_doc
+			oid_dsi_ = new_dsi_doc
 			log.info("oid_dsi_ : %s ", oid_dsi_ )
-			log.info("str(oid_dsi_) : %s ", str(oid_dsi_) )
+			id_dsi =  str(oid_dsi_)
+			log.info("id_dsi : %s ", id_dsi )
 
 			### DSR - VALUES COPIES - save dsr object to db 
 			# new_dsr_doc = mongo_datasets_raws.replace_one( {"_id" : oid_dsi_ }, new_dsr, upsert=True )
-			new_dsr_doc = mongo_datasets_raws.insert(new_dsr)
-			log.info("new_dsr is saved in db... ")
-			### keep track of new_dsr_doc oid 
-			oid_dsr_		= new_dsr_doc
-			log.info("oid_dsr_ : %s ", str(oid_dsr_) )
+			# new_dsr_doc = mongo_datasets_raws.insert(new_dsr)
+			# log.info("new_dsr is saved in db... ")
+			# ### keep track of new_dsr_doc oid 
+			# oid_dsr_		= new_dsr_doc
+			# log.info("oid_dsr_ : %s ", str(oid_dsr_) )
+
+
+			### DSI_DOCS - INSERT MANY
+			df_ = df.copy()
+			df_["oid_dsi"] = oid_dsi_
+			df_col_dict_ = df_.to_dict(orient="records")
+			
+			### delete previous documents from mongo_datasets_inputs_docs
+			# log.info("deleting documents related to dsi in mongo_datasets_inputs_docs ...")
+			# try :
+			# 	mongo_datasets_inputs_docs.delete_many({ 'oid_dsi' : oid_dsi_ })
+			# except : 
+			# 	pass
+
+			### insert many docs in dso_docs for every entry of df_col_dict
+			log.info("inserting documents related to dsi in mongo_datasets_inputs_docs ...")
+			if len(df_col_dict_) > 0 and len(df_col_dict_) < 2 :
+				mongo_datasets_inputs_docs.insert_one( df_col_dict_ )
+			else :
+				mongo_datasets_inputs_docs.insert_many( df_col_dict_ )
+
 
 
 			### DSI - add dsi ref to user 
-			add_to_datasets(	coll		= "mongo_users", 
-								target_doc_oid	= oid_usr_, 
-								doc_type				= "dsi", 
-								oid_by					= oid_usr_, 
-								oid_to_add			= oid_dsi_, 
-								include_is_fav	= True
-							)
+			# add_to_datasets(	coll		= "mongo_users", 
+			# 					target_doc_oid	= oid_usr_, 
+			# 					doc_type				= "dsi", 
+			# 					oid_by					= oid_usr_, 
+			# 					oid_to_add			= oid_dsi_, 
+			# 					include_is_fav	= True
+			# 				)
 
 			### DSI - add dsr ref to dsi 
-			add_to_datasets(	coll 		= "mongo_datasets_inputs", 
-								target_doc_oid	= oid_dsi_, 
-								doc_type				= "dsr", 
-								oid_by					= oid_usr_, 
-								oid_to_add			= oid_dsr_, 
-							)
+			# add_to_datasets(	coll 		= "mongo_datasets_inputs", 
+			# 					target_doc_oid	= oid_dsi_, 
+			# 					doc_type				= "dsr", 
+			# 					oid_by					= oid_usr_, 
+			# 					oid_to_add			= oid_dsr_, 
+			# 				)
 
 			### DSR - add dsi ref to dsr 
-			add_to_uses(		coll 			= "mongo_datasets_raws", 
-								target_doc_oid	= oid_dsr_, 
-								doc_type				= "dsi", 
-								oid_by					= oid_dsi_, 
-							)
+			# add_to_uses(		coll 			= "mongo_datasets_raws", 
+			# 					target_doc_oid	= oid_dsr_, 
+			# 					doc_type				= "dsi", 
+			# 					oid_by					= oid_dsi_, 
+			# 				)
 
-			### DEPRECATED / TO DECIDE IF NEED TO SAVE ORIGINAL FILE ON SERVER|DB
+			### DEPRECATED / NEED TO DECIDE IF NEED TO SAVE ORIGINAL FILE ON SERVER|DB
 
 			### save file in uploads folder if file doesn't exist
 			# destination = app.config["UPLOADS_DATA"]
@@ -415,13 +435,13 @@ class DsiCreate(Resource):
 
 			log.info("--- dsi and dsr are created...")
 			return {
-						"msg"		: "your file '{}' has been correctly uploaded...".format(filename),
-						"data"	: {
-							"src_link" 	: payload["src_link"],
-							"filename" 	: filename,
-							"_id" 			: str(oid_dsi_)
-						}
-					}, 200
+				"msg"		: "your file '{}' has been correctly uploaded...".format(filename),
+				"data"	: {
+					"src_link" 	: payload["src_link"],
+					"filename" 	: filename,
+					"_id" 			: str(oid_dsi_)
+				}
+			}, 200
 
 
 		### no dataframe detected
@@ -431,7 +451,7 @@ class DsiCreate(Resource):
 
 			### delete previously inserted dsr and dsi docs
 			mongo_datasets_inputs.delete_one({"_id" : ObjectId(oid_dsi_) })
-			mongo_datasets_raws.delete_one({"_id" : ObjectId(oid_dsr_) })
+			# mongo_datasets_raws.delete_one({"_id" : ObjectId(oid_dsr_) })
 
 			### send message
 			return {

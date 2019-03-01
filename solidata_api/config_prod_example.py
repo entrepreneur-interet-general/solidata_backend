@@ -67,6 +67,7 @@ class BaseConfig(object):
 	MONGO_COLL_DATAMODELS_FIELDS		= "datamodels_fields"
 	# MONGO_COLL_CONNECTORS					= "connectors"
 	MONGO_COLL_DATASETS_INPUTS			= "datasets_inputs"
+	MONGO_COLL_DATASETS_INPUTS_DOC 	= "datasets_inputs_docs"
 	MONGO_COLL_DATASETS_RAWS				= "datasets_raws"
 	MONGO_COLL_DATASETS_OUTPUTS			= "datasets_outputs"
 	MONGO_COLL_DATASETS_OUTPUTS_DOC	= "datasets_outputs_docs"
