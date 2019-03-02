@@ -13,6 +13,9 @@ from 	flask_restplus 	import  marshal
 
 from 	. import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
+
+from .query_utils import * 
+
 from 	solidata_api._core.solidify import *
 
 
@@ -34,7 +37,9 @@ def Query_db_solidify (
 		doc_id,
 		claims,
 		roles_for_complete 	= ["admin"],
-		payload = {}
+		payload = {},
+		page_args = {},
+		query_args = {},
 	):
 
 	print()

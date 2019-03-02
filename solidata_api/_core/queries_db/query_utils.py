@@ -19,9 +19,9 @@ from 	flask_restplus 	import  marshal
 
 from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
+from solidata_api._core.pandas_ops.pd_utils import *
 
 import operator
-
 
 
 def weighted(nb):
@@ -77,7 +77,6 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 	
 	return query
 
-
 def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") : 
 	"""
 	get_ds_docs + search filters to f_data 
@@ -103,7 +102,6 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	results = list(cursor)
 
 	return results
-
 
 def strip_f_data(	data_raw, 
 									doc_open_level_show, 
@@ -170,12 +168,16 @@ def strip_f_data(	data_raw,
 	log.debug('f_col_headers_for_df : \n%s', pformat(f_col_headers_for_df) )  
 	f_data_df_out = f_data_df[ f_col_headers_for_df ]
 
+	### clean f_data_df_out from NaNs
+	# f_data_df_out = f_data_df_out.dropna(how="all")
+	f_data_df_out = f_data_df_out.replace({np.nan:None})  
+
+	### transform f_data to dict
 	f_data = f_data_df_out.to_dict('records')
 
 	del f_data_df_out, f_data_df
 
 	return f_data
-
 
 def search_for_str( search_str, row) :
 
@@ -200,7 +202,6 @@ def search_for_str( search_str, row) :
 	# 	log.debug( "row_check : \n%s", row_check )
 
 	return row_check
-
 
 def search_f_data (data_raw, query_args, not_filtered=True) :
 	"""
@@ -239,7 +240,6 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
 		log.debug( "... f_data[0] : \n%s ", pformat(f_data[0]) )
 
 	return f_data
-
 
 def GetFData( document_type, 
 							can_access_complete, not_filtered,
@@ -339,9 +339,6 @@ def GetFData( document_type,
 			# document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ 0 : 1 ]
 
 	return document_out
-
-
-
 
 
 def check_if_prj_is_buildable (doc_prj) :

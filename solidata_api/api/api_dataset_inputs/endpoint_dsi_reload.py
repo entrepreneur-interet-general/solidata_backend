@@ -9,6 +9,7 @@ from solidata_api.api import *
 log.debug(">>> api_dataset_inputs ... creating api endpoints for DSI_RELOAD")
 
 from . import api, document_type
+from solidata_api._core.pandas_ops.pd_utils import *
 
 ### create namespace
 ns = Namespace('reload', description='Dsi : reload a new dataset_input')
@@ -267,8 +268,9 @@ class DsiReload(Resource):
 					log.debug("df_headers : %s", pformat(df_headers))
 
 					### clean data from nan rows and change Nan to None
-					df = df.dropna(how="all")
-					df = df.replace({np.nan:None})
+					# df = df.dropna(how="all")
+					# df = df.replace({np.nan:None})
+					df = cleanDfFromNans(df)
 					print ("\n", df.head(5)) 
 
 					### get data as records

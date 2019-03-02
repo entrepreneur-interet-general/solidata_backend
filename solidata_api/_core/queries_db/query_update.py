@@ -104,7 +104,7 @@ def Query_db_update (
 		claims,
 		roles_for_complete = ["admin"],
 		payload = {},
-		page_args = {} ,
+		page_args = {},
 		query_args = {},
 	):
 
@@ -163,7 +163,7 @@ def Query_db_update (
 
 		### get doc's owner infos
 		created_by_oid = document["log"]["created_by"]
-		
+
 		### get doc's team infos
 		if "team" in document : 
 			team_oids = [ t["oid_usr"] for t in document["team"] ]
