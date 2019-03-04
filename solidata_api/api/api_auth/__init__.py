@@ -26,11 +26,11 @@ blueprint = Blueprint( 'api_auth', __name__, template_folder=app.config["TEMPLAT
 ### create API
 api = Api( 	blueprint,
 						title				= "Solidata API : AUTH SERVER",
-						version				= "0.1",
-						description			= "auth server / manages tokens",
+						version			= "0.1",
+						description	= app.config["CODE_LINK"] + " : auth server / manages tokens",
 						doc					= '/documentation',
-						default				= 'login',
-						authorizations		= auth_check,
+						default			= 'login',
+						authorizations = auth_check,
 						# security='apikey' # globally ask for apikey auth
 )
 

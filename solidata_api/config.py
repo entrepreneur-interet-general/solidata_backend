@@ -8,6 +8,8 @@ from datetime import timedelta
 
 class BaseConfig(object):  
 
+	CODE_LINK					= "<a target='_blank' href='https://github.com/entrepreneur-interet-general/solidata_backend'>Solidata_backend</a>"
+
 	RUN_MODE					= "dev"
 	DEBUG							= True
 	TEMPLATES_FOLDER 	= "/templates"
@@ -28,7 +30,6 @@ class BaseConfig(object):
 	SECRET_KEY						= "app_very_secret_key"
 
 	""" SHARED JWT SECRET KEY : this key must be shared with openscraper and solidata """
-
 	JWT_SECRET_KEY										= "a_key_shared_with_front_and_openscraper_and_solidata"
 	JWT_HEADER_NAME										= "Authorization" #"X-API-KEY"
 	JWT_TOKEN_LOCATION								= ["headers", "query_string"]

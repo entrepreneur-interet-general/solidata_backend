@@ -192,8 +192,6 @@ def Query_db_doc (
 						# shuffle_seed, sort_by, slice_f_data, 
 						# start_index, end_index
 			)
-
-
 			message = "dear user, there is the complete {} you requested ".format(document_type_full)
 
 		# for other users
@@ -223,7 +221,6 @@ def Query_db_doc (
 							# shuffle_seed, sort_by, slice_f_data, 
 							# start_index, end_index
 				)
-
 				message = "dear user, there is the {} you requested given your credentials".format(document_type_full)
 
 			else : 

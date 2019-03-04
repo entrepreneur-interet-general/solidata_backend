@@ -6,8 +6,9 @@ config_prod.py
 import os
 from datetime import timedelta
 
-
 class BaseConfig(object):  
+
+	CODE_LINK					= "<a target='_blank' href='https://github.com/entrepreneur-interet-general/solidata_backend'>Solidata_backend</a>"
 
 	RUN_MODE					= "dev"
 	DEBUG 						= True

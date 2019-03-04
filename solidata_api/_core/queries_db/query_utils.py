@@ -24,6 +24,11 @@ from solidata_api._core.pandas_ops.pd_utils import *
 import operator
 
 
+def removeKey(d, key):
+	r = dict(d)
+	del r[key]
+	return r
+
 def weighted(nb):
 	
 	if nb is None:
@@ -54,6 +59,7 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 	search_in 		= query_args.get('search_in', 		None )
 	search_int 		= query_args.get('search_int', 		None )
 	search_float 	= query_args.get('search_float', 	None )
+	search_tags 	= query_args.get('search_tags', 	None )
 	item_id 			= query_args.get('item_id', 			None )
 	is_complete 	= query_args.get('is_complete', 	None )
 
@@ -66,6 +72,12 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 		q_item = { "_id" : ObjectId(item_id)  } 
 		query.update(q_item)
 
+	# search by tags
+	if search_tags != None :
+		pass
+		# q_tag = { "_id" : ObjectId(item_id)  } 
+		# query.update(q_tag)
+
 	### search by content --> collection need to be indexed
 	# cf : https://stackoverflow.com/questions/6790819/searching-for-value-of-any-field-in-mongodb-without-explicitly-naming-it
 	if search_for != None and search_for != [] and search_for != [''] :
@@ -77,6 +89,29 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 	
 	return query
 
+def build_projected_fields(ignore_fields_list=[], keep_fields_list=[] ) :
+	""" projection of the query """
+	### cf : https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
+
+	# add ignore_fields / keep_fields criterias to query if any
+	projected_fields = None
+
+	if ignore_fields_list != [] or keep_fields_list != [] : 
+		
+		projected_fields = {}
+		
+		# add fields to ignore
+		if ignore_fields_list != [] :
+			ignore_fields = { f : 0 for f in ignore_fields_list }
+			projected_fields.update( ignore_fields )
+		
+		# add fields to retrieve
+		if keep_fields_list != [] :
+			keep_fields = { f : 1 for f in keep_fields_list }
+			projected_fields.update( keep_fields )
+
+	return projected_fields
+
 def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") : 
 	"""
 	get_ds_docs + search filters to f_data 
@@ -85,6 +120,9 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	print()
 	print("-+- "*40)
 	log.debug( "... get_ds_docs " )
+
+	keep_fields_list = []
+	ignore_fields_list = []
 
 	map_list = query_args.get('map_list',	False )
 
@@ -97,9 +135,15 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 
 	query = build_first_term_query(doc_oid, query_args, field_to_query=field_to_query)
 	log.debug('query : \n%s', pformat(query) )  
+	
+	if map_list : 
+		keep_fields_list = ["_id", field_to_query, "lat", "lon"]
+	
+	projected_fields = build_projected_fields(ignore_fields_list, keep_fields_list)
+	log.debug('projected_fields : \n%s', pformat(projected_fields) )  
 
 	# results = ds_doc_collection.find({'oid_dso' : doc_oid })
-	cursor = ds_doc_collection.find(query)
+	cursor = ds_doc_collection.find(query, projected_fields)
 
 	results = list(cursor)
 
@@ -161,11 +205,11 @@ def strip_f_data(	data_raw,
 		f_col_headers_for_df 	= [ h["f_coll_header_val"] for h in f_col_headers_selected ]
 	elif document_type == "dso" : 
 		f_col_headers_for_df 	= [ h["f_title"] for h in f_col_headers_selected if h["f_title"] in f_data_cols ]
-	
+		
 	### append "_id" column to authorized columns
 	f_data_df["_id"] = f_data_df["_id"].apply(lambda x: str(x))
-	f_data_df = f_data_df.rename( index=str, columns = {"_id" : "solidata_id"})
-	f_col_headers_for_df.append("solidata_id")
+	f_data_df = f_data_df.rename( index=str, columns = {"_id" : "sd_id"})
+	f_col_headers_for_df.append("sd_id")
 
 	log.debug('f_col_headers_for_df : \n%s', pformat(f_col_headers_for_df) )  
 	f_data_df_out = f_data_df[ f_col_headers_for_df ]
@@ -182,7 +226,6 @@ def strip_f_data(	data_raw,
 	return f_data
 
 def search_for_str( search_str, row) :
-
 
 	### TO DO : TREAT strings within "" and commas here 
 
@@ -243,10 +286,33 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
 
 	return f_data
 
+def latLngTuple(f_data, query_args) : 
+	map_list	= query_args.get('map_list',	False )
+	
+	### map listing required
+	if map_list : 
+		as_latlng	= query_args.get('as_latlng',	False )
+		geo_precision	= query_args.get('geo_precision',	6 )
+		f_data_tupled = []
+		for d in f_data : 
+			d["lat"] = round(float(d["lat"]), geo_precision)
+			d["lon"] = round(float(d["lon"]), geo_precision)
+			if as_latlng : 
+				d["latlng"] = ( d["lat"], d["lon"]) 
+				d = removeKey(d, "lat")
+				d = removeKey(d, "lon")
+			f_data_tupled.append(d)
+	
+	### map_list not required
+	else : 
+		f_data_tupled = f_data
+	
+	return f_data_tupled
+
 def GetFData( document_type, 
 							can_access_complete, not_filtered,
 							document, document_out, doc_oid, doc_open_level_show,
-							team_oids, created_by_oid,	roles_for_complete, user_role, user_oid,
+							team_oids, created_by_oid, roles_for_complete, user_role, user_oid,
 							page_args, query_args,
 						) : 
               # start_index, end_index
@@ -276,8 +342,7 @@ def GetFData( document_type,
 	descending		= query_args.get('descending',		False )
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
 	# q_normalize		= query_args.get('normalize',			False )
-	### TO FINISH
-	map_list			= query_args.get('map_list',	False )
+	# map_list			= query_args.get('map_list',	False )
 
 	# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 	if document_type in ["dsi", "dso"] and can_access_complete :
@@ -293,13 +358,20 @@ def GetFData( document_type,
 				not_filtered = False
 				if document_type == "dso" :	
 					db_coll="dso_doc"
+					document_out["data_raw"]["f_col_headers"].append(
+						{	
+							'f_title': '_id',
+							'open_level_show': 'sd_id'
+						}
+					)
 				elif document_type == "dsi" : 
 					db_coll="dsi_doc"
 					document_out["data_raw"] = {"f_col_headers" : document["data_raw"]["f_col_headers"]}
 					document_out["data_raw"]["f_col_headers"].append(
 						{	
-							'f_coll_header_text': 'solidata_id',
-							'f_coll_header_val': 'solidata_id'}
+							'f_coll_header_text': 'sd_id',
+							'f_coll_header_val': 'sd_id'
+						}
 					)
 				document_out["data_raw"]["f_data"] = get_ds_docs(doc_oid, query_args, db_coll=db_coll)
 				document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
@@ -311,6 +383,7 @@ def GetFData( document_type,
 																		user_oid,
 																		document_type=document_type
 																	)
+				document_out["data_raw"]["f_data"] = latLngTuple(document_out["data_raw"]["f_data"], query_args)
 		else :
 			document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 

@@ -16,14 +16,14 @@ ns = Namespace('mapping', description='Map docs of a prj : ... ')
 ### import models 
 from solidata_api._models.models_updates import * 
 from solidata_api._models.models_project import * 
-mod_doc				= Prj_infos(ns)
-model_doc_out		= mod_doc.mod_complete_out
+mod_doc	= Prj_infos(ns)
+model_doc_out	= mod_doc.mod_complete_out
 model_doc_guest_out	= mod_doc.model_guest_out
-model_doc_min		= mod_doc.model_minimum
-models 				= {
-	"model_doc_out" 		: model_doc_out ,
-	"model_doc_guest_out" 	: model_doc_guest_out ,
-	"model_doc_min" 		: model_doc_min ,
+model_doc_min	= mod_doc.model_minimum
+models = {
+	"model_doc_out" 			: model_doc_out ,
+	"model_doc_guest_out" : model_doc_guest_out ,
+	"model_doc_min" 			: model_doc_min ,
 } 
 
 model_update_mapping	= Update_mapping(ns, document_type).model_update_generic
@@ -68,7 +68,7 @@ class Prj_mapping(Resource):
 		log.debug ("payload : \n{}".format(pformat(ns.payload)))
 
 		### check client identity and claims
-		claims 			= get_jwt_claims() 
+		claims = get_jwt_claims() 
 		log.debug("claims : \n %s", pformat(claims) )
 
 		### update doc in DB

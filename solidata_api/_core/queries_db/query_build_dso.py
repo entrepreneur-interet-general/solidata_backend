@@ -192,10 +192,10 @@ def Query_db_build_dso (
 						### get prj's dmfs' headers (if not empty) - from dmf_list (aka prj's dmt)
 						headers_dso_from_dmf_list 	= [ 
 							{ 	
-								"oid_dmf" 	: d["_id"] , 
+								"oid_dmf" : d["_id"] , 
 								"f_type" 	: d["data_raw"]["f_type"],
 								"f_code" 	: d["data_raw"]["f_code"],
-								"f_title" 	: d["infos"]["title"]
+								"f_title" : d["infos"]["title"]
 							} 
 							for d in dmf_list if d["_id"] in dmf_list_from_map 
 						]

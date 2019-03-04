@@ -29,14 +29,16 @@ def cleanColNames(df, charsToReplace = u"°.[]", replaceWith="-" ):
     df = df.rename( index=str, columns = df_cols_clean)
     return df
 
-def read_file_with_pd ( uploaded_file, file_extension, sep="," ) : 
-	
-	encoding = "utf-8"
+def read_file_with_pd ( uploaded_file, file_extension, sep=",", encoding = "utf-8" ) : 
 
 	if file_extension in ["csv", "tsv"] : 
 		if file_extension == "tsv" : 
 			sep = "\t"
-		df = pd.read_csv(uploaded_file, sep=sep, encoding=encoding)
+		log.debug("uploaded_file : %s", uploaded_file)
+		try : 
+			df = pd.read_csv(uploaded_file, sep=sep, encoding=encoding)
+		except : 
+			df = pd.read_csv(uploaded_file, sep=sep)
 
 	elif file_extension in ["xls","xlsx"] : 
 		df = pd.read_excel(uploaded_file, encoding=encoding)

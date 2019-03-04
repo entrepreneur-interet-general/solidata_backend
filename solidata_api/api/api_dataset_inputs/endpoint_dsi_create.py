@@ -154,10 +154,15 @@ class DsiCreate(Resource):
 					new_dsi["specs"]["src_parser"] = None
 					# new_dsr["specs"]["src_parser"] = None
 
+					### create a secure filename
+					log.debug("uploaded_file : \n%s", pformat(uploaded_file.__dict__))
+					file_encoding = "utf-8"
+					log.debug("trying to read file / file_encoding : %s", file_encoding)
+
 					### create dataframe by reading file with pandas
 					sep = payload['csv_sep']
 					log.debug("trying to read file / sep : %s", sep)
-					df = read_file_with_pd(uploaded_file, file_extension, sep=sep )
+					df = read_file_with_pd(uploaded_file, file_extension, sep=sep, encoding=file_encoding )
 					df_is_created = True
 					
 					### add src_sep info

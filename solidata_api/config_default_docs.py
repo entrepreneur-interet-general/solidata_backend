@@ -37,11 +37,12 @@ default_recipes_list = [
 			"is_standard" 	: True
 		},
 		"data_raw" : {
-			"f_code" 		: "geoloc_ban_nominatim",
+			"f_code" 			: "geoloc_ban_nominatim",
 			"f_object" 		: "geolocalize some dataframes",
 			"f_comments" 	: "first recipe to be tested in solidata",
 			"field_raw" 	: {	
 				"parameters" : [
+					"dsi_to_geoloc", 		### dsi list to geoloc
 					"new_dmfs_list", 		### dmf to add to dmt and dsis
 					"dmf_list_to_geocode",	### 
 					# "prj_list_to_geocode",
@@ -125,6 +126,41 @@ default_tag_list = [
 ### DEFAULT DMFs
 default_dmf_list = [
 
+	# SYSTEM RELATED
+	{
+		"infos" : {
+			"title" 		: "solidata_id",
+			"description" : "a data's ID in Solidata"
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "SOLIDATA_ID",
+			"f_object" 	: "",
+			"f_type" 		: "id",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "sd_id",
+			"description" : "a data's ID in Solidata"
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "SD_ID",
+			"f_object" 	: "",
+			"f_type" 		: "id",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
 	# USER RELATED
 	{
 		"infos" : {
@@ -148,17 +184,17 @@ default_dmf_list = [
 	{
 		"infos" : {
 			"title" 		: "address",
-			"description" 	: "Location’s address."
+			"description" : "Location’s address."
 		},
 		"specs" : {
 			"doc_type"		: "dmf",
-			"is_standard" 	: True
+			"is_standard" : True
 		},
 		"data_raw" : {
 			"f_code" 		: "ADDRESS",
-			"f_object" 		: "",
+			"f_object" 	: "",
 			"f_type" 		: "geoloc",
-			"f_comments" 	: "",
+			"f_comments" : "",
 			"f_is_required" : False,
 		}
 	},
@@ -172,7 +208,7 @@ default_dmf_list = [
 			"is_standard" 	: True
 		},
 		"data_raw" : {
-			"f_code" 		: "LAT",
+			"f_code" 		: "LATITUDE",
 			"f_object" 		: "",
 			"f_type" 		: "geoloc",
 			"f_comments" 	: "",
@@ -189,7 +225,41 @@ default_dmf_list = [
 			"is_standard" 	: True
 		},
 		"data_raw" : {
-			"f_code" 		: "LONG",
+			"f_code" 		: "LONGITUDE",
+			"f_object" 		: "",
+			"f_type" 		: "geoloc",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "lat",
+			"description" 	: "Location’s latitude."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "LAT",
+			"f_object" 		: "",
+			"f_type" 		: "geoloc",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 		: "lon",
+			"description" 	: "Location’s longitude."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "LON",
 			"f_object" 		: "",
 			"f_type" 		: "geoloc",
 			"f_comments" 	: "",
@@ -230,11 +300,28 @@ default_dmf_list = [
 			"f_is_required" : False,
 		}
 	},
+	{
+		"infos" : {
+			"title" 			: "city",
+			"description" : "City’s data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "CITY_LOC",
+			"f_object" 		: "",
+			"f_type" 		: "geoloc",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
 	# CATEGORIES RELATED
 	{
 		"infos" : {
-			"title" 		: "tag",
-			"description" 	: "Tags about a data."
+			"title" 			: "tag",
+			"description" : "Tags about a data."
 		},
 		"specs" : {
 			"doc_type"		: "dmf",
@@ -250,8 +337,8 @@ default_dmf_list = [
 	},
 	{
 		"infos" : {
-			"title" 		: "category",
-			"description" 	: "Category related a data."
+			"title" 			: "category",
+			"description" : "Category related a data."
 		},
 		"specs" : {
 			"doc_type"		: "dmf",

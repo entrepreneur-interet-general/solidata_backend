@@ -24,11 +24,11 @@ blueprint = Blueprint( 'api_datamodel_fields', __name__, template_folder=app.con
 ### create API
 api = Api( 	blueprint,
 						title				= "Solidata API : DATAMODEL FIELDS",
-						version				= "0.1",
-						description			= "create, list, delete, edit... datamodel fields",
+						version			= "0.1",
+						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... datamodel fields",
 						doc					= '/documentation',
-						default				= 'create',
-						authorizations		= auth_check,
+						default			= 'create',
+						authorizations = auth_check,
 						# security			='apikey' # globally ask for pikey auth
 )
 
