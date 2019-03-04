@@ -127,6 +127,14 @@ class RequestParserBuilder :
 				help='normalize results',
 				# location = 'values'
 			)
+			self.baseParser.add_argument(
+				'map_list', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='get light results for map display',
+				# location = 'values'
+			)
 
 		if add_data_query : 
 

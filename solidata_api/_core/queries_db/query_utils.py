@@ -86,6 +86,8 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	print("-+- "*40)
 	log.debug( "... get_ds_docs " )
 
+	map_list = query_args.get('map_list',	False )
+
 	if db_coll == "dso_doc" :
 		field_to_query = "oid_dso"
 	if db_coll == "dsi_doc" :
@@ -274,6 +276,8 @@ def GetFData( document_type,
 	descending		= query_args.get('descending',		False )
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
 	# q_normalize		= query_args.get('normalize',			False )
+	### TO FINISH
+	map_list			= query_args.get('map_list',	False )
 
 	# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 	if document_type in ["dsi", "dso"] and can_access_complete :
