@@ -295,12 +295,16 @@ def latLngTuple(f_data, query_args) :
 		geo_precision	= query_args.get('geo_precision',	6 )
 		f_data_tupled = []
 		for d in f_data : 
-			d["lat"] = round(float(d["lat"]), geo_precision)
-			d["lon"] = round(float(d["lon"]), geo_precision)
-			if as_latlng : 
-				d["latlng"] = ( d["lat"], d["lon"]) 
-				d = removeKey(d, "lat")
-				d = removeKey(d, "lon")
+			if d["lat"]!= 'None' and d["lon"]!='None' : 
+				d["lat"] = round(float(d["lat"]), geo_precision)
+				d["lon"] = round(float(d["lon"]), geo_precision)
+				if as_latlng : 
+					d["latlng"] = ( d["lat"], d["lon"]) 
+					d = removeKey(d, "lat")
+					d = removeKey(d, "lon")
+			else : 
+					d = removeKey(d, "lat")
+					d = removeKey(d, "lon")
 			f_data_tupled.append(d)
 	
 	### map_list not required
@@ -342,7 +346,7 @@ def GetFData( document_type,
 	descending		= query_args.get('descending',		False )
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
 	# q_normalize		= query_args.get('normalize',			False )
-	# map_list			= query_args.get('map_list',	False )
+	map_list			= query_args.get('map_list',	False )
 
 	# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 	if document_type in ["dsi", "dso"] and can_access_complete :
@@ -410,7 +414,7 @@ def GetFData( document_type,
 		document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
 
 		# slice f_data
-		if slice_f_data == True :
+		if slice_f_data == True and map_list == False :
 			log.debug( 'slice_f_data : %s', slice_f_data )
 			document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
 			# document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ 0 : 1 ]
