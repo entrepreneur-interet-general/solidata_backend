@@ -112,6 +112,7 @@ def Query_db_build_dso (
 			### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 			dso_in['_id'] 				= doc_oid
 			dso_in['infos'] 			= doc_prj["infos"]
+			dso_in['specs'] 			= {"doc_type" : "dso"}
 			dso_in['public_auth']	= doc_prj["public_auth"]
 			dso_in['datasets'] 		= doc_prj["datasets"]
 			dso_in['team'] 				= doc_prj["team"]
