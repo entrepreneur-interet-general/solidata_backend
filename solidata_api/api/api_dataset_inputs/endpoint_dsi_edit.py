@@ -92,6 +92,7 @@ class Dsi_edit(Resource):
 
 
 	@ns.doc('delete_dsi')
+	# @ns.expect(q_minimal)
 	@ns.response(204, 'document deleted')
 	@guest_required 
 	def delete(self, doc_id):

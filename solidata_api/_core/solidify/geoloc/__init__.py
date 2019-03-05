@@ -51,7 +51,8 @@ geopy.geocoders.options.default_user_agent = "solidata_app"
 # from tqdm import tqdm
 
 ### import pandas functions
-from 	solidata_api._core.pandas_ops import pd, np, prj_dsi_mapping_as_df
+from solidata_api._core.pandas_ops import pd, np, prj_dsi_mapping_as_df
+from solidata_api._core.queries_db.query_utils import removeKey
 
 ### for forked processes --> create mongoclient inside forked process
 from flask import current_app as app
@@ -86,12 +87,14 @@ location_compl_col	= "temp_solidata_compl_location_"
 location_col     		= "temp_solidata_location_"
 
 empty_location 	= {
-	"src_geocoder"	: None,
+	"src_geocoder": None,
 	"raw"        	: None,
 	"address"    	: None,
 	"point"      	: None,
-	"latitude"   	: None,
-	"longitude"  	: None,
+	# "latitude"   	: None,
+	# "longitude"  	: None,
+	"lat"   			: None,
+	"lon"  				: None,
 }
 
 
@@ -161,8 +164,10 @@ def LocToDict(location_raw, src_geocoder=None) :
 			"raw"       	: location_raw.raw,
 			"address"   	: location_raw.address,
 			"point"     	: location_raw.point,
-			"latitude"  	: location_raw.latitude,
-			"longitude" 	: location_raw.longitude,
+			# "latitude"  	: location_raw.latitude,
+			# "longitude" 	: location_raw.longitude,
+			"lat"			  	: location_raw.latitude,
+			"lon"				 	: location_raw.longitude,
 		}
 	else : 
 		return {
@@ -170,11 +175,13 @@ def LocToDict(location_raw, src_geocoder=None) :
 			"raw"        	: None,
 			"address"    	: None,
 			"point"      	: None,
-			"latitude"   	: None,
-			"longitude"  	: None,
+			# "latitude"   	: None,
+			# "longitude"  	: None,
+			"lat"   			: None,
+			"lon"  				: None,
 		}
 
-def extract_loc(row, field_name="longitude") :
+def extract_loc(row, field_name="lon") :
 	""" 
 	extract field value from a cell's dict
 	"""
@@ -352,6 +359,7 @@ def geoloc_dsi ( 	dsi_doc,
 
 	### retrieve dsi_oid and check test
 	dsi_oid 				= dsi_doc["_id"]
+	headers_dsi 		= dsi_doc["data_raw"]["f_col_headers"]
 	test_geoloc 		= params["test_geoloc"]
 	new_dmfs_list		= params["new_dmfs_list"]
 	dft_test_trim		= params["test_rows"]
@@ -360,6 +368,7 @@ def geoloc_dsi ( 	dsi_doc,
 	### locally open mongo client
 	mongodb_client, mongodb_db	= create_connect()
 	mongodb_coll_dsi	= mongodb_db[app.config["MONGO_COLL_DATASETS_INPUTS"]]
+	mongodb_coll_dsi_docs	= mongodb_db[app.config["MONGO_COLL_DATASETS_INPUTS_DOC"]]
 	log.debug("... mongodb_coll_dsi : \n%s", pformat(mongodb_coll_dsi) )
 
 	### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
@@ -382,7 +391,7 @@ def geoloc_dsi ( 	dsi_doc,
 
 	### load every DSI's f_data as a dataframe & add new columns (new_dmfs) if does not exist yet
 	dsi_f_data 		= dsi_doc["data_raw"]["f_data"]
-	df_f_data_src 	= pd.DataFrame(dsi_f_data)
+	df_f_data_src = pd.DataFrame(dsi_f_data)
 	# print()
 	# log.debug("... df_f_data.head(3) ... ")
 	# print (df_f_data.head(3))
@@ -480,8 +489,8 @@ def geoloc_dsi ( 	dsi_doc,
 
 		### create and populate new columns in df_f_data_src from new_dmfs_list
 		for new_col in new_dmfs_list : 
-			new_col_title 					= new_col["infos"]["title"]
-			df_f_data_src[new_col_title] 	= df_f_data[location_col].apply(extract_loc, field_name=new_col_title)
+			new_col_title = new_col["infos"]["title"]
+			df_f_data_src[new_col_title] = df_f_data[location_col].apply(extract_loc, field_name=new_col_title)
 
 		print()
 		log.debug("... df_f_data_src.columns.values.tolist() : \n%s", pformat(df_f_data_src.columns.values.tolist()) )
@@ -514,16 +523,29 @@ def geoloc_dsi ( 	dsi_doc,
 		# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
 		
 		### uses the client creaed inside forked process
-		dsi_ = mongodb_coll_dsi.update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
-		# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
-		# log.error("ERROR in geoloc_dsi for dsi_oid : %s", dsi_oid )
+		# dsi_ = mongodb_coll_dsi.update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_data" : updated_f_data} } )
+		for doc in updated_f_data : 
+			doc_id = doc["_id"]
+			doc_clean = removeKey(doc, "_id")
+			mongodb_coll_dsi_docs.replace_one( {"_id" : doc_id }, doc_clean, upsert=True )
+		
+		### update DSI's headers list
+		headers_to_add_to_dsi = [ 
+			{
+				"f_coll_header_val" : h["infos"]["title"],
+				"f_coll_header_text" : h["data_raw"]["f_code"]
+			} for h in new_dmfs_list
+		]
+		headers_dsi_updated = headers_dsi + [ h for h in headers_to_add_to_dsi if h not in headers_dsi ]
+		dsi_ = mongodb_coll_dsi.update_one( {"_id" : dsi_oid }, {"$set" :  { "data_raw.f_col_headers" : headers_dsi_updated} } )
 
 	### unflag DSI's log.is_running
 	# log.debug("... flag DSI doc as NOT running ... " )
 	# dsi_ = db_dict_by_type['dsi'].update_one( {"_id" : dsi_oid }, {"$set" :  { "log.is_running" : False} } )
 
 	### freeing memory from costfull pandas objects
-	del dsi_, updated_f_data, df_f_data_src, df_f_data, dsi_f_data
+	# del dsi_, updated_f_data, df_f_data_src, df_f_data, dsi_f_data
+	del updated_f_data, df_f_data_src, df_f_data, dsi_f_data
 	mongodb_client.close()
 
 	### callback for multiprocessing
@@ -585,6 +607,9 @@ class geoloc_prj :
 		self.dmf_list_to_geocode 	= [ ObjectId(dmf_id) for dmf_id in rec_params["dmf_list_to_geocode"]]
 		log.debug("... self.dmf_list_to_geocode : \n%s", pformat(self.dmf_list_to_geocode) )
 
+		# self.dsi_list_to_geocode 	= [ ObjectId(dsi_id) for dsi_id in rec_params["dsi_list_to_geocode"]]
+		# log.debug("... self.dsi_list_to_geocode : \n%s", pformat(self.dsi_list_to_geocode) )
+
 		self.new_dmfs_list 			= rec_params["new_dmfs_list"]
 		log.debug("... self.new_dmfs_list[0] : \n%s\n...", pformat(self.new_dmfs_list[0]) )
 
@@ -612,17 +637,17 @@ class geoloc_prj :
 			self.is_complex_rec 			= True
 			self.dmt_doc 							= src_docs["dmt_doc"]
 			self.dmf_list 						= src_docs["dmf_list"]
-			self.dsi_list 						= src_docs["dsi_list"]
+			self.dsi_list 						= [ dsi for dsi in src_docs["dsi_list"] if str(dsi["_id"]) in rec_params["dsi_list_to_geocode"] ]
 			self.prj_dmf_ols_mapping 	= src_docs["src_doc"]["mapping"]["dmf_to_open_level"]
 			self.prj_dsi_mapping 			= src_docs["src_doc"]["mapping"]["dsi_to_dmf"]
 		
 		### only geoloc a DSI
 		else : 
-			self.is_complex_rec 	= False
+			self.is_complex_rec = False
 			self.dsi_list 			= src_docs["src_doc"]
 
-		self.dsi_mapped_list 		= []
-		self.df_mapper_dsi_to_dmf 	= None
+		self.dsi_mapped_list 	= []
+		self.df_mapper_dsi_to_dmf = None
 
 
 	def remap_dsi(self) :
@@ -800,7 +825,6 @@ class geoloc_prj :
 
 		### loop dsi list
 		for dsi_doc in self.dsi_list : 
-			
 			
 			print() 
 			### cf : http://blog.shenwei.me/python-multiprocessing-pool-difference-between-map-apply-map_async-apply_async/

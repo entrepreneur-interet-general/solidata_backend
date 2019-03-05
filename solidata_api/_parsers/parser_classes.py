@@ -26,12 +26,22 @@ class RequestParserBuilder :
 
 	def __init__(	self, 
 					add_pagination 	= False,
-					add_queries 	= False,
+					add_queries 		= False,
 					add_data_query 	= False,
-					add_files		= False,
+					add_map_query 	= False,
+					add_files				= False,
 				) : 
 
 		self.baseParser = reqparse.RequestParser()
+
+		self.baseParser.add_argument(
+			'token', 
+			type=str, 
+			required=False, 
+			default=None, 
+			help='add token to slug to be able to retrieve more complete data from a DSO',
+			# location = 'values'
+		)
 
 		if add_pagination : 
 
@@ -128,16 +138,36 @@ class RequestParserBuilder :
 				# location = 'values'
 			)
 
-		if add_data_query : 
+		if add_map_query : 
 
 			self.baseParser.add_argument(
-				'token', 
-				# action='append', ### multiple values
-				type=str, 
+				'map_list', 
+				type=inputs.boolean, 
 				required=False, 
-				help='add token to slug to be able to retrieve more complete data from a DSO',
+				default=False, 
+				help='get light results for map display',
 				# location = 'values'
 			)
+			self.baseParser.add_argument(
+				'as_latlng', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='coordinates as latlng tuple',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'geo_precision', 
+				type=int, 
+				required=False, 
+				default=6, 
+				choices=[0,1,2,3,4,5,6],
+				help='precision of the coordinates as latlng tuple',
+				# location = 'values'
+			)
+
+		if add_data_query : 
+			
 			self.baseParser.add_argument(
 				'search_for', 
 				action='append',
@@ -152,6 +182,14 @@ class RequestParserBuilder :
 				type=str, 
 				required=False, 
 				help='find data in document matching this string as field in records',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
+				'search_tags', 
+				action='split',
+				type=str, 
+				required=False, 
+				help='find documents matching this list of tags strings (separated by commas)',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -332,6 +370,9 @@ class RequestParserBuilder :
 		return self.baseParser
 
 
+q_minimal 						= RequestParserBuilder()
+query_min_arguments		= q_minimal.get_parser
+
 q_arguments 					= RequestParserBuilder(add_queries=True)
 query_arguments				= q_arguments.get_parser
 # log.debug(" query_arguments : \n%s ", pformat(query_arguments.args[0].__dict__ ))
@@ -349,5 +390,8 @@ q_pag_args 						= RequestParserBuilder(add_pagination=True, add_queries=True)
 query_pag_args				= q_pag_args.get_parser
 
 
-q_data_dso 								= RequestParserBuilder(add_pagination=True, add_data_query=True)
+q_data_dsi 								= RequestParserBuilder(add_pagination=True, add_data_query=True)
+query_data_dsi_arguments	= q_data_dsi.get_parser
+
+q_data_dso 								= RequestParserBuilder(add_pagination=True, add_data_query=True, add_map_query=True)
 query_data_dso_arguments	= q_data_dso.get_parser

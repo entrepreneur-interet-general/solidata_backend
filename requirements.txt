@@ -55,4 +55,5 @@ tornado==5.1.1
 tqdm==4.29.1
 urllib3==1.24.1
 Werkzeug==0.14.1
+xlrd==1.2.0
 zict==0.1.3

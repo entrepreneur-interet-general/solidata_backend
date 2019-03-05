@@ -25,29 +25,29 @@ def Query_db_delete (
 		document_type,
 		doc_id,
 		claims,
-		roles_for_delete 	= ["admin"],
-		auth_can_delete 	= ["owner"],
+		roles_for_delete = ["admin"],
+		auth_can_delete  = ["owner"],
 	):
 
 	### prepare marshaller 
 	# marshaller = Marshaller(ns, models)
 
 	### default values
-	db_collection				= db_dict_by_type[document_type]
-	document_type_full 	= doc_type_dict[document_type]
-	user_id = user_oid	= None
-	user_role						= "anonymous"
-	doc_oid							= ObjectId(doc_id)
-	document_out				= None
-	response_code				= 401
+	db_collection       = db_dict_by_type[document_type]
+	document_type_full  = doc_type_dict[document_type]
+	user_id = user_oid  = None
+	user_role           = "anonymous"
+	doc_oid             = ObjectId(doc_id)
+	document_out        = None
+	response_code       = 401
 	user_allowed_to_delete 	= False
-	message 						= "dear user, you don't have the credentials to delete this {} with this oid : {}".format(document_type_full, doc_id) 
+	message             = "dear user, you don't have the credentials to delete this {} with this oid : {}".format(document_type_full, doc_id) 
 
 	if claims or claims!={}  :
-		user_role 		= claims["auth"]["role"]
-		user_id	 		= claims["_id"] ### get the oid as str
+		user_role = claims["auth"]["role"]
+		user_id	= claims["_id"] ### get the oid as str
 		if user_role != "anonymous" : 
-			user_oid 		= ObjectId(user_id)
+			user_oid = ObjectId(user_id)
 			log.debug("user_oid : %s", user_oid )
 
 	### retrieve from db
@@ -60,10 +60,10 @@ def Query_db_delete (
 
 	### sum up all query arguments
 	query_resume = {
-		"document_type"		: document_type,	
-		"doc_id" 			: doc_id,
-		"user_id" 			: user_id,
-		"user_role"			: user_role,
+		"document_type"	: document_type,	
+		"doc_id"        : doc_id,
+		"user_id"       : user_id,
+		"user_role"     : user_role,
 		"is_member_of_team" : False
 	}
 
@@ -91,16 +91,26 @@ def Query_db_delete (
 				user_allowed_to_delete = True
 
 			if user_allowed_to_delete : 
+
 				### delete doc from db
 				db_collection.delete_one({"_id" : doc_oid })
 
+				### delete docs corresponding to dsi | dso
+				if document_type in ["dsi", "dso"] : 
+					if document_type == "dso" :	
+						identifier = "oid_dso"
+						db_coll_docs = db_dict_by_type["dso_doc"]
+					elif document_type == "dsi" : 
+						identifier = "oid_dsi"
+						db_coll_docs = db_dict_by_type["dsi_doc"]
+					db_coll_docs.delete_many({ identifier : doc_oid })
+
 				### TO DO - delete user info from all projects and other datasets 
-				
 				
 				### TO DO - OR choice to keep at least email / or / delete all data
 
-				message 				= "dear user, you just deleted the following %s with oid : %s" %(document_type_full, doc_id)
-				response_code 	= 200
+				message = "dear user, you just deleted the following %s with oid : %s" %(document_type_full, doc_id)
+				response_code = 200
 
 	else : 
 		message 		= "dear user, there is no {} with this oid : {}".format(document_type_full, doc_id) 

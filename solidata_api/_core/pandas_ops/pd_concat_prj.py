@@ -11,6 +11,7 @@ log.debug("... loading pd_concat_prj.py ...")
 
 from . import pd, np
 from solidata_api._choices._choices_f_types import *
+from solidata_api._core.pandas_ops.pd_utils import *
 
 
 def prj_dsi_mapping_as_df(prj_dsi_mapping) : 

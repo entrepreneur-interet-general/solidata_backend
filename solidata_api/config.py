@@ -8,6 +8,8 @@ from datetime import timedelta
 
 class BaseConfig(object):  
 
+	CODE_LINK					= "<a target='_blank' href='https://github.com/entrepreneur-interet-general/solidata_backend'>Solidata_backend</a>"
+
 	RUN_MODE					= "dev"
 	DEBUG							= True
 	TEMPLATES_FOLDER 	= "/templates"
@@ -28,7 +30,6 @@ class BaseConfig(object):
 	SECRET_KEY						= "app_very_secret_key"
 
 	""" SHARED JWT SECRET KEY : this key must be shared with openscraper and solidata """
-
 	JWT_SECRET_KEY										= "a_key_shared_with_front_and_openscraper_and_solidata"
 	JWT_HEADER_NAME										= "Authorization" #"X-API-KEY"
 	JWT_TOKEN_LOCATION								= ["headers", "query_string"]
@@ -68,11 +69,12 @@ class BaseConfig(object):
 	MONGO_COLL_PROJECTS								= "projects"
 	MONGO_COLL_DATAMODELS_TEMPLATES		= "datamodels_templates"
 	MONGO_COLL_DATAMODELS_FIELDS			= "datamodels_fields"
-	# MONGO_COLL_CONNECTORS				= "connectors"
+	# MONGO_COLL_CONNECTORS						= "connectors"
 	MONGO_COLL_DATASETS_INPUTS				= "datasets_inputs"
+	MONGO_COLL_DATASETS_INPUTS_DOC 		= "datasets_inputs_docs"
 	MONGO_COLL_DATASETS_RAWS					= "datasets_raws"
 	MONGO_COLL_DATASETS_OUTPUTS				= "datasets_outputs"
-	MONGO_COLL_DATASETS_OUTPUTS_DOC	= "datasets_outputs_docs"
+	MONGO_COLL_DATASETS_OUTPUTS_DOC		= "datasets_outputs_docs"
 	MONGO_COLL_RECIPES								= "recipes"
 	# MONGO_COLL_CORR_DICTS						= "corr_dicts"
 	MONGO_COLL_LICENCES								= "licences"

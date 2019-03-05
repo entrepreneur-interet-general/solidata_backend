@@ -30,6 +30,8 @@ dmf_types_list = [
 	'hyperlink',
 
 	'boolean',
+
+	'id',
 	
 	'other'
 ]
