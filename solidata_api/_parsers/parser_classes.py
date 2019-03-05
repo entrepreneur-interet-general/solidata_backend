@@ -175,10 +175,7 @@ class RequestParserBuilder :
 				default=False, 
 				help='retrieve uniques values for each tag column in records',
 				# location = 'values'
-			)
-
-		if add_data_query : 
-			
+			)			
 			self.baseParser.add_argument(
 				'search_for', 
 				action='append',
