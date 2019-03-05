@@ -167,7 +167,15 @@ class RequestParserBuilder :
 			)
 
 		if add_data_query : 
-			
+
+			self.baseParser.add_argument(
+				'get_filters', 
+				type=inputs.boolean, 
+				required=False, 
+				default=False, 
+				help='retrieve uniques values for each tag column in records',
+				# location = 'values'
+			)			
 			self.baseParser.add_argument(
 				'search_for', 
 				action='append',
