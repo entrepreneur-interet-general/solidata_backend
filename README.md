@@ -59,6 +59,14 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/Api
 	- data as csv / excel sheets...
 	- data as api endpoints to request... 
 
+
+-------
+## WHAT'S NEW ?
+
+- version 0.2 beta : app version on namespaces
+- version 0.2 : imports each line as separate doc in `dsi_docs` and `dso_docs`
+- version 0.1 : ...
+
 -------
 
 ## INSTALLATION WALKTHROUGH 
