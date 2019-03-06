@@ -25,12 +25,12 @@ blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder=app.confi
 
 ### create API
 api = Api( 	blueprint,
-						title						= "Solidata API : DATASET INPUTS",
-						version					= "0.1",
-						description			= app.config["CODE_LINK"] + " : create, list, delete, edit... dataset inputs",
-						doc							= '/documentation',
-						default					= 'create',
-						authorizations	= auth_check,
+						title	= "Solidata API : DATASET INPUTS",
+						version	= app.config["APP_VERSION"],
+						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... dataset inputs",
+						doc	= '/documentation',
+						default	= 'create',
+						authorizations= auth_check,
 						# security			='apikey' # globally ask for apikey auth
 )
 

@@ -24,11 +24,11 @@ blueprint = Blueprint( 'api_tags', __name__, template_folder=app.config["TEMPLAT
 
 ### create API
 api = Api( 	blueprint,
-						title				= "Solidata API : TAGS",
-						version			= "0.1",
+						title	= "Solidata API : TAGS",
+						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... datamodel tags",
-						doc					= '/documentation',
-						default			= 'create',
+						doc	= '/documentation',
+						default	= 'create',
 						authorizations = auth_check,
 						# security			='apikey' # globally ask for pikey auth
 )

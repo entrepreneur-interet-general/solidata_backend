@@ -23,11 +23,11 @@ blueprint = Blueprint( 'api_users', __name__, template_folder=app.config["TEMPLA
 
 ### create API
 api = Api( 	blueprint,
-						title				= "Solidata API : USERS",
-						version			= "0.2",
+						title	= "Solidata API : USERS",
+						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] +  " : create, list, delete, edit... users",
-						doc					= '/documentation',
-						default			= 'register',
+						doc	= '/documentation',
+						default = 'register',
 						authorizations = auth_check,
 						# security='apikey' # globally ask for pikey auth
 )

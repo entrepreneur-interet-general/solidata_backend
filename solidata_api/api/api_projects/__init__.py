@@ -25,11 +25,11 @@ blueprint = Blueprint( 'api_projects', __name__, template_folder=app.config["TEM
 
 ### create API
 api = Api( 	blueprint,
-						title				= "Solidata API : PROJECTS",
-						version			= "0.1",
+						title	= "Solidata API : PROJECTS",
+						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... projects",
-						doc					= '/documentation',
-						default			= 'create',
+						doc	= '/documentation',
+						default	= 'create',
 						authorizations = auth_check,
 						# security		='apikey' # globally ask for pikey auth
 )
