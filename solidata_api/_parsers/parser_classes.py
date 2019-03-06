@@ -157,6 +157,14 @@ class RequestParserBuilder :
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
+				'only_geocoded', 
+				type=inputs.boolean, 
+				required=False, 
+				default=True, 
+				help='retrieve only geocoded items',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
 				'geo_precision', 
 				type=int, 
 				required=False, 

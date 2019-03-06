@@ -287,25 +287,39 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
 	return f_data
 
 def latLngTuple(f_data, query_args) : 
+
 	map_list	= query_args.get('map_list',	False )
 	
 	### map listing required
 	if map_list : 
+
 		as_latlng	= query_args.get('as_latlng',	False )
 		geo_precision	= query_args.get('geo_precision',	6 )
+		only_geocoded	= query_args.get('only_geocoded',	True )
+
 		f_data_tupled = []
+
 		for d in f_data : 
-			if d["lat"]!= 'None' and d["lon"]!='None' : 
-				d["lat"] = round(float(d["lat"]), geo_precision)
-				d["lon"] = round(float(d["lon"]), geo_precision)
-				if as_latlng : 
-					d["latlng"] = ( d["lat"], d["lon"]) 
-					d = removeKey(d, "lat")
-					d = removeKey(d, "lon")
-			else : 
-					d = removeKey(d, "lat")
-					d = removeKey(d, "lon")
-			f_data_tupled.append(d)
+			d_keys = list(d.keys())
+			has_geo = False
+			if "lat" in d_keys and "lon" in d_keys : 
+				if d["lat"]!= 'None' and d["lon"]!='None' : 
+					has_geo = True
+					d["lat"] = round(float(d["lat"]), geo_precision)
+					d["lon"] = round(float(d["lon"]), geo_precision)
+					if as_latlng : 
+						d["latlng"] = ( d["lat"], d["lon"]) 
+						d = removeKey(d, "lat")
+						d = removeKey(d, "lon")
+				else : 
+						d = removeKey(d, "lat")
+						d = removeKey(d, "lon")
+
+			if only_geocoded == False : 
+				f_data_tupled.append(d)
+			else :
+				if has_geo : 
+					f_data_tupled.append(d)
 	
 	### map_list not required
 	else : 
