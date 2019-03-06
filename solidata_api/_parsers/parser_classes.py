@@ -227,7 +227,7 @@ class RequestParserBuilder :
 			self.baseParser.add_argument(
 				'item_id', 
 				action='append',
-				type=float, 
+				type=str, 
 				required=False, 
 				help='find data in document matching this float in records',
 				# location = 'values'

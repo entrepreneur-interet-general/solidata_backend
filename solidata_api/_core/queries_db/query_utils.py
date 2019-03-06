@@ -69,7 +69,7 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 
 	# search by item_id
 	if item_id != None :
-		q_item = { "_id" : ObjectId(item_id)  } 
+		q_item = { "_id" : { "$in" : [ ObjectId(i_id) for i_id in item_id ] }}
 		query.update(q_item)
 
 	# search by tags
