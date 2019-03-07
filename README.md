@@ -22,6 +22,15 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/Api
 
 ------
 
+## DEVELOPPERS
+
+Nice to see you around ! For a more complete tour check out : 
+- our *[guidelines](./GUIDELINES_DEV.md)*
+- our *[changelog](./CHANGELOG.md)*
+- our *[contribution guide](./CONTRIBUTING.md)*
+
+--------
+
 ## TECHNICAL POINTS
 
 #### Tech stack
@@ -46,26 +55,20 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/Api
 - Documentation 
 	- on all API endpoints with Swagger (and some patience from the developer)
 
-##### Features TO DO  :
+##### Current features TO DO  :
 - user : 
 	- edit user
 	- edit email
 - add/edit a project : 
-	- edit project infos : licence, author, title...
 	- edit team and access levels
 	- add project to users involved
-	- delete project
-- import data : 
-	- data as csv / excel sheets...
-	- data as api endpoints to request... 
 
 
 -------
 ## WHAT'S NEW ?
 
-- version 0.2 beta : app version on namespaces
-- version 0.2 : imports each line as separate doc in `dsi_docs` and `dso_docs`
-- version 0.1 : ...
+- check out our our *[changelog](./CHANGELOG.md)* for moredetails
+
 
 -------
 
@@ -111,12 +114,15 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/Api
 
 ### _PRODUCTION_
 
+- Check our *[snippets](./prod_snippets)* folder for more instructions
+
 - for now we are using the following configuration
 
 	- droplet in digitalocean.com
 	- ubuntu 18.04
 	- 3Go RAM / 2CPU
 	- 60Go memory
+
 
 - configure your server (user, firewall...): 
 	- cf : [ docs 1 ](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04) 
@@ -175,10 +181,12 @@ part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/Api
 - the [SocialConnect](https://entrepreneur-interet-general.etalab.gouv.fr/defi/2017/09/26/socialconnect/) project, aka "Carrefour des Innovations Sociales"
 - the [EIG](https://entrepreneur-interet-general.etalab.gouv.fr/) program by [Etalab](https://www.etalab.gouv.fr/)
 - the [CGET](http://www.cget.gouv.fr/)
+- [Christophe Ninucci](https://github.com/chrnin) for his help, advices and taste for memes
+- the [creator](https://github.com/noirbizarre) and community of [Flask RestPlus](https://github.com/noirbizarre/flask-restplus)
 
 #### Contacts - maintainance :
 
-- [Julien Paris](<mailto:julien.paris@cget.gouv.fr>), developer (aka [JPy](https://twitter.com/jparis_py) on Twitter)
+- [Julien Paris](<mailto:julien.paris@cget.gouv.fr>), developer (aka [JPy](https://twitter.com/jparis_py) on Twitter, or [Jpy](https://github.com/JulienParis) on Github)
 
 -------
 

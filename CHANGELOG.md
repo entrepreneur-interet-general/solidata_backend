@@ -5,7 +5,7 @@ We keep track of our main changes and versions here
 ----------
 
 ## Current (in progress) : v.0.2.1
-- check current version in `/solidata_api/application.py`
+- you can also check the current version in `/solidata_api/application.py`
 
 -----------
 ## v.0.2.1 beta (2019-03-07)
@@ -18,6 +18,9 @@ We keep track of our main changes and versions here
   - get_filters, get_uniques...
 
 
-## v.0.2.0 beta (2019-03-06)
+## v.0.2.0 beta (2019-03-01)
+- imports each line as separate doc in `dsi_docs` and `dso_docs`
 
-- First published version
+--------
+## v.0.1 alpha (winter 2018-2019)
+- First published version (check commits for more infos on this)
