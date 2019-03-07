@@ -46,9 +46,12 @@ class Dsi_infos_(Resource):
 	# @ns.expect(query_arguments)
 	@ns.expect(query_data_dsi_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the dataset input oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific dsi in db
+
+		:param doc_id : dsi's oid <doc_id>
 
 		>
 			--- needs   : dsi's oid <doc_id>

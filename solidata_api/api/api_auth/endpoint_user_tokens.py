@@ -225,6 +225,7 @@ class FreshAccessToken(Resource):
 class NewRefreshToken(Resource) :
 
 	# def post(self, old_refresh_token="your_old_refresh_token") : 
+	@ns.doc(params={'old_refresh_token': 'the old refresh token'})
 	def post(self, old_refresh_token) : 
 		"""
 		Refresh the refresh_token given when POST an old refresh_token (in URL or in header) ...

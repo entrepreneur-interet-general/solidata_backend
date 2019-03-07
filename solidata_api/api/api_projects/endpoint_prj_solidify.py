@@ -50,6 +50,7 @@ class Prj_solidify(Resource):
 	@ns.doc('solidify_prj')
 	@guest_required 
 	@ns.expect([model_solidify])
+	@ns.doc(params={'doc_id': 'the prj oid'})
 	def put(self, doc_id):
 		"""
 		Solidify a  prj in db

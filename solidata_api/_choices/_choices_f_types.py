@@ -54,6 +54,14 @@ dmf_type_categ = [
 	'category',
 ]
 
+dmf_types_uniques = [
+	'text',
+
+	'tag',
+	'category',
+	
+	'other'
+]
 
 
 

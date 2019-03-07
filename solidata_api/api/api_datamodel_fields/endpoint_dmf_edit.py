@@ -51,6 +51,7 @@ class Dmf_update(Resource):
 	@ns.doc('update_dmf')
 	@guest_required 
 	@ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the dmf oid'})
 	def put(self, doc_id):
 		"""
 		Update a  dmf in db
@@ -102,6 +103,7 @@ class Dmf_update(Resource):
 	@ns.doc('delete_dmf')
 	@ns.response(204, 'document deleted')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the dmf oid'})
 	def delete(self, doc_id):
 		"""
 		delete a dmf in db

@@ -25,11 +25,13 @@ default location for parsers
 class RequestParserBuilder :
 
 	def __init__(	self, 
-					add_pagination 	= False,
-					add_queries 		= False,
-					add_data_query 	= False,
-					add_map_query 	= False,
-					add_files				= False,
+					add_pagination = False,
+					add_slice_query = True,
+					add_queries = False,
+					add_data_query = False,
+					add_map_query = False,
+					add_filter_query = False,
+					add_files = False,
 				) : 
 
 		self.baseParser = reqparse.RequestParser()
@@ -57,9 +59,20 @@ class RequestParserBuilder :
 				'per_page', 
 				type=int, 
 				required=False, 
-				choices=[0, 2, 5, 10, 20, 25, 50, 100],
+				choices=[0, 1, 2, 3, 4, 5, 10, 20, 25, 50, 75, 100],
 				default=10, 
-				help='Results per page',
+				help='Results per page ( get all results if 0 )',
+				# location = 'values'
+			)
+
+		if add_slice_query : 
+
+			self.baseParser.add_argument(
+				'slice_f_data', 
+				type=inputs.boolean, 
+				required=False, 
+				default=True, 
+				help='just retrieve a slice of the f_data',
 				# location = 'values'
 			)
 
@@ -145,7 +158,7 @@ class RequestParserBuilder :
 				type=inputs.boolean, 
 				required=False, 
 				default=False, 
-				help='get light results for map display',
+				help='get light results for map display : only sd_id, lat, lon',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -170,20 +183,32 @@ class RequestParserBuilder :
 				required=False, 
 				default=6, 
 				choices=[0,1,2,3,4,5,6],
-				help='precision of the coordinates as latlng tuple',
+				help='precision of the coordinates as float numbers',
 				# location = 'values'
 			)
 
-		if add_data_query : 
+		if add_filter_query : 
 
 			self.baseParser.add_argument(
 				'get_filters', 
 				type=inputs.boolean, 
 				required=False, 
 				default=False, 
-				help='retrieve uniques values for each tag column in records',
+				help='retrieve uniques values for each tag or category column in records',
 				# location = 'values'
-			)			
+			)
+			self.baseParser.add_argument(
+				'get_uniques', 
+				type=str, 
+				required=False, 
+				# default=None, 
+				choices=dmf_types_uniques,
+				help='retrieve uniques values for each column in records : text, tag, category, other',
+				# location = 'values'
+			)
+
+		if add_data_query : 
+
 			self.baseParser.add_argument(
 				'search_for', 
 				action='append',
@@ -229,17 +254,17 @@ class RequestParserBuilder :
 				action='append',
 				type=str, 
 				required=False, 
-				help='find data in document matching this float in records',
+				help='find data inside the document matching this list of ids in records',
 				# location = 'values'
 			)
-			self.baseParser.add_argument(
-				'only_f_data', 
-				type=inputs.boolean, 
-				required=False, 
-				default=False, 
-				help='just retrieve the f_data of the result',
-				# location = 'values'
-			)
+			# self.baseParser.add_argument(
+			# 	'only_f_data', 
+			# 	type=inputs.boolean, 
+			# 	required=False, 
+			# 	default=False, 
+			# 	help='just retrieve the f_data of the result',
+			# 	# location = 'values'
+			# )
 			self.baseParser.add_argument(
 				'is_complete', 
 				type=inputs.boolean, 
@@ -257,18 +282,10 @@ class RequestParserBuilder :
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
-				'slice_f_data', 
-				type=inputs.boolean, 
-				required=False, 
-				default=True, 
-				help='just retrieve a slice of the f_data',
-				# location = 'values'
-			)
-			self.baseParser.add_argument(
 				'sort_by', 
 				type=str, 
 				required=False, 
-				help='sort data in document according this field in records',
+				help='sort data in document according to this field in records',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -284,7 +301,7 @@ class RequestParserBuilder :
 				type=int, 
 				required=False, 
 				default=None, 
-				help='shuffle the list of results',
+				help='shuffle the list of results given a seed',
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
@@ -292,7 +309,7 @@ class RequestParserBuilder :
 				type=inputs.boolean, 
 				required=False, 
 				default=False, 
-				help='normalize results',
+				help='normalize results (aka data) in response',
 				# location = 'values'
 			)
 			
@@ -386,28 +403,28 @@ class RequestParserBuilder :
 		return self.baseParser
 
 
-q_minimal 						= RequestParserBuilder()
-query_min_arguments		= q_minimal.get_parser
+q_minimal	= RequestParserBuilder()
+query_min_arguments	= q_minimal.get_parser
 
-q_arguments 					= RequestParserBuilder(add_queries=True)
-query_arguments				= q_arguments.get_parser
+q_arguments = RequestParserBuilder(add_queries=True)
+query_arguments = q_arguments.get_parser
 # log.debug(" query_arguments : \n%s ", pformat(query_arguments.args[0].__dict__ ))
 
-q_data 								= RequestParserBuilder(add_data_query=True)
-query_data_arguments	= q_data.get_parser
+q_data = RequestParserBuilder(add_data_query=True)
+query_data_arguments = q_data.get_parser
 
-q_files 							= RequestParserBuilder(add_files=True)
-file_parser						= q_files.get_parser
+q_files = RequestParserBuilder(add_files=True)
+file_parser	= q_files.get_parser
 
-q_pagination 					= RequestParserBuilder(add_pagination=True)
-pagination_arguments	= q_pagination.get_parser
+q_pagination = RequestParserBuilder(add_pagination=True)
+pagination_arguments = q_pagination.get_parser
 
-q_pag_args 						= RequestParserBuilder(add_pagination=True, add_queries=True)
-query_pag_args				= q_pag_args.get_parser
+q_pag_args = RequestParserBuilder(add_pagination=True, add_queries=True)
+query_pag_args = q_pag_args.get_parser
 
 
-q_data_dsi 								= RequestParserBuilder(add_pagination=True, add_data_query=True)
-query_data_dsi_arguments	= q_data_dsi.get_parser
+q_data_dsi = RequestParserBuilder(add_pagination=True, add_slice_query=False, add_data_query=True)
+query_data_dsi_arguments = q_data_dsi.get_parser
 
-q_data_dso 								= RequestParserBuilder(add_pagination=True, add_data_query=True, add_map_query=True)
-query_data_dso_arguments	= q_data_dso.get_parser
+q_data_dso = RequestParserBuilder(add_pagination=True, add_slice_query=False, add_data_query=True, add_map_query=True, add_filter_query=True)
+query_data_dso_arguments = q_data_dso.get_parser

@@ -52,6 +52,7 @@ class Usr_edit(Resource) :
 	@current_user_required
 	# @guest_required
 	@ns.expect([model_update])
+	@api.doc(params={'usr_id': 'the usr oid'})
 	def put(self, usr_id):
 		"""
 		Update a  usr in db
@@ -96,6 +97,7 @@ class Usr_edit(Resource) :
 	@ns.doc('delete_user')
 	@ns.response(204, 'document deleted')
 	@current_user_required
+	@api.doc(params={'usr_id': 'the usr oid'})
 	def delete(self, usr_id):
 		"""
 		Delete an user given its _id / only doable by admin or current_user

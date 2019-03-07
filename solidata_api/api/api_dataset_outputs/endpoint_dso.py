@@ -47,14 +47,17 @@ class Dso_infos_(Resource):
 	@ns.doc('dso_infos')
 	@ns.expect(query_data_dso_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the dataset output oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific dso in db
 
+		:param doc_id : dsi's oid <doc_id>
+
 		>
-			--- needs   : project's oid <doc_id>
+			--- needs : a dso/project doc_id in the url
 			--- optional : request arguments (pagination|query), json web token in headers...  (cf : solidata_api._parsers.parser_classes)
-			>>> returns : project data
+			>>> returns : dso/project data
 
 		"""
 
@@ -88,8 +91,8 @@ class Dso_infos_(Resource):
 		log.debug("results have been retrieved ... " )
 		# log.debug("results : \n%s ", pformat(results) )
 
-		log.debug("results['data']['infos']['title'] : %s", results['data']['infos']['title']) 
-		log.debug("len(results['data']['data_raw']['f_data']) : %s", len(results['data']['data_raw']['f_data']) )
+		# log.debug("results['data']['infos']['title'] : %s", results['data']['infos']['title']) 
+		# log.debug("len(results['data']['data_raw']['f_data']) : %s", len(results['data']['data_raw']['f_data']) )
 
 		return results, response_code
 
@@ -107,8 +110,9 @@ class Dso_List(Resource):
 		list of all dso in db
 
 		>
-			--- needs   : nothing - optionnal args : pagination, list of oid_prj, list of tags, query
-			>>> returns : prj data as a list
+			--- needs   : nothing 
+			--- optionnal args : pagination, list of oid_prj, list of tags, query...
+			>>> returns : dso/prj data as a list
 
 		"""
 

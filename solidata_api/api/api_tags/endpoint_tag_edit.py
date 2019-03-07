@@ -51,6 +51,7 @@ class Tag_edit(Resource):
 	@ns.doc('update_tag')
 	@guest_required 
 	@ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the tag oid'})
 	def put(self, doc_id):
 		"""
 		Update a tag in db
@@ -95,6 +96,7 @@ class Tag_edit(Resource):
 	@ns.doc('delete_tag')
 	@ns.response(204, 'document deleted')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the tag oid'})
 	def delete(self, doc_id):
 		"""
 		delete a tag in db

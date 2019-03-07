@@ -19,6 +19,7 @@ from 	flask_restplus 	import  marshal
 
 from 	. 	import db_dict_by_type, Marshaller
 from 	solidata_api._choices._choices_docs import doc_type_dict
+from 	solidata_api._choices._choices_f_types import dmf_types_list, dmf_type_categ
 from solidata_api._core.pandas_ops.pd_utils import *
 
 import operator
@@ -90,8 +91,14 @@ def build_first_term_query(ds_oid, query_args, field_to_query="oid_dso") :
 	return query
 
 def build_projected_fields(ignore_fields_list=[], keep_fields_list=[] ) :
-	""" projection of the query """
+	""" 
+	projection of the query 
+	"""
 	### cf : https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/
+
+	print()
+	print("-+- "*40)
+	log.debug( "... build_projected_fields " )
 
 	# add ignore_fields / keep_fields criterias to query if any
 	projected_fields = None
@@ -112,7 +119,7 @@ def build_projected_fields(ignore_fields_list=[], keep_fields_list=[] ) :
 
 	return projected_fields
 
-def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") : 
+def get_ds_docs(doc_oid, query_args, db_coll="dso_doc", f_col_headers=[] ) : 
 	"""
 	get_ds_docs + search filters to f_data 
 	"""
@@ -120,11 +127,15 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	print()
 	print("-+- "*40)
 	log.debug( "... get_ds_docs " )
+	log.debug( "... f_col_headers : \n%s", pformat(f_col_headers) )
 
+	filters_field = ""
 	keep_fields_list = []
 	ignore_fields_list = []
 
 	map_list = query_args.get('map_list',	False )
+	get_filters = query_args.get('get_filters',	False )
+	get_uniques = query_args.get('get_uniques',	None )
 
 	if db_coll == "dso_doc" :
 		field_to_query = "oid_dso"
@@ -139,6 +150,14 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	if map_list : 
 		keep_fields_list = ["_id", field_to_query, "lat", "lon"]
 	
+	if get_filters and db_coll == "dso_doc" :
+		if get_uniques == None : 
+			list_filters = dmf_type_categ
+		else :
+			list_filters = [ get_uniques ]
+		keep_fields_list = [ h["f_title"] for h in f_col_headers if h["f_type"] in list_filters ]
+	
+	log.debug('keep_fields_list : \n%s', pformat(keep_fields_list) )  
 	projected_fields = build_projected_fields(ignore_fields_list, keep_fields_list)
 	log.debug('projected_fields : \n%s', pformat(projected_fields) )  
 
@@ -146,6 +165,15 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc") :
 	cursor = ds_doc_collection.find(query, projected_fields)
 
 	results = list(cursor)
+	log.debug('results[0] : \n%s', pformat(results[0]) )  
+
+	if get_filters : 
+		u_values = []
+		for h in keep_fields_list : 
+			u_list = list(set( str(dic[h]) for dic in results if h in dic.keys() )) 
+			u_val_fields = { h : u_list }
+			u_values.append(u_val_fields)
+		results = u_values
 
 	return results
 
@@ -361,10 +389,14 @@ def GetFData( document_type,
 	shuffle_seed	= query_args.get('shuffle_seed',	None )
 	# q_normalize		= query_args.get('normalize',			False )
 	map_list			= query_args.get('map_list',	False )
+	get_filters   = query_args.get('get_filters',	False )
 
 	# append "f_data" if doc is in ["dsi", "dsr", "dsr"]
 	if document_type in ["dsi", "dso"] and can_access_complete :
 		
+		### override slice_f_data in case doc is dsi or dso to avoid overloading the api or the client
+		slice_f_data = True 
+
 		log.debug( '...document_type : %s', document_type )
 		# log.debug( '...document["data_raw"]["f_data"][:1] : \n%s', pformat(document["data_raw"]["f_data"][:1]) )
 		# log.debug( '...document["data_raw"] : \n%s', pformat(document["data_raw"]) )
@@ -378,8 +410,9 @@ def GetFData( document_type,
 					db_coll="dso_doc"
 					document_out["data_raw"]["f_col_headers"].append(
 						{	
-							'f_title': '_id',
-							'open_level_show': 'sd_id'
+							'f_title' : '_id',
+							'open_level_show' : 'sd_id',
+							'f_type' : 'id'
 						}
 					)
 				elif document_type == "dsi" : 
@@ -391,22 +424,29 @@ def GetFData( document_type,
 							'f_coll_header_val': 'sd_id'
 						}
 					)
-				document_out["data_raw"]["f_data"] = get_ds_docs(doc_oid, query_args, db_coll=db_coll)
-				document_out["data_raw"]["f_data"] = strip_f_data(	document_out["data_raw"], 
-																		doc_open_level_show, 
-																		team_oids,
-																		created_by_oid,
-																		roles_for_complete, 
-																		user_role, 
-																		user_oid,
-																		document_type=document_type
+				document_out["data_raw"]["f_data"] = get_ds_docs(
+																		doc_oid, 
+																		query_args, 
+																		db_coll=db_coll,
+																		f_col_headers=document["data_raw"]["f_col_headers"]
 																	)
-				document_out["data_raw"]["f_data"] = latLngTuple(document_out["data_raw"]["f_data"], query_args)
+				if get_filters == False :
+					document_out["data_raw"]["f_data"] = strip_f_data(	
+																			document_out["data_raw"], 
+																			doc_open_level_show, 
+																			team_oids,
+																			created_by_oid,
+																			roles_for_complete, 
+																			user_role, 
+																			user_oid,
+																			document_type=document_type
+																		)
+					document_out["data_raw"]["f_data"] = latLngTuple(document_out["data_raw"]["f_data"], query_args)
 		else :
 			document_out["data_raw"]["f_data"] = document["data_raw"]["f_data"]
 
-		if len(document_out["data_raw"]["f_data"]) > 0 : 
-			log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
+		# if len(document_out["data_raw"]["f_data"]) > 0 : 
+		# 	log.debug( 'document_out["data_raw"]["f_data"][0] : \n%s', pformat(document_out["data_raw"]["f_data"][0]) )
 
 		### SEARCH QUERIES
 		document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args, not_filtered=not_filtered)
@@ -428,11 +468,16 @@ def GetFData( document_type,
 		document_out["data_raw"]["f_data_count"] = len(document_out["data_raw"]["f_data"])
 
 		# slice f_data
-		if slice_f_data == True and map_list == False :
+		if slice_f_data == True and map_list == False and get_filters == False :
 			log.debug( 'slice_f_data : %s', slice_f_data )
 			document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
 			# document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ 0 : 1 ]
 
+		# only f_data
+		# if only_f_data : 
+		# 	document_out = document_out["data_raw"]["f_data"]
+
+		
 	return document_out
 
 

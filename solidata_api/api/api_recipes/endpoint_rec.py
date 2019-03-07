@@ -45,6 +45,7 @@ class Rec_infos_(Resource):
 	@ns.doc('rec_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the recipe oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific rec in db

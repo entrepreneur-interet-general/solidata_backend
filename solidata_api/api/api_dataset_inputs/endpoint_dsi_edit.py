@@ -50,6 +50,7 @@ class Dsi_edit(Resource):
 	@ns.doc('update_dsi')
 	@guest_required 
 	@ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the dsi oid'})
 	def put(self, doc_id):
 		"""
 		Update a  dsi in db
@@ -95,6 +96,7 @@ class Dsi_edit(Resource):
 	# @ns.expect(q_minimal)
 	@ns.response(204, 'document deleted')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the dsi oid'})
 	def delete(self, doc_id):
 		"""
 		delete a dsi in db

@@ -51,6 +51,7 @@ class Prj_edit(Resource):
 	@ns.doc('update_prj')
 	@guest_required 
 	@ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the prj oid'})
 	def put(self, doc_id):
 		"""
 		Update a  prj in db
@@ -94,6 +95,7 @@ class Prj_edit(Resource):
 
 	@ns.doc('delete_prj')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the prj oid'})
 	def delete(self, doc_id):
 		"""
 		delete a prj in db

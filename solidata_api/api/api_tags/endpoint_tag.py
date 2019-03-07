@@ -45,6 +45,7 @@ class Tag_infos_(Resource):
 	@ns.doc('tag_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the tag oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific tag in db

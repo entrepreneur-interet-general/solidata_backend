@@ -50,6 +50,7 @@ class Prj_mapping(Resource):
 	@ns.doc('update_prj')
 	@guest_required 
 	@ns.expect([model_update_mapping])
+	@ns.doc(params={'doc_id': 'the prj oid'})
 	def put(self, doc_id):
 		"""
 		Update a  prj in db

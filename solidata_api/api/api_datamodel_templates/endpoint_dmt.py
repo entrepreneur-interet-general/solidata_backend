@@ -45,6 +45,7 @@ class Dmt_infos_(Resource):
 	@ns.doc('dmt_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the dmt oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific dmt in db

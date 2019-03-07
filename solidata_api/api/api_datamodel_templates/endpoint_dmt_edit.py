@@ -51,6 +51,7 @@ class Dmt_edit(Resource):
 	@ns.doc('update_dmt')
 	@guest_required 
 	@ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the dmt oid'})
 	def put(self, doc_id):
 		"""
 		Update a  dmt in db
@@ -96,6 +97,7 @@ class Dmt_edit(Resource):
 	@ns.doc('delete_dmt')
 	@ns.response(204, 'document deleted')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the dmt oid'})
 	def delete(self, doc_id):
 		"""
 		delete a dmt in db

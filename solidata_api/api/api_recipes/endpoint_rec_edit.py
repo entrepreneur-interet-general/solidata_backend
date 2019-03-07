@@ -96,6 +96,7 @@ class Rec_edit(Resource):
 	@ns.doc('delete_rec')
 	@ns.response(204, 'document deleted')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the rec oid'})
 	def delete(self, doc_id):
 		"""
 		delete a rec in db

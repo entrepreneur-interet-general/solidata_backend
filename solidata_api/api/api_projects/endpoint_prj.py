@@ -49,6 +49,7 @@ class Prj_infos_(Resource):
 	@ns.doc('prj_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the prj oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific prj in db

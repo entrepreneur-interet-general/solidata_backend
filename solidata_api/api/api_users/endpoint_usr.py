@@ -46,6 +46,7 @@ class Usr_infos_(Resource):
 	@ns.doc('usr_infos')
 	# @ns.expect(query_arguments)
 	@jwt_optional
+	@ns.doc(params={'doc_id': 'the usr oid'})
 	def get(self, doc_id):
 		"""
 		get infos of a specific usr in db

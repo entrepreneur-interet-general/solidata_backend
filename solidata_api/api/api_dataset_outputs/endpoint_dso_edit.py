@@ -53,6 +53,7 @@ class Dso_edit(Resource):
 	@ns.doc('update_dso')
 	@guest_required 
 	# @ns.expect([model_update])
+	@ns.doc(params={'doc_id': 'the dso oid'})
 	def put(self, doc_id):
 		"""
 		Rebuild a dso from prj in db
@@ -96,6 +97,7 @@ class Dso_edit(Resource):
 
 	@ns.doc('delete_dso')
 	@guest_required 
+	@ns.doc(params={'doc_id': 'the dso oid'})
 	def delete(self, doc_id):
 		"""
 		delete a dso in db
