@@ -81,7 +81,7 @@ Nice to see you around ! For a more complete tour check out :
 
 - create a virtual environment for Python3
 	
-	```
+	```bash
 	python3 -m venv venv
 	pip install --upgrade pip
 	pip install -r requirements.txt
@@ -89,7 +89,7 @@ Nice to see you around ! For a more complete tour check out :
 
 - create a secret config_file `config_prod.py` in the folder `./solidata_api` based 
 
-	```
+	```bash
 	cp ./solidata_api/config_pro_exampled.py ./solidata_api/config_prod.py
 	nano ./solidata_api/config_prod.py 
 	```
@@ -102,14 +102,14 @@ Nice to see you around ! For a more complete tour check out :
 
 - run the app in dev mode (without possibility to send email) : 
 
-	```
-	$ python appserver.py --mode=dev
+	```bash
+	python appserver.py --mode=dev
 	``` 
 
 - run the app in dev mode (with possibility to send email) : 
 
-	```
-	$ python appserver.py --mode=dev_email
+	```bash
+	python appserver.py --mode=dev_email
 	``` 
 
 ### _PRODUCTION_
@@ -144,7 +144,7 @@ Nice to see you around ! For a more complete tour check out :
 
 - install git on your server
 	- cf : [ docs 1 ](https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-18-04)	- basically : 
-		```
+		```bash
 		sudo apt-get update
 		sudo apt-get install git
 		git --version
@@ -160,8 +160,8 @@ Nice to see you around ! For a more complete tour check out :
 
 - run the app in production mode (with possibility to send email) : 
 
-	```
-	$ python appserver.py --mode=production
+	```bash
+	python appserver.py --mode=production
 	``` 
 
 ------
