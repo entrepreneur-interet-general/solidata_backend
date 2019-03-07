@@ -23,6 +23,18 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
+class MyApi(Api):
+	@property
+	def specs_url(self):
+		"""Monkey patch for HTTPS"""
+		# log.debug("self.base_url : %s" , self.base_url)
+		# log.debug("app.config['RUN_MODE'] : %s" , app.config["RUN_MODE"])
+		scheme = 'http' if "http" in self.base_url else 'https'
+		# scheme = 'https' if app.config["RUN_MODE"] in ["prod","preprod"] else 'http'
+		# scheme = 'http' if app.config["ENV"] in ["dev"] or app.config["DOMAIN_PORT"] in self.base_url else 'https'
+		# scheme = 'http' if app.config["DOMAIN_PORT"] in self.base_url else 'https'
+		return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
+
 import jwt
 from flask_jwt_extended import (
 		jwt_required, jwt_optional, jwt_refresh_token_required, fresh_jwt_required,

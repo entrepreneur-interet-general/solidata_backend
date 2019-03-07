@@ -22,7 +22,7 @@ blueprint = Blueprint( 'api_datamodel_templates', __name__, template_folder=app.
 # CORS(blueprint)
 
 ### create API
-api = Api( 	blueprint,
+api = MyApi(  	blueprint,
 						title	= "Solidata API : DATAMODEL TEMPLATES",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] +  " : create, list, delete, edit... datamodel templates",

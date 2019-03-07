@@ -22,7 +22,7 @@ blueprint = Blueprint( 'api_recipes', __name__, template_folder=app.config["TEMP
 # CORS(blueprint)
 
 ### create API
-api = Api( 	blueprint,
+api = MyApi(  	blueprint,
 						title				= "Solidata API : RECIPES",
 						version			= "0.1",
 						description	= app.config["CODE_LINK"] +  " : create, list, delete, edit... recipes",
