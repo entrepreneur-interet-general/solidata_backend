@@ -23,7 +23,7 @@ blueprint = Blueprint( 'api_tags', __name__, template_folder=app.config["TEMPLAT
 # CORS(blueprint)
 
 ### create API
-api = MyApi(  	blueprint,
+api = Api(  	blueprint,
 						title	= "Solidata API : TAGS",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... datamodel tags",
