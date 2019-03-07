@@ -113,6 +113,8 @@ def app_runner(mode, host, port, https, rsa, anojwt) :
 	print("=== RUNNING APP "+ "==="*40)
 	print("=== "*40)
 	print()
+	host = app.config["DOMAIN_ROOT"]
+	port = app.config["DOMAIN_PORT"]
 	app.run( debug=app_debug, host=host, port=port, threaded=True )
 
 
