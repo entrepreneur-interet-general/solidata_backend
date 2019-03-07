@@ -29,8 +29,8 @@ class MyApi(Api):
 		"""Monkey patch for HTTPS"""
 		# log.debug("self.base_url : %s" , self.base_url)
 		# log.debug("app.config['RUN_MODE'] : %s" , app.config["RUN_MODE"])
-		# scheme = 'http' if "http" in self.base_url else 'https'
-		scheme = 'https' if app.config["RUN_MODE"] in ["prod","preprod"] else 'http'
+		scheme = 'http' if "http" in self.base_url else 'https'
+		# scheme = 'https' if app.config["RUN_MODE"] in ["prod","preprod"] else 'http'
 		# scheme = 'http' if app.config["ENV"] in ["dev"] or app.config["DOMAIN_PORT"] in self.base_url else 'https'
 		# scheme = 'http' if app.config["DOMAIN_PORT"] in self.base_url else 'https'
 		return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
