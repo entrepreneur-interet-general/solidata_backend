@@ -6,7 +6,7 @@
 
 part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/ApiViz) / [Solidata_frontend](https://github.com/entrepreneur-interet-general/solidata_frontend) / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper) )
 
-#### Building a public service for managing, consolidating, and sharing data 
+#### Building a public service for managing, consolidating, and sharing "api-fied" data
 
 
 -------
@@ -40,7 +40,7 @@ Nice to see you around ! For a more complete tour check out :
 - _Security_  : **[Flask-JWT-extended](https://flask-jwt-extended.readthedocs.io/en/latest/)**... wrapper JWT for Flask
 - _Emailing_  : **[Flask-email](https://pythonhosted.org/Flask-Mail/)**... templating, sending, etc...
 - _Data management_  : **[Pandas](http://pandas.pydata.org/)**... to do operations on datasets...
-- _Geocoding_  : **[Geopy](https://geopy.readthedocs.io/en/stable/)**... to use several geocoder : Nominatim, BAN, etc...
+- _Geocoding_  : **[Geopy](https://geopy.readthedocs.io/en/stable/)**... to use several geocoders : Nominatim, BAN, etc...
 
 #### Features :
 
@@ -67,7 +67,7 @@ Nice to see you around ! For a more complete tour check out :
 -------
 ## WHAT'S NEW ?
 
-- check out our our *[changelog](./CHANGELOG.md)* for moredetails
+- check out our our *[changelog](./CHANGELOG.md)* for more details
 
 
 -------
@@ -176,7 +176,7 @@ Nice to see you around ! For a more complete tour check out :
 
 ## CREDITS 
 
-#### Solidata's team thanks :
+#### Solidata's backend team thanks :
 
 - the [SocialConnect](https://entrepreneur-interet-general.etalab.gouv.fr/defi/2017/09/26/socialconnect/) project, aka "Carrefour des Innovations Sociales"
 - the [EIG](https://entrepreneur-interet-general.etalab.gouv.fr/) program by [Etalab](https://www.etalab.gouv.fr/)
