@@ -32,7 +32,7 @@ api = MyApi(  	blueprint,
 						authorizations = auth_check,
 						# security			='apikey' # globally ask for pikey auth
 )
-
+# log.debug("api : \n%s", pformat(api.__dict__))
 
 ### errors handlers
 
