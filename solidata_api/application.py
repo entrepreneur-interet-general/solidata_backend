@@ -80,7 +80,7 @@ def create_app(
 
 	### create Flask app
 	app = Flask(app_name)
-	# app.wsgi_app = ProxyFix(app.wsgi_app)
+	app.wsgi_app = ProxyFix(app.wsgi_app)
 
 	### load config 
 	if run_mode == "prod" : 	
