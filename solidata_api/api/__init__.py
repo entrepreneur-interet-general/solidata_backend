@@ -23,6 +23,17 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
+# monkey patch courtesy of
+# https://github.com/noirbizarre/flask-restplus/issues/54
+# so that /swagger.json is served over https
+if os.environ.get('HTTPS'):
+	@property
+	def specs_url(self):
+		"""Monkey patch for HTTPS"""
+		return url_for(self.endpoint('specs'), _external=True, _scheme='https')
+
+	Api.specs_url = specs_url
+
 # class MyApi(Api):
 # 	@property
 # 	def specs_url(self):
