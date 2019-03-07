@@ -23,7 +23,7 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
-# monkey patch courtesy of
+# monkey patch to make swagger work in https too - courtesy of
 # https://github.com/noirbizarre/flask-restplus/issues/565
 class MyApi(Api):
 	@property
