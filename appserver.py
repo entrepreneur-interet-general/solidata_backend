@@ -79,9 +79,9 @@ def app_runner(mode, host, port, https, rsa, anojwt) :
 	### SET UP ENV VARS FROM CLI 
 	os.environ["DOMAIN_ROOT"]	= host
 	os.environ["DOMAIN_PORT"]	= port
-	if mode not in ["prod", "preprod"]:
-		os.environ["SERVER_NAME"]	= host + ":" + port
-		os.environ["DOMAIN_NAME"]	= http_mode + "://" + host + ":" + port
+	# if mode not in ["prod", "preprod"]:
+	os.environ["SERVER_NAME"]	= host + ":" + port
+	os.environ["DOMAIN_NAME"]	= http_mode + "://" + host + ":" + port
 
 
 	log.debug("\n--- STARTING SOLIDATA API ---\n")
@@ -110,7 +110,7 @@ def app_runner(mode, host, port, https, rsa, anojwt) :
 	# simple flask runner
 	print()
 	print("=== "*40)
-	print("=== "*40)
+	print("=== RUNNING APP "+ "==="*40)
 	print("=== "*40)
 	print()
 	app.run( debug=app_debug, host=host, port=port, threaded=True )
