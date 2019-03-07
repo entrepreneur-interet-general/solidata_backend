@@ -23,7 +23,7 @@ CORS(
 	# headers=['Content-Type', 'Authorization'], 
 	resources={ 
 		r"/api/*": {"origins": "*"}, 
-		r"/api/*/swagger.json":{"origins": "*", "Access-Control-Allow-Origin" : "*"},
+		# r"/api/*/swagger.json":{"origins": "*", "Access-Control-Allow-Origin" : "*"},
 		# r"/swaggerui/*":{"origins": "*"} 
 		},
 	# send_wildcard=True,
