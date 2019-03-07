@@ -22,7 +22,7 @@ blueprint = Blueprint( 'api_users', __name__, template_folder=app.config["TEMPLA
 # CORS(blueprint)
 
 ### create API
-api = Api( 	blueprint,
+api = MyApi( 	blueprint,
 						title	= "Solidata API : USERS",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] +  " : create, list, delete, edit... users",
