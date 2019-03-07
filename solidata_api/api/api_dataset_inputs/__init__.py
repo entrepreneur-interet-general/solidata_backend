@@ -24,7 +24,7 @@ blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder=app.confi
 # CORS(blueprint)
 
 ### create API
-api = MyApi( 	blueprint,
+api = Api( 	blueprint,
 						title	= "Solidata API : DATASET INPUTS",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... dataset inputs",

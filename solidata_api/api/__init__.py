@@ -20,22 +20,21 @@ import 	requests
 from 	flask 				import Blueprint, current_app as app, url_for, request, render_template
 
 from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
-from 	werkzeug.contrib.fixers import ProxyFix
 
 from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
 ### cf : https://stackoverflow.com/questions/47508257/serving-flask-restplus-on-https-server
-class MyApi(Api):
-	@property
-	def specs_url(self):
-		"""Monkey patch for HTTPS"""
-		# log.debug("self.base_url : %s" , self.base_url)
-		# log.debug("app.config['RUN_MODE'] : %s" , app.config["RUN_MODE"])
-		scheme = 'http' if "http" in self.base_url else 'https'
-		# scheme = 'https' if app.config["RUN_MODE"] in ["prod","preprod"] else 'http'
-		# scheme = 'http' if app.config["ENV"] in ["dev"] or app.config["DOMAIN_PORT"] in self.base_url else 'https'
-		# scheme = 'http' if app.config["DOMAIN_PORT"] in self.base_url else 'https'
-		return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
+# class MyApi(Api):
+# 	@property
+# 	def specs_url(self):
+# 		"""Monkey patch for HTTPS"""
+# 		# log.debug("self.base_url : %s" , self.base_url)
+# 		# log.debug("app.config['RUN_MODE'] : %s" , app.config["RUN_MODE"])
+# 		scheme = 'http' if "http" in self.base_url else 'https'
+# 		# scheme = 'https' if app.config["RUN_MODE"] in ["prod","preprod"] else 'http'
+# 		# scheme = 'http' if app.config["ENV"] in ["dev"] or app.config["DOMAIN_PORT"] in self.base_url else 'https'
+# 		# scheme = 'http' if app.config["DOMAIN_PORT"] in self.base_url else 'https'
+# 		return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
 
 import jwt
 from flask_jwt_extended import (

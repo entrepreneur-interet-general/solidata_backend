@@ -24,7 +24,7 @@ blueprint = Blueprint( 'api_auth', __name__, template_folder=app.config["TEMPLAT
 # CORS(blueprint)
 
 ### create API
-api = MyApi( 	blueprint,
+api = Api( 	blueprint,
 						title	= "Solidata API : AUTH SERVER",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : auth server / manages tokens",

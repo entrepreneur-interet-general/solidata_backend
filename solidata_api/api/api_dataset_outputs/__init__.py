@@ -23,7 +23,7 @@ blueprint = Blueprint( 'api_dataset_outputs', __name__, template_folder=app.conf
 
 ### create API
 # api = Api( 	blueprint,
-api = MyApi( 	blueprint,
+api = Api( 	blueprint,
 						title = "Solidata API : DATASET OUTPUTS",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... dataset outputs",

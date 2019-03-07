@@ -9,7 +9,7 @@ from log_config import log, pprint, pformat
 log.debug ("... starting app ...")
 
 from flask import Flask, g, current_app
-
+from werkzeug.contrib.fixers import ProxyFix
 
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 ### FLASK-EXTENDED-JWT IMPORTS
@@ -80,6 +80,7 @@ def create_app(
 
 	### create Flask app
 	app = Flask(app_name)
+	app.wsgi_app = ProxyFix(app.wsgi_app)
 
 	### load config 
 	if run_mode == "prod" : 	

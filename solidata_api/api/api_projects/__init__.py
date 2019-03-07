@@ -24,7 +24,7 @@ blueprint = Blueprint( 'api_projects', __name__, template_folder=app.config["TEM
 # CORS(blueprint)
 
 ### create API
-api = MyApi( 	blueprint,
+api = Api( 	blueprint,
 						title	= "Solidata API : PROJECTS",
 						version	= app.config["APP_VERSION"],
 						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... projects",
