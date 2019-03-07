@@ -77,9 +77,9 @@ def app_runner(mode, host, port, https, rsa, anojwt) :
 	print()
 
 	### SET UP ENV VARS FROM CLI 
+	os.environ["DOMAIN_ROOT"]	= host
+	os.environ["DOMAIN_PORT"]	= port
 	if mode not in ["prod", "preprod"]:
-		os.environ["DOMAIN_ROOT"]	= host
-		os.environ["DOMAIN_PORT"]	= port
 		os.environ["SERVER_NAME"]	= host + ":" + port
 		os.environ["DOMAIN_NAME"]	= http_mode + "://" + host + ":" + port
 
