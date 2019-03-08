@@ -36,8 +36,8 @@ class MyApi(Api):
 		The Swagger specifications absolute url (ie. `swagger.json`)
 		:rtype: str
 		'''
-		return url_for(self.endpoint('specs'), _external=True)
-		# return url_for(self.endpoint('specs'), _external=False)
+		# return url_for(self.endpoint('specs'), _external=True)
+		return url_for(self.endpoint('specs'), _external=False)
 	
 	# @property
 	# def sd_get_root(self):
