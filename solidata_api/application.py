@@ -4,6 +4,7 @@
 application.py  
 - creates a Flask app instance and registers the database object
 """
+import os 
 
 from log_config import log, pprint, pformat
 log.debug ("... starting app ...")
@@ -81,6 +82,7 @@ def create_app(
 	### create Flask app
 	app = Flask(app_name)
 	# app.wsgi_app = ProxyFix(app.wsgi_app)
+	app.config.SWAGGER_VALIDATOR_URL = 'http://domain.com/validator'
 
 	### load config 
 	if run_mode == "prod" : 	
@@ -97,6 +99,8 @@ def create_app(
 	app.config["ANOJWT_MODE"] = anojwt_mode
 	app.config["APP_VERSION"] = "0.2.1 beta"
 
+	app.config["SWAGGER_BASE_URL"] = os.environ["SWAGGER_BASE_URL"] = app.config["SERVER_NAME"]
+	
 	print()
 	log.debug("... app.config :\n %s", pformat(app.config))
 	print()
@@ -189,11 +193,8 @@ def create_app(
 		from solidata_api.api.api_recipes 	import blueprint as api_rec
 		app.register_blueprint( api_rec, url_prefix='/api/rec')
 
-
-		### TO DO - write missing endpoints
-
 		from solidata_api.api.api_dataset_outputs 	import blueprint as api_dso
-		app.register_blueprint( api_dso, url_prefix='/api/dso')
+		app.register_blueprint( api_dso, url_prefix='/api/dso', root_path="solidata.com")
 
 
 

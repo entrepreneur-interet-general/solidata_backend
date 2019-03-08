@@ -15,18 +15,23 @@ document_type		= "dso"
 ### create blueprint and api wrapper
 ### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
 
-blueprint = Blueprint( 'api_dataset_outputs', __name__, template_folder=app.config["TEMPLATES_FOLDER"] )
+blueprint = Blueprint( 
+	'api_dataset_outputs', 
+	__name__, 
+	template_folder=app.config["TEMPLATES_FOLDER"],
+	)
+
 # blueprint = Blueprint( 'api_dataset_inputs', __name__, template_folder='templates' )
 
 ### enable CORS on blueprint
-# CORS(blueprint)
+# CORS(blueprint) 
 
 ### create API
 # api = MyApi(  	blueprint,
 api = MyApi(  	blueprint,
 						title = "Solidata API : DATASET OUTPUTS",
 						version	= app.config["APP_VERSION"],
-						description	= app.config["CODE_LINK"] + " : create, list, delete, edit... dataset outputs",
+						description	= app.config["CODE_LINK"] + " ( mode: " + app.config["RUN_MODE"] + " ) : create, list, delete, edit... dataset outputs",
 						doc	= '/documentation',
 						default = 'edit',
 						authorizations = auth_check,

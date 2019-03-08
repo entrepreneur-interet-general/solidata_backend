@@ -23,17 +23,35 @@ from 	werkzeug.security 	import 	generate_password_hash, check_password_hash
 
 from 	flask_restplus 		import Api, Namespace, Resource, fields, marshal, reqparse
 
+log.info("SWAGGER_BASE_URL : %s " , os.getenv("SWAGGER_BASE_URL"))
+log.info("app.config['DOMAIN_NAME'] : %s" , app.config["DOMAIN_NAME"])
+
 # monkey patch to make swagger work in https too - courtesy of
 # https://github.com/noirbizarre/flask-restplus/issues/565
 class MyApi(Api):
+	
 	@property
 	def specs_url(self):
 		'''
 		The Swagger specifications absolute url (ie. `swagger.json`)
 		:rtype: str
 		'''
-		# return url_for(self.endpoint('specs'), _external=True)
-		return url_for(self.endpoint('specs'), _external=False)
+		return url_for(self.endpoint('specs'), _external=True)
+		# return url_for(self.endpoint('specs'), _external=False)
+	
+	# @property
+	# def sd_get_root(self):
+# 		'''
+# 		The API base absolute url
+# 		:rtype: str
+# 		'''
+		# return url_for(self.endpoint('specs'), _external=False)
+			# return self.endpoint('root')
+# 		return os.getenv("SWAGGER_BASE_URL")
+			# return url_for(os.getenv("SERVER_NAME"), _external=False)
+				
+# log.debug("MyApi.sd_get_root : \n%s", pformat(MyApi.sd_get_root))
+# # log.debug("MyApi.specs_url : \n%s", MyApi.specs_url)
 
 import jwt
 from flask_jwt_extended import (
