@@ -291,15 +291,18 @@ def Query_db_build_dso (
                 # print(df_data_concat.head(3))
                 # print(df_data_concat[["tags_list","oid_dso", "adresse du projet"]].head(3))
 
+
+
                 ### get df_data_concat as a list
                 ### WARNING ! THAT PART DOESN'T CREATE A NESTED DICT BUT JUST : { "KEY" : "stringified content" }
+                log.debug("... df_data_concat --> to dict ... ")
                 dso_f_data = df_data_concat.to_dict('records')
-                log.debug("... dso_f_data is composed ...")
+                print (dso_f_data[0])
 
               else : 
                 dso_f_data = []
+
               log.debug("... dso_f_data is composed ...")
-              log.debug("... dso_f_data[:5] : \n%s", pformat(dso_f_data[:5]))
 
               ### copy f_data to dso_in
               # dso_in["data_raw"]["f_data"] 	= dso_f_data
@@ -329,8 +332,8 @@ def Query_db_build_dso (
       log.debug( "value_test_f_data : \n%s", pformat(value_test_f_data) )
       for k, v in value_test_f_data.items() : 
         print()
-        log.debug("type(k) : %s", type(k))
-        log.debug("type(v) : %s", type(v))
+        log.debug("k : %s / type(k) : %s" %(k, type(k)))
+        log.debug("v : %s / type(v) : %s" %(v, type(v)))
       log.debug("... preparing to replace / insert dso_in ...")
 
       _id = dso_collection.replace_one( {"_id" : doc_oid }, dso_in, upsert=True )
@@ -349,10 +352,11 @@ def Query_db_build_dso (
 
       ### insert many docs in dso_docs for every entry of dso_f_data
       log.info("inserting documents related to prj in dso_doc_collection ...")
-      if len(dso_f_data) > 0 and len(dso_f_data) < 2 :
-        dso_doc_collection.insert_one( dso_f_data )
-      else :
-        dso_doc_collection.insert_many( dso_f_data )
+      log.debug("... dso_f_data[0] : \n%s", pformat(dso_f_data[0]))
+      # if len(dso_f_data) > 0 and len(dso_f_data) < 2 :
+      #   dso_doc_collection.insert_one( dso_f_data[0] )
+      # else :
+      dso_doc_collection.insert_many( dso_f_data )
 
 
 

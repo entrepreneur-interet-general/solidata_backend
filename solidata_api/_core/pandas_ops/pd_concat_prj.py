@@ -82,10 +82,10 @@ def convert_col_types (df_light, df_map_) :
 				df_light[col] = df_light[col].astype('float')
 
 
-		if f_type in dmf_type_boolean :
+		elif f_type in dmf_type_boolean :
 			df_light[col] = df_light[col].astype('bool')
 
-		if f_type in dmf_type_date :
+		elif f_type in dmf_type_date :
 			# cf : http://pandas.pydata.org/pandas-docs/stable/generated/pandas.to_datetime.html#pandas.to_datetime
 			df_light[col] = pd.to_datetime(df_light[col], infer_datetime_format=True, errors='coerce')
 
@@ -93,11 +93,11 @@ def convert_col_types (df_light, df_map_) :
 		# if f_type in dmf_type_categ :
 		# 	df_light[col] = df_light[col].astype('str')
 
-		if f_type in dmf_type_lists :
+		elif f_type in dmf_type_lists :
 			# df_light[col] = df_light[col].apply(lambda x: ' | '.join(x))
 			pass
 
-		if f_type in dmf_type_objects :
+		elif f_type in dmf_type_objects :
 			# df_light[col] = df_light[col].astype('str')
 			pass
 
