@@ -338,7 +338,7 @@ default_dmf_list = [
 	{
 		"infos" : {
 			"title" 			: "tags_list",
-			"description" : "Tags list about a data."
+			"description" : "Tags list about a data. (must be an array)"
 		},
 		"specs" : {
 			"doc_type"		: "dmf",
