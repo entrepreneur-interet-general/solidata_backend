@@ -303,7 +303,7 @@ class DsiReload(Resource):
 					### delete previous documents from mongo_datasets_inputs_docs
 					log.info("deleting documents related to dsi in mongo_datasets_inputs_docs ...")
 					try :
-						mongo_datasets_inputs_docs.delete_many({ 'oid_dsi' : oid_dsi_ })
+						mongo_datasets_inputs_docs.delete_many({ 'oid_dsi' : doc_oid })
 					except : 
 						pass
 

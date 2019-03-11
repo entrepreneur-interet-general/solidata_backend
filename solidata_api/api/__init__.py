@@ -45,7 +45,7 @@ class MyApi(Api):
 # 		The API base absolute url
 # 		:rtype: str
 # 		'''
-		# return url_for(self.endpoint('specs'), _external=False)
+			# return url_for(self.endpoint('root'))
 			# return self.endpoint('root')
 # 		return os.getenv("SWAGGER_BASE_URL")
 			# return url_for(os.getenv("SERVER_NAME"), _external=False)
