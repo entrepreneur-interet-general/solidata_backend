@@ -63,6 +63,7 @@ def convert_col_types (df_light, df_map_) :
 
 	for col in df_light.columns :
 
+		print()
 		log.debug("... col : %s", col)
 
 		### get back f_type for corresponding header
@@ -88,9 +89,18 @@ def convert_col_types (df_light, df_map_) :
 			# cf : http://pandas.pydata.org/pandas-docs/stable/generated/pandas.to_datetime.html#pandas.to_datetime
 			df_light[col] = pd.to_datetime(df_light[col], infer_datetime_format=True, errors='coerce')
 
+		### TO FINISH
 		# if f_type in dmf_type_categ :
-		# 	pass
-		
+		# 	df_light[col] = df_light[col].astype('str')
+
+		if f_type in dmf_type_lists :
+			# df_light[col] = df_light[col].apply(lambda x: ' | '.join(x))
+			pass
+
+		if f_type in dmf_type_objects :
+			# df_light[col] = df_light[col].astype('str')
+			pass
+
 		else : 
 			df_light[col] = df_light[col].astype('str')
 
@@ -100,6 +110,10 @@ def convert_col_types (df_light, df_map_) :
 
 
 	print("-/- "*40)
+
+	print()
+	log.debug("... df_light end ...")
+	print(df_light.head(3))
 
 
 	return df_light

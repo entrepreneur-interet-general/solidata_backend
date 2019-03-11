@@ -13,55 +13,73 @@ log.debug("... loading _choices_f_types.py ...")
 
 
 dmf_types_list = [
-	'text',
-	'email',
-	'float',
-	'integer',
-	'date',
-	'price',
+  'text',
+  'email',
+  'float',
+  'integer',
+  'date',
+  'price',
 
-	'address',
-	'geoloc',
+  'address',
+  'geoloc',
 
-	'tag',
-	'category',
+  'tag',
+  'category',
 
-	'media_link',
-	'hyperlink',
+  'media_link',
+  'hyperlink',
 
-	'boolean',
+  'boolean',
 
-	'id',
-	
-	'other'
+  ### for objects like dicts
+  'object',
+
+  ### for lists
+  'list_strings',
+  'list_integers',
+  'list_floats',
+  'list_objects',
+
+  'id',
+  
+  'other'
 ]
 
 dmf_type_int = [
-	'integer',
+  'integer',
 ]
 dmf_type_float = [
-	'float',
-	'price',
+  'float',
+  'price',
 ]
 dmf_type_boolean = [
-	'boolean',
+  'boolean',
 ]
 dmf_type_date = [
-	'date',
+  'date',
 ]
 dmf_type_categ = [
-	'tag',
-	'category',
+  'tag',
+  'category',
 ]
 
 dmf_types_uniques = [
-	'text',
+  'text',
 
-	'tag',
-	'category',
-	
-	'other'
+  'tag',
+  'category',
+  
+  'other'
 ]
 
+dmf_type_objects = [
+  'object_raw',
+]
 
+dmf_type_lists = [
+  'list_strings',
+  'list_integers',
+  'list_floats',
+  'list_objects',
+]
 

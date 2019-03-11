@@ -321,7 +321,7 @@ default_dmf_list = [
 	{
 		"infos" : {
 			"title" 			: "tag",
-			"description" : "Tags about a data."
+			"description" : "Tag about a data."
 		},
 		"specs" : {
 			"doc_type"		: "dmf",
@@ -331,6 +331,23 @@ default_dmf_list = [
 			"f_code" 		: "TAG",
 			"f_object" 		: "",
 			"f_type" 		: "tag",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 			: "tags_list",
+			"description" : "Tags list about a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "TAGLIST",
+			"f_object" 		: "",
+			"f_type" 		: "list_strings",
 			"f_comments" 	: "",
 			"f_is_required" : False,
 		}
@@ -348,6 +365,23 @@ default_dmf_list = [
 			"f_code" 		: "CATEGORY",
 			"f_object" 		: "",
 			"f_type" 		: "category",
+			"f_comments" 	: "",
+			"f_is_required" : False,
+		}
+	},
+	{
+		"infos" : {
+			"title" 			: "categories_list",
+			"description" : "Categories list about a data."
+		},
+		"specs" : {
+			"doc_type"		: "dmf",
+			"is_standard" 	: True
+		},
+		"data_raw" : {
+			"f_code" 		: "CATEGORIESLIST",
+			"f_object" 		: "",
+			"f_type" 		: "list_strings",
 			"f_comments" 	: "",
 			"f_is_required" : False,
 		}

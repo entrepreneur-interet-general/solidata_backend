@@ -226,6 +226,14 @@ class RequestParserBuilder :
 				# location = 'values'
 			)
 			self.baseParser.add_argument(
+				'search_filters', 
+				action='append',
+				type=str, 
+				required=False, 
+				help='find data in document matching this kind of string : <field_name>__<valueToSearch>',
+				# location = 'values'
+			)
+			self.baseParser.add_argument(
 				'search_tags', 
 				action='split',
 				type=str, 
