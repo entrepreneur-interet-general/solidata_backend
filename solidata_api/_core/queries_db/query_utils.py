@@ -241,6 +241,7 @@ def strip_f_data(	data_raw,
 
   ### load f_data as dataframe
   f_data_df = pd.DataFrame(f_data)
+  f_data_df = f_data_df.replace({np.nan:None})  
   log.debug('f_data_df.head(5) : \n%s', f_data_df.head(5) )  
 
 
@@ -372,7 +373,7 @@ def latLngTuple(f_data, query_args) :
       d_keys = list(d.keys())
       has_geo = False
       if "lat" in d_keys and "lon" in d_keys : 
-        if d["lat"]!= 'None' and d["lon"]!='None' : 
+        if d["lat"]!= 'None' and d["lon"]!='None' and d["lat"]!= None and d["lon"]!= None: 
           has_geo = True
           d["lat"] = round(float(d["lat"]), geo_precision)
           d["lon"] = round(float(d["lon"]), geo_precision)
