@@ -288,6 +288,11 @@ def strip_f_data(	data_raw,
   # f_data_df_out = f_data_df_out.dropna(how="all")
   f_data_df_out = f_data_df_out.replace({np.nan:None})  
 
+  # df = df.dropna(how="all")
+  # df = df.replace({np.nan:None})
+  f_data_df_out = cleanDfFromNans(f_data_df_out)
+  print ("\n", f_data_df_out.head(5)) 
+
   ### transform f_data to dict
   f_data = f_data_df_out.to_dict('records')
 
@@ -349,6 +354,7 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
       f_data_df = f_data_df[f_data_df.apply(lambda row: search_for_str(search_for, row) ).any(axis=1)]
 
     ### convert Nan to None
+    f_data_df = f_data_df.dropna(how="all")
     f_data_df = f_data_df.replace({np.nan:None})
 
     f_data = f_data_df.to_dict('records')
