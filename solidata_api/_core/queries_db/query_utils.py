@@ -8,7 +8,7 @@ import re
 import random
 
 import pandas as pd
-import 	numpy as np
+import numpy as np
 from pandas.io.json import json_normalize
 
 from log_config import log, pformat
@@ -177,6 +177,7 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc", f_col_headers=[] ) :
   map_list = query_args.get('map_list',	False )
   get_filters = query_args.get('get_filters',	False )
   get_uniques = query_args.get('get_uniques',	None )
+  shuffle_seed = query_args.get('shuffle_seed',	None )
 
   if db_coll == "dso_doc" :
     field_to_query = "oid_dso"
@@ -208,6 +209,7 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc", f_col_headers=[] ) :
   results = list(cursor)
   log.debug('results[0] : \n%s', pformat(results[0]) )  
 
+
   if get_filters : 
     u_values = []
     for h in keep_fields_list : 
@@ -215,6 +217,16 @@ def get_ds_docs(doc_oid, query_args, db_coll="dso_doc", f_col_headers=[] ) :
       u_val_fields = { h : u_list }
       u_values.append(u_val_fields)
     results = u_values
+
+  ### TEST SHUFFLE HERE / FIRST 
+  ### shuffle results
+  if shuffle_seed != None and map_list == False and get_filters == False:
+    random.seed(shuffle_seed)
+    random.shuffle(document_out["data_raw"]["f_data"])
+
+
+
+
 
   return results
 
@@ -359,6 +371,7 @@ def search_f_data (data_raw, query_args, not_filtered=True) :
 
     f_data = f_data_df.to_dict('records')
     log.debug( "... f_data[0] : \n%s ", pformat(f_data[0]) )
+    del f_data_df
 
   return f_data
 
@@ -500,9 +513,9 @@ def GetFData( document_type,
     document_out["data_raw"]["f_data"] = search_f_data(document_out["data_raw"], query_args, not_filtered=not_filtered)
 
     ### shuffle results
-    if shuffle_seed != None :
-      random.seed(shuffle_seed)
-      random.shuffle(document_out["data_raw"]["f_data"])
+    # if shuffle_seed != None and map_list == False and get_filters == False:
+    #   random.seed(shuffle_seed)
+    #   random.shuffle(document_out["data_raw"]["f_data"])
 
     ### sort results
     if sort_by != None :
@@ -520,6 +533,13 @@ def GetFData( document_type,
       log.debug( 'slice_f_data : %s', slice_f_data )
       document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ start_index : end_index ]
       # document_out["data_raw"]["f_data"] = document_out["data_raw"]["f_data"][ 0 : 1 ]
+
+
+    # ### shuffle results
+    # if shuffle_seed != None and map_list == False and get_filters == False:
+    #   random.seed(shuffle_seed)
+    #   random.shuffle(document_out["data_raw"]["f_data"])
+
 
     # only f_data
     # if only_f_data : 
