@@ -13,10 +13,10 @@ from solidata_api.application import create_app
 app = create_app( app_name='SOLIDATA_API', run_mode="preprod" )
 
 if __name__ == "main" :
-  	
-	log.debug("\n--- STARTING SOLIDATA API (PREPROD) ---\n")
+    
+  log.debug("\n--- STARTING SOLIDATA API (PREPROD) ---\n")
 
-	### initiate socketio
-	socketio = SocketIO(app)
-	
-	app.run()
+  ### initiate socketio
+  socketio = SocketIO(app)
+  
+  app.run()

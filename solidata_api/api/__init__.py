@@ -29,35 +29,38 @@ log.info("app.config['DOMAIN_NAME'] : %s" , app.config["DOMAIN_NAME"])
 # monkey patch to make swagger work in https too - courtesy of
 # https://github.com/noirbizarre/flask-restplus/issues/565
 class MyApi(Api):
-	
-	@property
-	def specs_url(self):
-		'''
-		The Swagger specifications absolute url (ie. `swagger.json`)
-		:rtype: str
-		'''
-		# return url_for(self.endpoint('specs'), _external=True)
-		return url_for(self.endpoint('specs'), _external=False)
-	
-	# @property
-	# def sd_get_root(self):
+  
+  @property
+  def specs_url(self):
+    '''
+    The Swagger specifications absolute url (ie. `swagger.json`)
+    :rtype: str
+    '''
+    # return url_for(self.endpoint('specs'), _external=True)
+    return url_for(self.endpoint('specs'), _external=False)
+  
+### + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + ###
+
+        
+  # @property
+  # def sd_get_root(self):
 # 		'''
 # 		The API base absolute url
 # 		:rtype: str
 # 		'''
-			# return url_for(self.endpoint('root'))
-			# return self.endpoint('root')
+      # return url_for(self.endpoint('root'))
+      # return self.endpoint('root')
 # 		return os.getenv("SWAGGER_BASE_URL")
-			# return url_for(os.getenv("SERVER_NAME"), _external=False)
-				
+      # return url_for(os.getenv("SERVER_NAME"), _external=False)
+        
 # log.debug("MyApi.sd_get_root : \n%s", pformat(MyApi.sd_get_root))
 # # log.debug("MyApi.specs_url : \n%s", MyApi.specs_url)
 
 import jwt
 from flask_jwt_extended import (
-		jwt_required, jwt_optional, jwt_refresh_token_required, fresh_jwt_required,
-		create_access_token, create_refresh_token, decode_token,
-		get_jwt_identity, get_jwt_claims, get_raw_jwt,
+    jwt_required, jwt_optional, jwt_refresh_token_required, fresh_jwt_required,
+    create_access_token, create_refresh_token, decode_token,
+    get_jwt_identity, get_jwt_claims, get_raw_jwt,
 )
 
 
@@ -95,18 +98,18 @@ log.debug("public_key_str : \n %s", pformat(public_key_str))
 cipher = PKCS1_v1_5.new(key_pair)
 
 def RSAencrypt(msg_clear):
-	log.debug("\ \ / / msg_clear    : \n%s", msg_clear )
-	ciphertext = cipher.encrypt(msg_clear.encode('utf8'))
-	return b64encode(ciphertext).decode('ascii')
+  log.debug("\ \ / / msg_clear    : \n%s", msg_clear )
+  ciphertext = cipher.encrypt(msg_clear.encode('utf8'))
+  return b64encode(ciphertext).decode('ascii')
 
 def RSAdecrypt(msg_encrypted):
-	log.debug("\ \ / / msg_encrypted    : \n%s", msg_encrypted )
-	ciphertext = b64decode(msg_encrypted.encode('ascii'))
-	log.debug("\ \ / / ciphertext    : \n%s", ciphertext )
-	plaintext = cipher.decrypt(ciphertext, b'DECRYPTION FAILED')
-	log.debug("\ \ / / plaintext    : \n%s", plaintext )
-	return plaintext.decode('utf8')
-	
+  log.debug("\ \ / / msg_encrypted    : \n%s", msg_encrypted )
+  ciphertext = b64decode(msg_encrypted.encode('ascii'))
+  log.debug("\ \ / / ciphertext    : \n%s", ciphertext )
+  plaintext = cipher.decrypt(ciphertext, b'DECRYPTION FAILED')
+  log.debug("\ \ / / plaintext    : \n%s", plaintext )
+  return plaintext.decode('utf8')
+  
 ### TEST ENCRYPT
 ciphertext = RSAencrypt('a-very-common-password')
 log.info("/ / \ \ ciphertext : \n%s", ciphertext)
@@ -133,9 +136,9 @@ from solidata_api._core.cors 			import CORS, cross_origin
 from solidata_api._auth.authorizations 	import authorizations as auth_check
 
 from solidata_api._auth 				import ( 
-	admin_required, current_user_required, confirm_email_required, guest_required,
-	anonymous_required, renew_pwd_required, reset_pwd_required 
-	)
+  admin_required, current_user_required, confirm_email_required, guest_required,
+  anonymous_required, renew_pwd_required, reset_pwd_required 
+  )
 
 from solidata_api._parsers 	import * # pagination_arguments
 # from solidata_api._parsers.parser_pagination 	import * # pagination_arguments
