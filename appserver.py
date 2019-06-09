@@ -37,7 +37,7 @@ from flask_socketio import SocketIO
 @click.option('--host',    default="localhost", nargs=1,  help="The <host> name you want the app to run on : <IP_NUMBER> " )
 @click.option('--port',    default="4000", nargs=1,  help="The <port> number you want the app to run on : <PORT_NUMBER>")
 @click.option('--mongodb', default="local", nargs=1,  help="The <mongodb> you need to run the app : local | distant | server" )
-@click.option('--auth_mode', default="local", nargs=1,  help="The <auth_mode> you need to run the app : local | distant" )
+@click.option('--auth_mode', default="internal", nargs=1,  help="The <auth_mode> you need to run the app : internal | local | distant_prod | distant_preprod " )
 @click.option('--rsa',     default="yes", nargs=1,  help="The <rsa> mode (RSA encrypt/decrypt for forms) : no, yes" )
 @click.option('--anojwt',  default="yes", nargs=1,  help="The <anojwt> mode (needs an anonymous JWT for login and register routes) : no, yes" )
 @click.option('--antispam', default="no", nargs=1, help="The <antispam> mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
@@ -57,7 +57,7 @@ def app_runner(mode, docker, host, port, mongodb, auth_mode, rsa, anojwt, antisp
   --host    : localhost | <your_IP>
   --port    : <your_favorite_port>
   --mongodb : local | distant | server
-  --auth_mode : local | distant 
+  --auth_mode : internal | local | distant_prod | distant_prepod
   --https   : yes | no
   --rsa     : yes | no
   --antispam : yes | no

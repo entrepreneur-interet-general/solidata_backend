@@ -33,6 +33,27 @@ docs:
       - title: "Install the docs"
         url: /guide/install-docs
 
+  - title: API
+    children:
+      - title: "Concepts"
+        url: /api/concepts
+      - title: "Datamodel fields"
+        url: /api/dmf
+      - title: "Datamodel templates"
+        url: /api/dmt
+      - title: "Projects"
+        url: /api/prj
+      - title: "Recipes"
+        url: /api/rec
+      - title: "Dataset inputs"
+        url: /api/dsi
+      - title: "Dataset outputs"
+        url: /api/dmt
+      - title: "Authentication"
+        url: /api/authentication
+      - title: "Users"
+        url: /api/users
+
   - title: Developers
     children:
       - title: "Stack"

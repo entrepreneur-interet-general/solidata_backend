@@ -217,6 +217,90 @@
     
       <li>
         
+          <span class="nav__sub-title">API</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/concepts" class="">Concepts</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmf" class="">Datamodel fields</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Datamodel templates</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/prj" class="">Projects</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/rec" class="">Recipes</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dsi" class="">Dataset inputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Dataset outputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/authentication" class="">Authentication</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/users" class="">Users</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
           <span class="nav__sub-title">Developers</span>
         
 
@@ -482,7 +566,7 @@
       <li>set up UFW, GIT, NGINX, …</li>
       <li>(optional) <a href="https://docs.mongodb.com/manual/installation/">install MongoDB</a> (if the solidata’s DB for config is hosted on your own server)</li>
       <li>add the github repo</li>
-      <li>create and set of secret env variables at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
+      <li>create and set of secret env variables at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code>, <code class="highlighter-rouge">example.env.mailing</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
       <li>lauch docker and run the command :
         <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make up-prod
 </code></pre></div>        </div>
@@ -542,7 +626,7 @@
   <li>optionnal : get a domain name : check OVH, namecheap, godaddy…. + setup DNS</li>
   <li><strong>follow (most of) these <a href="https://github.com/entrepreneur-interet-general/tutos-2018/wiki/Admin-Sys">instructions</a></strong></li>
   <li><strong>go to app folder and create a virtual env</strong> (for instance called “venv”)</li>
-  <li><strong>create and set of secret env variables</strong> at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
+  <li><strong>create and set of secret env variables</strong> at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code>, <code class="highlighter-rouge">example.env.mailing</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
   <li>
     <p><strong>set up the <a href="./unit/working_service_config.service">gunicorn service</a> and <a href="./nginx/working_nginx_config">NGINX</a></strong> with supervisor</p>
   </li>
@@ -572,6 +656,7 @@
 <ul>
   <li><code class="highlighter-rouge">example.env.global</code></li>
   <li><code class="highlighter-rouge">example.env.mongodb</code></li>
+  <li><code class="highlighter-rouge">example.env.mailing</code></li>
 </ul>
 
 <p>If you want or need to use Apiviz in production you will have to duplicate those files at the same level with those new names :</p>
@@ -579,6 +664,7 @@
 <ul>
   <li><code class="highlighter-rouge">.env.global</code></li>
   <li><code class="highlighter-rouge">.env.mongodb</code></li>
+  <li><code class="highlighter-rouge">.env.mailing</code></li>
 </ul>
 
 <p>… then you will be able to change the environment variable you want and begin to use all of the available arguments like :</p>
@@ -604,7 +690,7 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--host'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"localhost"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;host&gt; name you want the app to run on : localhost(default) | &lt;IP_NUMBER&gt; "</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--port'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"4000"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;port&gt; number you want the app to run on : 4000 (default) | &lt;PORT_NUMBER&gt;"</span><span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--mongodb'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;mongodb&gt; you need to run the app : local | distant | server"</span> <span class="p">)</span>
-<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--auth_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;auth_mode&gt; you need to run the app : local | distant"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--auth_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"internal"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;auth_mode&gt; you need to run the app : internal | local | distant_prod | distant_preprod "</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--rsa'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;rsa&gt; mode (RSA encrypt/decrypt for forms), protects '/login' + '/register' + '/password_forgotten' + '/reset_password': 'no' (default), 'yes'"</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--anojwt'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;anojwt&gt; mode (needs an anonymous JWT for login and register routes), affects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--antispam'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;antispam&gt; mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
@@ -642,7 +728,11 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 
 <span class="c">### AUTH SPECS ENV VARS</span>
 <span class="nv">AUTH_MODE</span><span class="o">=</span><span class="nb">local
-</span><span class="nv">RSA_MODE</span><span class="o">=</span>yes
+</span><span class="nv">DISTANT_AUTH_URL_ROOT_LOCAL</span><span class="o">=</span>http://localhost:4100/
+<span class="nv">DISTANT_AUTH_URL_ROOT</span><span class="o">=</span>https://toktok-auth.com/
+<span class="nv">DISTANT_AUTH_URL_ROOT_PREPOD</span><span class="o">=</span>https://preprod.toktok-auth.com/
+
+<span class="nv">RSA_MODE</span><span class="o">=</span>yes
 <span class="nv">ANOJWT_MODE</span><span class="o">=</span>yes
 <span class="nv">ANTISPAM_MODE</span><span class="o">=</span>no
 <span class="nv">ANTISPAM_VAL</span><span class="o">=</span>my-string-to-check
@@ -821,7 +911,7 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/meta/changelog/" rel="permalink">CHANGE LOG
+        <a href="/api/users/" rel="permalink">API - users
 </a>
       
     </h2>
@@ -850,38 +940,7 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/meta/credits/" rel="permalink">CREDITS
-</a>
-      
-    </h2>
-    
-      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
-
-
-
-
-  less than 1 minute read
-</p>
-    
-    <p class="archive__item-excerpt" itemprop="description">
-
-ApiViz’s team thanks :
-
-</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/meta/maintain/" rel="permalink">MAINTAIN
+        <a href="/api/rec/" rel="permalink">API - recipes
 </a>
       
     </h2>
@@ -910,7 +969,7 @@ ApiViz’s team thanks :
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/dev/guidelines/" rel="permalink">GUIDELINES FOR DEVELOPMENT
+        <a href="/api/prj/" rel="permalink">API - projects
 </a>
       
     </h2>
@@ -920,12 +979,39 @@ ApiViz’s team thanks :
 
 
 
-  1 minute read
+  less than 1 minute read
 </p>
     
     <p class="archive__item-excerpt" itemprop="description">
 
-This project is prone to be developped by several developpers, so we agreed on some basic rules…
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/dso/" rel="permalink">API - dataset outputs
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
 
 </p>
   </article>

@@ -14,11 +14,15 @@ toc_sticky: true
 
 -----
 
-{% include figure image_path="/static/logos/logo_solidata_15a-380x64.png" alt="toktok logo" %}
+{% include figure image_path="/static/logos/logo_solidata_15a-380x64.png" alt="solidata logo" %}
 
 ## SOLIDATA BACKEND
 
 **Solidata** is a microservice (a REST API) for data management and authentication based on access and refresh JSON Web Tokens (JWT)
+
+
+{% include figure image_path="/documentation/screenshots/endpoints_dataset_inputs.png" alt="solidata dsi" %}
+
 
 - compatible with the **TADATA!** sofware suite ( [ApiViz](https://github.com/co-demos/apiviz-frontend) / [Solidata_frontend](https://github.com/entrepreneur-interet-general/solidata_frontend) / [Toktok](https://github.com/co-demos/toktok) / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper)  )
 
@@ -26,8 +30,11 @@ toc_sticky: true
 
 ## GOALS
 
-- a server to manage data and authorizations based on JWT exchanges between client and server
-- possibility to switch on/off some extra features as : RSA decryption/encryption, anonymous JWT, sending confirmation email
+- allow you to consume data from your own csv/xls files or external APIs ;
+- consolidate your data : apply your own datamodel, simplify columns, apply metadatas, ... ; 
+- share the consolidated datas on API endpoints with the level of openness you decide (opendata, commons, collective, private) ;
+- manage all your data and your recipes by projects ;
+- be able to manage projects by teams and share data/recipes/datamodels...
 
 ---------
 
@@ -49,7 +56,9 @@ Solidata includes "out-the-box" some classic features related to user authentica
 - confirm email (optionnal in dev mode): confirm user by sending a confirmation link (protected) in an email 
 - password forgotten by sending a link (protected) in an email with redirection to new password form 
 - reset password from client interface (protected) ...
-- Documentation on all API endpoints with Swagger (and some patience from the developers)
+
+### Documentation 
+	- on all API endpoints with Swagger (and some patience from the developer)
 
 ### Features TO DO  :
 - user : 
@@ -60,6 +69,5 @@ Solidata includes "out-the-box" some classic features related to user authentica
 
 ## INSPIRATIONS / BENCHMARK
 
-- not finding a simple enough open source solution resolving the following problem : having a third party service (on a distant server) able to serve reasonnably secure tokens and manage users, so to avoid to build/re-invent a custom authentication for login/register every time we work on an app... 
-- more, be able to share user/credentials between multiple services 
-- we looked at [Oauth2.0](https://oauth.net/2/) (but doesn't manage users per say), meteor-password (but dialog with websocket)...
+- [Dataiku](https://www.dataiku.com/), [Parabola](https://parabola.io/), but they are proprietary solutions (and too complex for our purposes)... Not to mention they are very expensive...
+- [Match ID](https://matchid-project.github.io/), but the backend doesn't resolve the "sharing" part with levels as ["opendata", "commons", "collective", "private"], and no BDD to back up recipes

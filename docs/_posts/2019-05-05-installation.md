@@ -50,7 +50,7 @@ You have two different options to run (locally) solidata on your computer/server
     - set up UFW, GIT, NGINX, ...
     - (optional) [install MongoDB](https://docs.mongodb.com/manual/installation/) (if the solidata's DB for config is hosted on your own server)
     - add the github repo
-    - create and set of secret env variables at the project's folder root based on `example.env.global` and `example.env.mongodb`
+    - create and set of secret env variables at the project's folder root based on `example.env.global`, `example.env.mailing` and `example.env.mongodb`
     - lauch docker and run the command : 
       ```sh
       make up-prod
@@ -110,7 +110,7 @@ You have two different options to run (locally) solidata on your computer/server
 1. optionnal : get a domain name : check OVH, namecheap, godaddy.... + setup DNS
 1. **follow (most of) these [instructions](https://github.com/entrepreneur-interet-general/tutos-2018/wiki/Admin-Sys)**
 1. **go to app folder and create a virtual env** (for instance called "venv")
-1. **create and set of secret env variables** at the project's folder root based on `example.env.global` and `example.env.mongodb`
+1. **create and set of secret env variables** at the project's folder root based on `example.env.global`, `example.env.mailing` and `example.env.mongodb`
 1. **set up the [gunicorn service](./unit/working_service_config.service) and [NGINX](./nginx/working_nginx_config)** with supervisor 
 
 1. ... pray for all that to work as expected, and keep calm... 
@@ -136,11 +136,13 @@ The environment variables are stored in a couple of files at the root of the pro
 
 - `example.env.global`
 - `example.env.mongodb`
+- `example.env.mailing`
 
 If you want or need to use Apiviz in production you will have to duplicate those files at the same level with those new names : 
 
 - `.env.global`
 - `.env.mongodb`
+- `.env.mailing`
 
 ... then you will be able to change the environment variable you want and begin to use all of the available arguments like :
 
@@ -170,7 +172,7 @@ At the CLI level you can use :
 @click.option('--host', default="localhost", nargs=1,  help="The <host> name you want the app to run on : localhost(default) | <IP_NUMBER> " )
 @click.option('--port', default="4000", nargs=1,  help="The <port> number you want the app to run on : 4000 (default) | <PORT_NUMBER>")
 @click.option('--mongodb', default="local", nargs=1,  help="The <mongodb> you need to run the app : local | distant | server" )
-@click.option('--auth_mode', default="local", nargs=1,  help="The <auth_mode> you need to run the app : local | distant" )
+@click.option('--auth_mode', default="internal", nargs=1,  help="The <auth_mode> you need to run the app : internal | local | distant_prod | distant_preprod " )
 @click.option('--rsa', default="no", nargs=1,  help="The <rsa> mode (RSA encrypt/decrypt for forms), protects '/login' + '/register' + '/password_forgotten' + '/reset_password': 'no' (default), 'yes'" )
 @click.option('--anojwt', default="no", nargs=1, help="The <anojwt> mode (needs an anonymous JWT for login and register routes), affects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
 @click.option('--antispam', default="no", nargs=1, help="The <antispam> mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
@@ -207,6 +209,10 @@ MONGODB_MODE=local
 
 ### AUTH SPECS ENV VARS
 AUTH_MODE=local
+DISTANT_AUTH_URL_ROOT_LOCAL=http://localhost:4100/
+DISTANT_AUTH_URL_ROOT=https://toktok-auth.com/
+DISTANT_AUTH_URL_ROOT_PREPOD=https://preprod.toktok-auth.com/
+
 RSA_MODE=yes
 ANOJWT_MODE=yes
 ANTISPAM_MODE=no

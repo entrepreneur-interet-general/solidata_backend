@@ -30,6 +30,12 @@ brew install ruby
 gem install jekyll
 ```
 
+- From your repo's root go to the `/docs` folder
+
+```sh 
+cd /docs
+```
+
 - Install setup (given the `Gemfile`, `Gemfile.lock` and `_config.yml` files)
 
 ```bash

@@ -90,7 +90,7 @@
 
   </head>
 
-  <body class="layout--home wide">
+  <body class="layout--home">
 
     <!--[if lt IE 9]>
 <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
@@ -210,6 +210,90 @@
             
 
             <li><a href="/guide/install-docs" class="">Install the docs</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">API</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/concepts" class="">Concepts</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmf" class="">Datamodel fields</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Datamodel templates</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/prj" class="">Projects</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/rec" class="">Recipes</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dsi" class="">Dataset inputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Dataset outputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/authentication" class="">Authentication</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/users" class="">Users</a></li>
           
         </ul>
         
@@ -417,7 +501,7 @@
 
 <ul> 
   <li>
-    An open source authentication service built upon Flask Restplus framework
+    Building a public service for managing, consolidating, and sharing "API-fied" data
   </li>
   <li>
     compatible with the <strong>TADATA!</strong> sofware suite : 
@@ -429,18 +513,20 @@
       <code>Solidata_frontend</code>
     </a> 
     / 
+    <a href="https://github.com/co-demos/toktok" target="_blank">
+      <code>Toktok</code>
+    </a> 
+    / 
     <a href="https://github.com/entrepreneur-interet-general/OpenScraper" target="_blank">
       <code>OpenScraper</code>
     </a>
   </li>
 </ul>
 
-<br>
-
 <figure class="">
   <img src=
     
-      "/screenshots/endpoints_auth_server.png"
+      "/documentation/screenshots/endpoints_dataset_inputs.png"
     
     alt="main screenshot">
   </figure>
@@ -462,7 +548,7 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/general/presentation/" rel="permalink">PRESENTATION
+        <a href="/dev/stack/" rel="permalink">STACK
 </a>
       
     </h2>
@@ -472,7 +558,7 @@
 
 
 
-  1 minute read
+  less than 1 minute read
 </p>
     
     <p class="archive__item-excerpt" itemprop="description">
@@ -491,37 +577,7 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/prod/ubuntu/" rel="permalink">UBUNTU
-</a>
-      
-    </h2>
-    
-      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
-
-
-
-
-  2 minute read
-</p>
-    
-    <p class="archive__item-excerpt" itemprop="description">INITIAL SETUP UBUNTU 18.04
-cf : tuto Digital Ocean
-
-</p>
-  </article>
-</div>
-
-
-  
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/prod/supervisor/" rel="permalink">SUPERVISOR
+        <a href="/guide/install-docs/" rel="permalink">INSTALL THE DOCS WITH JEKYLL
 </a>
       
     </h2>
@@ -534,7 +590,7 @@ cf : tuto Digital Ocean
   less than 1 minute read
 </p>
     
-    <p class="archive__item-excerpt" itemprop="description">USING SUPERVISOR TO RUN GUNICORN/PYTHON PROCESS
+    <p class="archive__item-excerpt" itemprop="description">
 
 </p>
   </article>
@@ -550,7 +606,7 @@ cf : tuto Digital Ocean
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/prod/nginx/" rel="permalink">NGINX
+        <a href="/lexicon/third-services-integration/" rel="permalink">INTEROPERABILITY
 </a>
       
     </h2>
@@ -560,10 +616,10 @@ cf : tuto Digital Ocean
 
 
 
-  2 minute read
+  less than 1 minute read
 </p>
     
-    <p class="archive__item-excerpt" itemprop="description">NGINX - SUBDOMAINS AND SERVER BLOCKS
+    <p class="archive__item-excerpt" itemprop="description">
 
 </p>
   </article>
@@ -579,7 +635,7 @@ cf : tuto Digital Ocean
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/prod/mongo_db/" rel="permalink">MONGO DB
+        <a href="/guide/deployment-configs/" rel="permalink">DEPLOYMENT CONFIGURATIONS
 </a>
       
     </h2>
@@ -589,10 +645,41 @@ cf : tuto Digital Ocean
 
 
 
-  2 minute read
+  less than 1 minute read
 </p>
     
-    <p class="archive__item-excerpt" itemprop="description">MONGO DB WALKTHROUGH FOR UBUNTU
+    <p class="archive__item-excerpt" itemprop="description">
+
+Apiviz can be deployed according to several configurations as follow…
+
+</p>
+  </article>
+</div>
+
+
+  
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/lexicon/data-flows/" rel="permalink">APIVIZ ECOSYSTEM DATA FLOWS
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
 
 </p>
   </article>
@@ -642,12 +729,26 @@ cf : tuto Digital Ocean
         <li><a href="/page4/" class="disabled current">4</a></li>
       
     
+      
+        
+        
+        
+        <li><a href="/page5/">5</a></li>
+      
+    
+      
+        
+        
+        
+        <li><a href="/page6/">6</a></li>
+      
+    
 
     
     
 
     
-      <li><a href="/page5/">5</a></li>
+      <li><a href="/page7/">7</a></li>
     
 
     

@@ -217,6 +217,90 @@
     
       <li>
         
+          <span class="nav__sub-title">API</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/concepts" class="">Concepts</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmf" class="">Datamodel fields</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Datamodel templates</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/prj" class="">Projects</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/rec" class="">Recipes</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dsi" class="">Dataset inputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Dataset outputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/authentication" class="">Authentication</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/users" class="">Users</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
           <span class="nav__sub-title">Developers</span>
         
 
@@ -430,6 +514,7 @@
     <ul>
       <li><a href="#jwt-json-web-tokens-">JWT (JSON Web Tokens) :</a></li>
       <li><a href="#users-management-">Users management :</a></li>
+      <li><a href="#documentation">Documentation</a></li>
       <li><a href="#features-to-do--">Features TO DO  :</a></li>
     </ul>
   </li>
@@ -441,12 +526,16 @@
         <hr />
 
 <figure class="">
-  <img src="/static/logos/logo_solidata_15a-380x64.png" alt="toktok logo" />
+  <img src="/static/logos/logo_solidata_15a-380x64.png" alt="solidata logo" />
   </figure>
 
 <h2 id="solidata-backend">SOLIDATA BACKEND</h2>
 
 <p><strong>Solidata</strong> is a microservice (a REST API) for data management and authentication based on access and refresh JSON Web Tokens (JWT)</p>
+
+<figure class="">
+  <img src="/documentation/screenshots/endpoints_dataset_inputs.png" alt="solidata dsi" />
+  </figure>
 
 <ul>
   <li>compatible with the <strong>TADATA!</strong> sofware suite ( <a href="https://github.com/co-demos/apiviz-frontend">ApiViz</a> / <a href="https://github.com/entrepreneur-interet-general/solidata_frontend">Solidata_frontend</a> / <a href="https://github.com/co-demos/toktok">Toktok</a> / <a href="https://github.com/entrepreneur-interet-general/OpenScraper">OpenScraper</a>  )</li>
@@ -457,8 +546,11 @@
 <h2 id="goals">GOALS</h2>
 
 <ul>
-  <li>a server to manage data and authorizations based on JWT exchanges between client and server</li>
-  <li>possibility to switch on/off some extra features as : RSA decryption/encryption, anonymous JWT, sending confirmation email</li>
+  <li>allow you to consume data from your own csv/xls files or external APIs ;</li>
+  <li>consolidate your data : apply your own datamodel, simplify columns, apply metadatas, … ;</li>
+  <li>share the consolidated datas on API endpoints with the level of openness you decide (opendata, commons, collective, private) ;</li>
+  <li>manage all your data and your recipes by projects ;</li>
+  <li>be able to manage projects by teams and share data/recipes/datamodels…</li>
 </ul>
 
 <hr />
@@ -484,8 +576,11 @@
   <li>confirm email (optionnal in dev mode): confirm user by sending a confirmation link (protected) in an email</li>
   <li>password forgotten by sending a link (protected) in an email with redirection to new password form</li>
   <li>reset password from client interface (protected) …</li>
-  <li>Documentation on all API endpoints with Swagger (and some patience from the developers)</li>
 </ul>
+
+<h3 id="documentation">Documentation</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- on all API endpoints with Swagger (and some patience from the developer)
+</code></pre></div></div>
 
 <h3 id="features-to-do--">Features TO DO  :</h3>
 <ul>
@@ -502,9 +597,8 @@
 <h2 id="inspirations--benchmark">INSPIRATIONS / BENCHMARK</h2>
 
 <ul>
-  <li>not finding a simple enough open source solution resolving the following problem : having a third party service (on a distant server) able to serve reasonnably secure tokens and manage users, so to avoid to build/re-invent a custom authentication for login/register every time we work on an app…</li>
-  <li>more, be able to share user/credentials between multiple services</li>
-  <li>we looked at <a href="https://oauth.net/2/">Oauth2.0</a> (but doesn’t manage users per say), meteor-password (but dialog with websocket)…</li>
+  <li><a href="https://www.dataiku.com/">Dataiku</a>, <a href="https://parabola.io/">Parabola</a>, but they are proprietary solutions (and too complex for our purposes)… Not to mention they are very expensive…</li>
+  <li><a href="https://matchid-project.github.io/">Match ID</a>, but the backend doesn’t resolve the “sharing” part with levels as [“opendata”, “commons”, “collective”, “private”], and no BDD to back up recipes</li>
 </ul>
 
         
@@ -613,7 +707,7 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/meta/changelog/" rel="permalink">CHANGE LOG
+        <a href="/api/users/" rel="permalink">API - users
 </a>
       
     </h2>
@@ -642,38 +736,7 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/meta/credits/" rel="permalink">CREDITS
-</a>
-      
-    </h2>
-    
-      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
-
-
-
-
-  less than 1 minute read
-</p>
-    
-    <p class="archive__item-excerpt" itemprop="description">
-
-ApiViz’s team thanks :
-
-</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/meta/maintain/" rel="permalink">MAINTAIN
+        <a href="/api/rec/" rel="permalink">API - recipes
 </a>
       
     </h2>
@@ -702,7 +765,7 @@ ApiViz’s team thanks :
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/dev/guidelines/" rel="permalink">GUIDELINES FOR DEVELOPMENT
+        <a href="/api/prj/" rel="permalink">API - projects
 </a>
       
     </h2>
@@ -712,12 +775,39 @@ ApiViz’s team thanks :
 
 
 
-  1 minute read
+  less than 1 minute read
 </p>
     
     <p class="archive__item-excerpt" itemprop="description">
 
-This project is prone to be developped by several developpers, so we agreed on some basic rules…
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/dso/" rel="permalink">API - dataset outputs
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
 
 </p>
   </article>

@@ -30,7 +30,7 @@ var store = [{
         "url": "http://localhost:4001/prod/ubuntu/",
         "teaser":null},{
         "title": "PRESENTATION",
-        "excerpt":"SOLIDATA BACKEND Solidata is a microservice (a REST API) for data management and authentication based on access and refresh JSON Web Tokens (JWT) compatible with the TADATA! sofware suite ( ApiViz / Solidata_frontend / Toktok / OpenScraper ) GOALS a server to manage data and authorizations based on JWT exchanges...","categories": ["general"],
+        "excerpt":"SOLIDATA BACKEND Solidata is a microservice (a REST API) for data management and authentication based on access and refresh JSON Web Tokens (JWT) compatible with the TADATA! sofware suite ( ApiViz / Solidata_frontend / Toktok / OpenScraper ) GOALS allow you to consume data from your own csv/xls files or...","categories": ["general"],
         "tags": ["documentation","configuration","deployment","ecosystem"],
         "url": "http://localhost:4001/general/presentation/",
         "teaser":null},{
@@ -70,7 +70,7 @@ var store = [{
         "url": "http://localhost:4001/lexicon/third-services-integration/",
         "teaser":null},{
         "title": "INSTALL THE DOCS WITH JEKYLL",
-        "excerpt":"The documentation is produced with : Github pages Jekyll Minimal Mistakes template For a local deployment of the documentation project (Jekyll + MMistakes template) Install ruby, Jekyll brew install ruby gem install jekyll Install setup (given the Gemfile, Gemfile.lock and _config.yml files) gem install bundler bundle bundle install bundle update...","categories": ["guide"],
+        "excerpt":"The documentation is produced with : Github pages Jekyll Minimal Mistakes template For a local deployment of the documentation project (Jekyll + MMistakes template) Install ruby, Jekyll brew install ruby gem install jekyll From your repo’s root go to the /docs folder cd /docs Install setup (given the Gemfile, Gemfile.lock...","categories": ["guide"],
         "tags": ["documentation","configuration","installation","Jekyll"],
         "url": "http://localhost:4001/guide/install-docs/",
         "teaser":null},{
@@ -108,4 +108,49 @@ var store = [{
         "excerpt":"  v.0.1 alpha (2019-03-06)      First published version  ","categories": ["meta"],
         "tags": ["log","versions"],
         "url": "http://localhost:4001/meta/changelog/",
+        "teaser":null},{
+        "title": "API - authentication",
+        "excerpt":"  The API for Solidata authentication     CONFIGURATION COLLECTIONS AND DOCUMENTS   DOCUMENTED URLs   check the following url :   http://localhost:4000/api/auth/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/authentication/",
+        "teaser":null},{
+        "title": "API - concepts",
+        "excerpt":"The API of Solidata backend deals with several distinct concepts : usr : users (endpoints and models) auth : authentication and register (endpoints) dmf : datamodel fields (endpoints and models) dmt : datamodel templates (endpoints and models) dsi : dataset inputs (endpoints and models) dso : dataset outputs (endpoints and...","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/concepts/",
+        "teaser":null},{
+        "title": "API - datamodel fields",
+        "excerpt":"  The API for Solidata DMF management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/dmf/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/dmf/",
+        "teaser":null},{
+        "title": "API - datamodel templates",
+        "excerpt":"  The API for Solidata DMT management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/dmt/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/dmt/",
+        "teaser":null},{
+        "title": "API - dataset inputs",
+        "excerpt":"  The API for Solidata DSI management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/dsi/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/dsi/",
+        "teaser":null},{
+        "title": "API - dataset outputs",
+        "excerpt":"  The API for Solidata DSO management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/dso/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/dso/",
+        "teaser":null},{
+        "title": "API - projects",
+        "excerpt":"  The API for Solidata PRJ management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/prj/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/prj/",
+        "teaser":null},{
+        "title": "API - recipes",
+        "excerpt":"  The API for Solidata REC management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/rec/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/rec/",
+        "teaser":null},{
+        "title": "API - users",
+        "excerpt":"  The API for Solidata users management     DOCUMENTED URLs   check the following url :   http://localhost:4000/api/usr/documentation  ","categories": ["api"],
+        "tags": ["documentation","configuration","api"],
+        "url": "http://localhost:4001/api/users/",
         "teaser":null}]
