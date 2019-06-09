@@ -76,6 +76,7 @@ def create_app(
   run_mode="dev", 
   docker_mode="docker_off",
   mongodb_mode="local",
+  auth_mode="local",
 
   antispam_mode="no", 
   antispam_value="",   

@@ -226,6 +226,9 @@ class BaseConfig(object):
   MONGO_COLL_LICENCES             = os.getenv("MONGO_COLL_LICENCES", "licences")
   MONGO_COLL_JWT_BLACKLIST        = os.getenv("MONGO_COLL_JWT_BLACKLIST", "jwt_blacklist")
 
+  """ AUTH MODE """ 
+  AUTH_MODE = os.getenv("AUTH_MODE", "local")
+
   """ EMAILING """
   # # email server
   # MAIL_SERVER         = 'smtp.googlemail.com'

@@ -13,9 +13,9 @@ log.debug (">>> _auth ... loading authorizations ...")
 from flask import current_app as app #, request
 
 authorizations = {
-		'apikey': {
-				'type'  : 'apiKey', 
-				'in'    : 'header',
-				'name'  : app.config["JWT_HEADER_NAME"], # 'X-API-KEY'
-		},
+  'apikey': {
+    'type'  : 'apiKey', 
+    'in'    : 'header',
+    'name'  : app.config["JWT_HEADER_NAME"], # 'X-API-KEY'
+  },
 }

@@ -113,5 +113,8 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# Jekyl ldocs
+/_site
+
 # mypy
 .mypy_cache/

@@ -37,12 +37,13 @@ from flask_socketio import SocketIO
 @click.option('--host',    default="localhost", nargs=1,  help="The <host> name you want the app to run on : <IP_NUMBER> " )
 @click.option('--port',    default="4000", nargs=1,  help="The <port> number you want the app to run on : <PORT_NUMBER>")
 @click.option('--mongodb', default="local", nargs=1,  help="The <mongodb> you need to run the app : local | distant | server" )
+@click.option('--auth_mode', default="local", nargs=1,  help="The <auth_mode> you need to run the app : local | distant" )
 @click.option('--rsa',     default="yes", nargs=1,  help="The <rsa> mode (RSA encrypt/decrypt for forms) : no, yes" )
 @click.option('--anojwt',  default="yes", nargs=1,  help="The <anojwt> mode (needs an anonymous JWT for login and register routes) : no, yes" )
 @click.option('--antispam', default="no", nargs=1, help="The <antispam> mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
 @click.option('--antispam_val', default="", nargs=1, help="The <antispam_val> to check in forms against spams : '' (default), <your-string-to-check>" )
 @click.option('--https',   default="false", nargs=1,  help="The <https> mode you want the app to run on : true | false")
-def app_runner(mode, docker, host, port, mongodb, rsa, anojwt, antispam, antispam_val, https) : 
+def app_runner(mode, docker, host, port, mongodb, auth_mode, rsa, anojwt, antispam, antispam_val, https) : 
 
   """ 
   runner for the SOLIDATA backend Flask app 
@@ -56,6 +57,7 @@ def app_runner(mode, docker, host, port, mongodb, rsa, anojwt, antispam, antispa
   --host    : localhost | <your_IP>
   --port    : <your_favorite_port>
   --mongodb : local | distant | server
+  --auth_mode : local | distant 
   --https   : yes | no
   --rsa     : yes | no
   --antispam : yes | no
@@ -78,16 +80,17 @@ def app_runner(mode, docker, host, port, mongodb, rsa, anojwt, antispam, antispa
 
   ### WARNING : CLIck will treat every input as string as defaults values are string too
   log.debug("\n=== CUSTOM CONFIG FROM CLI ===\n")
-  log.debug("=== mode     : %s", mode)
-  log.debug("=== docker   : %s", docker)
-  log.debug("=== host     : %s", host)
-  log.debug("=== port     : %s", port)
-  log.debug("=== mongodb  : %s", mongodb)
-  log.debug("=== rsa      : %s", rsa)
-  log.debug("=== anojwt   : %s", anojwt)
-  log.debug("=== antispam : %s", antispam)
+  log.debug("=== mode      : %s", mode)
+  log.debug("=== docker    : %s", docker)
+  log.debug("=== host      : %s", host)
+  log.debug("=== port      : %s", port)
+  log.debug("=== mongodb   : %s", mongodb)
+  log.debug("=== auth_mode : %s", auth_mode)
+  log.debug("=== rsa       : %s", rsa)
+  log.debug("=== anojwt    : %s", anojwt)
+  log.debug("=== antispam  : %s", antispam)
   log.debug("=== antispam_val : %s", antispam_val)
-  log.debug("=== https    : %s", https)
+  log.debug("=== https     : %s", https)
   print()
 
 
@@ -121,10 +124,11 @@ def app_runner(mode, docker, host, port, mongodb, rsa, anojwt, antispam, antispa
   os.environ["DOMAIN_PORT"]   = port
   os.environ["DOCKER_MODE"]   = docker
   os.environ["MONGODB_MODE"]  = mongodb
+  os.environ["AUTH_MODE"]     = auth_mode
 
   # if mode not in ["prod", "preprod"]:
-  os.environ["SERVER_NAME"]  = host + ":" + port
-  os.environ["DOMAIN_NAME"]  = http_mode + "://" + host + ":" + port
+  # os.environ["SERVER_NAME"]  = host + ":" + port
+  # os.environ["DOMAIN_NAME"]  = http_mode + "://" + host + ":" + port
 
 
   log.debug("\n--- STARTING SOLIDATA API ---\n")
@@ -137,6 +141,7 @@ def app_runner(mode, docker, host, port, mongodb, rsa, anojwt, antispam, antispa
     run_mode=mode, 
     docker_mode=docker,
     mongodb_mode=mongodb,
+    auth_mode=auth_mode,
 
     RSA_mode=rsa, 
     anojwt_mode=anojwt, 
