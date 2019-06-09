@@ -170,6 +170,7 @@ At the CLI level you can use :
 @click.option('--host', default="localhost", nargs=1,  help="The <host> name you want the app to run on : localhost(default) | <IP_NUMBER> " )
 @click.option('--port', default="4000", nargs=1,  help="The <port> number you want the app to run on : 4000 (default) | <PORT_NUMBER>")
 @click.option('--mongodb', default="local", nargs=1,  help="The <mongodb> you need to run the app : local | distant | server" )
+@click.option('--auth_mode', default="local", nargs=1,  help="The <auth_mode> you need to run the app : local | distant" )
 @click.option('--rsa', default="no", nargs=1,  help="The <rsa> mode (RSA encrypt/decrypt for forms), protects '/login' + '/register' + '/password_forgotten' + '/reset_password': 'no' (default), 'yes'" )
 @click.option('--anojwt', default="no", nargs=1, help="The <anojwt> mode (needs an anonymous JWT for login and register routes), affects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
 @click.option('--antispam', default="no", nargs=1, help="The <antispam> mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'" )
@@ -177,11 +178,17 @@ At the CLI level you can use :
 @click.option('--https', default="false", nargs=1, help="The <https> mode you want the app to run on : true | false")
 ```
 
+### the variables in `.env` files
+
 Within the `.env`files you can change the following variables : 
 
 - `example.env.global`
 
 ``` bash
+### GLOBAL ENV VARS
+
+APP_VERSION=0.2.2
+
 RUN_MODE=default
 DOCKER_MODE=docker_off
 AUTH_MODE=local
@@ -197,6 +204,26 @@ SERVER_NAME_TEST=True
 
 ### MONGO DB RELATED
 MONGODB_MODE=local
+
+### AUTH SPECS ENV VARS
+AUTH_MODE=local
+RSA_MODE=yes
+ANOJWT_MODE=yes
+ANTISPAM_MODE=no
+ANTISPAM_VAL=my-string-to-check
+
+SECURITY_PASSWORD_SALT=a-secret-security-pwd-salt
+
+JWT_SECRET_KEY=a-secret-jwt-key
+JWT_ACCESS_TOKEN_EXPIRES=720
+JWT_REFRESH_TOKEN_EXPIRES=10
+JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES=15
+JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES=7
+JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES=1
+
+JWT_RENEW_REFRESH_TOKEN_AT_LOGIN=true
+REDIRECTION_FRONT_PREPROD=http://preprod.solidata-api.co-demos.com
+REDIRECTION_FRONT_PROD=http://solidata-api.co-demos.com
 
 ```
 
@@ -227,6 +254,30 @@ MONGO_DISTANT_URI_OPTIONS=?ssl=true&replicaSet=<REPLICA-SET>&authSource=admin&re
 ### mongodb collections
 MONGO_COLL_TAGS=tags
 MONGO_COLL_USERS=users
+MONGO_COLL_PROJECTS=projects
+MONGO_COLL_DATAMODELS_TEMPLATES=datamodels_templates
+MONGO_COLL_DATAMODELS_FIELDS=datamodels_fields
+MONGO_COLL_DATASETS_INPUTS=datasets_inputs
+MONGO_COLL_DATASETS_INPUTS_DOC=datasets_inputs_docs
+MONGO_COLL_DATASETS_RAWS=datasets_raws
+MONGO_COLL_DATASETS_OUTPUTS=datasets_outputs
+MONGO_COLL_DATASETS_OUTPUTS_DOC=datasets_outputs_docs
+MONGO_COLL_RECIPES=recipes
 MONGO_COLL_LICENCES=licences
 MONGO_COLL_JWT_BLACKLIST=jwt_blacklist
+```
+
+- `example.env.mailing`
+
+``` bash
+### MAILING ENV VARS
+
+MAIL_SERVER=smtp.googlemail.com
+MAIL_PORT=465
+MAIL_USE_TLS=False
+MAIL_USE_SSL=True
+MAIL_USERNAME=XXX.XXX@XXX.com
+MAIL_PASSWORD=XXXXX
+MAIL_ADMINS=XXXX.XXXX@gmail.com,YYYY.YYYY@gmail.com
+MAIL_DEFAULT_SENDER=XXXX.XXXX@gmail.com
 ```

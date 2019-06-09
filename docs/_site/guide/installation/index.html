@@ -412,7 +412,7 @@
 
 
 
-  3 minute read
+  4 minute read
 </p>
           
         </header>
@@ -435,6 +435,7 @@
     <ul>
       <li><a href="#the-env-files">the .env files</a></li>
       <li><a href="#the-variables">the variables</a></li>
+      <li><a href="#the-variables-in-env-files">the variables in .env files</a></li>
     </ul>
   </li>
 </ul>
@@ -603,6 +604,7 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--host'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"localhost"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;host&gt; name you want the app to run on : localhost(default) | &lt;IP_NUMBER&gt; "</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--port'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"4000"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;port&gt; number you want the app to run on : 4000 (default) | &lt;PORT_NUMBER&gt;"</span><span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--mongodb'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;mongodb&gt; you need to run the app : local | distant | server"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--auth_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;auth_mode&gt; you need to run the app : local | distant"</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--rsa'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;rsa&gt; mode (RSA encrypt/decrypt for forms), protects '/login' + '/register' + '/password_forgotten' + '/reset_password': 'no' (default), 'yes'"</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--anojwt'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;anojwt&gt; mode (needs an anonymous JWT for login and register routes), affects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--antispam'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;antispam&gt; mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
@@ -610,13 +612,19 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 <span class="nd">@click.option</span><span class="p">(</span><span class="s">'--https'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"false"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;https&gt; mode you want the app to run on : true | false"</span><span class="p">)</span>
 </code></pre></div></div>
 
+<h3 id="the-variables-in-env-files">the variables in <code class="highlighter-rouge">.env</code> files</h3>
+
 <p>Within the <code class="highlighter-rouge">.env</code>files you can change the following variables :</p>
 
 <ul>
   <li><code class="highlighter-rouge">example.env.global</code></li>
 </ul>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">RUN_MODE</span><span class="o">=</span>default
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">### GLOBAL ENV VARS</span>
+
+<span class="nv">APP_VERSION</span><span class="o">=</span>0.2.2
+
+<span class="nv">RUN_MODE</span><span class="o">=</span>default
 <span class="nv">DOCKER_MODE</span><span class="o">=</span>docker_off
 <span class="nv">AUTH_MODE</span><span class="o">=</span><span class="nb">local
 </span><span class="nv">HTTPS_MODE</span><span class="o">=</span><span class="nb">false</span>
@@ -631,6 +639,26 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 
 <span class="c">### MONGO DB RELATED</span>
 <span class="nv">MONGODB_MODE</span><span class="o">=</span><span class="nb">local</span>
+
+<span class="c">### AUTH SPECS ENV VARS</span>
+<span class="nv">AUTH_MODE</span><span class="o">=</span><span class="nb">local
+</span><span class="nv">RSA_MODE</span><span class="o">=</span>yes
+<span class="nv">ANOJWT_MODE</span><span class="o">=</span>yes
+<span class="nv">ANTISPAM_MODE</span><span class="o">=</span>no
+<span class="nv">ANTISPAM_VAL</span><span class="o">=</span>my-string-to-check
+
+<span class="nv">SECURITY_PASSWORD_SALT</span><span class="o">=</span>a-secret-security-pwd-salt
+
+<span class="nv">JWT_SECRET_KEY</span><span class="o">=</span>a-secret-jwt-key
+<span class="nv">JWT_ACCESS_TOKEN_EXPIRES</span><span class="o">=</span>720
+<span class="nv">JWT_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>10
+<span class="nv">JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>15
+<span class="nv">JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>7
+<span class="nv">JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES</span><span class="o">=</span>1
+
+<span class="nv">JWT_RENEW_REFRESH_TOKEN_AT_LOGIN</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">REDIRECTION_FRONT_PREPROD</span><span class="o">=</span>http://preprod.solidata-api.co-demos.com
+<span class="nv">REDIRECTION_FRONT_PROD</span><span class="o">=</span>http://solidata-api.co-demos.com
 
 </code></pre></div></div>
 
@@ -662,8 +690,33 @@ gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0
 <span class="c">### mongodb collections</span>
 <span class="nv">MONGO_COLL_TAGS</span><span class="o">=</span>tags
 <span class="nv">MONGO_COLL_USERS</span><span class="o">=</span>users
+<span class="nv">MONGO_COLL_PROJECTS</span><span class="o">=</span>projects
+<span class="nv">MONGO_COLL_DATAMODELS_TEMPLATES</span><span class="o">=</span>datamodels_templates
+<span class="nv">MONGO_COLL_DATAMODELS_FIELDS</span><span class="o">=</span>datamodels_fields
+<span class="nv">MONGO_COLL_DATASETS_INPUTS</span><span class="o">=</span>datasets_inputs
+<span class="nv">MONGO_COLL_DATASETS_INPUTS_DOC</span><span class="o">=</span>datasets_inputs_docs
+<span class="nv">MONGO_COLL_DATASETS_RAWS</span><span class="o">=</span>datasets_raws
+<span class="nv">MONGO_COLL_DATASETS_OUTPUTS</span><span class="o">=</span>datasets_outputs
+<span class="nv">MONGO_COLL_DATASETS_OUTPUTS_DOC</span><span class="o">=</span>datasets_outputs_docs
+<span class="nv">MONGO_COLL_RECIPES</span><span class="o">=</span>recipes
 <span class="nv">MONGO_COLL_LICENCES</span><span class="o">=</span>licences
 <span class="nv">MONGO_COLL_JWT_BLACKLIST</span><span class="o">=</span>jwt_blacklist
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">example.env.mailing</code></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">### MAILING ENV VARS</span>
+
+<span class="nv">MAIL_SERVER</span><span class="o">=</span>smtp.googlemail.com
+<span class="nv">MAIL_PORT</span><span class="o">=</span>465
+<span class="nv">MAIL_USE_TLS</span><span class="o">=</span>False
+<span class="nv">MAIL_USE_SSL</span><span class="o">=</span>True
+<span class="nv">MAIL_USERNAME</span><span class="o">=</span>XXX.XXX@XXX.com
+<span class="nv">MAIL_PASSWORD</span><span class="o">=</span>XXXXX
+<span class="nv">MAIL_ADMINS</span><span class="o">=</span>XXXX.XXXX@gmail.com,YYYY.YYYY@gmail.com
+<span class="nv">MAIL_DEFAULT_SENDER</span><span class="o">=</span>XXXX.XXXX@gmail.com
 </code></pre></div></div>
 
         
