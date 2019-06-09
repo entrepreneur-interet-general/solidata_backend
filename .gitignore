@@ -114,7 +114,7 @@ venv.bak/
 /site
 
 # Jekyl ldocs
-/_site
+docs/_site
 
 # mypy
 .mypy_cache/
