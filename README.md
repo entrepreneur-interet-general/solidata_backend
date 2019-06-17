@@ -1,5 +1,8 @@
 <h1 align=center>  SOLIDATA <br> backend</h1>
 
+# WARNING : almost deprecated 
+
+From now please refer to the cloned and enhanced repo : [solidata-backend](https://github.com/co-demos/solidata-backend/pull/11)
 
 -------
 ## PRESENTATION
