@@ -1,0 +1,1085 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>INSTALLATION WALKTHROUGH - Solidata backend API docs</title>
+<meta name="description" content="">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Solidata backend API docs">
+<meta property="og:title" content="INSTALLATION WALKTHROUGH">
+<meta property="og:url" content="http://localhost:4001/guide/installation/">
+
+
+  <meta property="og:description" content="">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-05-05T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4001/guide/installation/">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Solidata backend API docs Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE ]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/static/logos/logo_solidata.png" alt=""></a>
+        
+        <a class="site-title" href="/">Solidata API docs</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/general/presentation" >Presentation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/guide/installation" >Quickstart guide</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/" >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://github.com/entrepreneur-interet-general/solidata_backend" >Repo</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">The Solidata project</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/general/presentation" class="">Presentation</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/general/ecosystem" class="">The Solidata ecosystem</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Installation</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/guide/installation" class="">Installation walkthrough</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/guide/install-docs" class="">Install the docs</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">API</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/concepts" class="">Concepts</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmf" class="">Datamodel fields</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Datamodel templates</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/prj" class="">Projects</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/rec" class="">Recipes</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dsi" class="">Dataset inputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Dataset outputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/authentication" class="">Authentication</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/users" class="">Users</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Developers</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/stack" class="">Stack</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/contributing" class="">Contributing</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/roadmaps" class="">Roadmaps</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/guidelines" class="">Guidelines</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Snippets</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/nginx" class="">Nginx</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/supervisor" class="">Supervisor</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/mongo_db" class="">Mongo db</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/ubuntu" class="">Ubuntu</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/git" class="">Git</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Meta</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/maintain" class="">Maintenance</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/credits" class="">Credits</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/changelog" class="">Change log</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/license" class="">License</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/posts/"><span class="nav__sub-title">Blog</span></a>
+        
+
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/categories/"><span class="nav__sub-title">Categories</span></a>
+        
+
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/tags/"><span class="nav__sub-title">Tags</span></a>
+        
+
+        
+      </li>
+    
+  </ul>
+</nav>
+    
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="INSTALLATION WALKTHROUGH">
+    <meta itemprop="description" content="">
+    <meta itemprop="datePublished" content="May 05, 2019">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">INSTALLATION WALKTHROUGH
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i>  contents</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#build-and-run">Build and run</a>
+    <ul>
+      <li><a href="#with-docker---locally">WITH DOCKER - LOCALLY</a></li>
+      <li><a href="#without-docker---locally">WITHOUT DOCKER - LOCALLY</a></li>
+      <li><a href="#without-docker---in-production">WITHOUT DOCKER - IN PRODUCTION</a></li>
+    </ul>
+  </li>
+  <li><a href="#environment-variables">Environment variables</a>
+    <ul>
+      <li><a href="#the-env-files">the .env files</a></li>
+      <li><a href="#the-variables">the variables</a></li>
+      <li><a href="#the-variables-in-env-files">the variables in .env files</a></li>
+    </ul>
+  </li>
+</ul>
+            </nav>
+          </aside>
+        
+        <hr />
+
+<h2 id="build-and-run">Build and run</h2>
+
+<p>You have two different options to run (locally) solidata on your computer/server : with <strong>Python</strong> or with <strong>Docker</strong>, depending where your heart leans…</p>
+
+<hr />
+
+<h3 id="with-docker---locally">WITH DOCKER - LOCALLY</h3>
+
+<ul>
+  <li><strong>locally - in your browser check this url</strong>
+    <ul>
+      <li>install <a href="https://docs.docker.com/docker-for-mac/install/">Docker (here for mac OS)</a></li>
+      <li>clone or <a href="https://github.com/co-demos/ApiViz/archive/master.zip">download</a> the repo</li>
+      <li><a href="https://docs.mongodb.com/manual/installation/">install MongoDB</a> locally/on your server or get the URI of the MongoDB you’re using</li>
+      <li>go to your <code class="highlighter-rouge">/solidata</code> folder</li>
+      <li>launch docker and run :
+        <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  make up
+</code></pre></div>        </div>
+      </li>
+      <li>check the following URL in your browser :
+        <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:4000/api/dsi/documentation
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>in production</strong>
+    <ul>
+      <li>install <a href="https://phoenixnap.com/kb/how-to-install-docker-on-ubuntu-18-04">Docker</a> on your server (here for Ubuntu 18)
+        <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get remove docker docker-engine docker.io
+<span class="nb">sudo </span>apt install docker.io
+<span class="nb">sudo </span>systemctl start docker
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>docker
+</code></pre></div>        </div>
+      </li>
+      <li>set up UFW, GIT, NGINX, …</li>
+      <li>(optional) <a href="https://docs.mongodb.com/manual/installation/">install MongoDB</a> (if the solidata’s DB for config is hosted on your own server)</li>
+      <li>add the github repo</li>
+      <li>create and set of secret env variables at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code>, <code class="highlighter-rouge">example.env.mailing</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
+      <li>lauch docker and run the command :
+        <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make up-prod
+</code></pre></div>        </div>
+      </li>
+      <li>test the following url in your browser : 
+  <a href="http://localhost:4000/api/dsi/documentation"><code class="highlighter-rouge">http://localhost:4000/api/dsi/documentation</code></a></li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="without-docker---locally"><em>WITHOUT DOCKER - LOCALLY</em></h3>
+
+<ol>
+  <li><strong>clone or <a href="https://github.com/co-demos/ApiViz/archive/master.zip">download</a> the repo</strong></li>
+  <li><strong><a href="https://docs.mongodb.com/manual/installation/">install MongoDB</a> locally</strong> or get the URI of the MongoDB you’re using</li>
+  <li><strong>go to your solidata folder</strong></li>
+  <li><strong>install python pip and virtualenv</strong>
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>apt install python-pip
+ <span class="nb">sudo </span>apt install virtualenv
+</code></pre></div>    </div>
+  </li>
+  <li><strong>install a <a href="https://pypi.python.org/pypi/virtualenv">virtual environment</a></strong>
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virtualenv <span class="nt">-p</span> python3 venv
+ <span class="nb">source </span>venv/bin/activate
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>install the libraries</strong></p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>pip install <span class="nt">-r</span> requirements.txt
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Go to your app folder and run :</strong></p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> python appserver.py
+</code></pre></div>    </div>
+  </li>
+  <li><strong>optional</strong> : you can also use some variables in the command line :
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># get the list of available CLI options</span>
+ python appserver.py <span class="nt">--help</span>
+
+ <span class="c"># for example : run with a custom port number in testing mode</span>
+ python appserver.py <span class="nt">--port</span><span class="o">=</span>4001 <span class="nt">--mode</span><span class="o">=</span>preprod
+</code></pre></div>    </div>
+  </li>
+  <li><strong>test the following url in your browser</strong> : 
+<a href="http://localhost:4001/api/dsi/documentation"><code class="highlighter-rouge">http://localhost:4001/api/dsi/documentation</code></a></li>
+</ol>
+
+<h3 id="without-docker---in-production"><em>WITHOUT DOCKER - IN PRODUCTION</em></h3>
+
+<ol>
+  <li><strong>get a server</strong> - check digital ocean, OVH, …</li>
+  <li>optionnal : get a domain name : check OVH, namecheap, godaddy…. + setup DNS</li>
+  <li><strong>follow (most of) these <a href="https://github.com/entrepreneur-interet-general/tutos-2018/wiki/Admin-Sys">instructions</a></strong></li>
+  <li><strong>go to app folder and create a virtual env</strong> (for instance called “venv”)</li>
+  <li><strong>create and set of secret env variables</strong> at the project’s folder root based on <code class="highlighter-rouge">example.env.global</code>, <code class="highlighter-rouge">example.env.mailing</code> and <code class="highlighter-rouge">example.env.mongodb</code></li>
+  <li>
+    <p><strong>set up the <a href="./unit/working_service_config.service">gunicorn service</a> and <a href="./nginx/working_nginx_config">NGINX</a></strong> with supervisor</p>
+  </li>
+  <li>
+    <p>… pray for all that to work as expected, and keep calm…</p>
+  </li>
+  <li>
+    <p><strong>update code and (re-)deploy</strong></p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">cd</span> /&lt;your_app_folder&gt;/&lt;username&gt;/app_solidata
+ git pull origin master
+
+ <span class="c"># start app with supervisor</span>
+ <span class="nb">sudo </span>supervisorctl start solidata
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="environment-variables">Environment variables</h2>
+
+<h3 id="the-env-files">the <code class="highlighter-rouge">.env</code> files</h3>
+
+<p>The environment variables are stored in a couple of files at the root of the project :</p>
+
+<ul>
+  <li><code class="highlighter-rouge">example.env.global</code></li>
+  <li><code class="highlighter-rouge">example.env.mongodb</code></li>
+  <li><code class="highlighter-rouge">example.env.mailing</code></li>
+</ul>
+
+<p>If you want or need to use Apiviz in production you will have to duplicate those files at the same level with those new names :</p>
+
+<ul>
+  <li><code class="highlighter-rouge">.env.global</code></li>
+  <li><code class="highlighter-rouge">.env.mongodb</code></li>
+  <li><code class="highlighter-rouge">.env.mailing</code></li>
+</ul>
+
+<p>… then you will be able to change the environment variable you want and begin to use all of the available arguments like :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># with Docker</span>
+make up-prod
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># with Python only</span>
+python appserver.py <span class="nv">mongodb</span><span class="o">=</span>distant <span class="nv">mode</span><span class="o">=</span>dev_email
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># with Gunicorn</span>
+gunicorn wsgi_prod:app <span class="nt">--bind</span><span class="o">=</span>0.0.0.0:4000
+</code></pre></div></div>
+
+<h3 id="the-variables">the variables</h3>
+
+<p>At the CLI level you can use :</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@click.option</span><span class="p">(</span><span class="s">'--mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"dev"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;mode&gt; you need to run the app : dev (default), dev_email, prod, preprod"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--docker'</span><span class="p">,</span>  <span class="n">default</span><span class="o">=</span><span class="s">"docker_off"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"Are you running the app with &lt;docker&gt; : docker_off | docker_on"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--host'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"localhost"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;host&gt; name you want the app to run on : localhost(default) | &lt;IP_NUMBER&gt; "</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--port'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"4000"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;port&gt; number you want the app to run on : 4000 (default) | &lt;PORT_NUMBER&gt;"</span><span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--mongodb'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"local"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;mongodb&gt; you need to run the app : local | distant | server"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--auth_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"internal"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;auth_mode&gt; you need to run the app : internal | local | distant_prod | distant_preprod "</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--rsa'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;rsa&gt; mode (RSA encrypt/decrypt for forms), protects '/login' + '/register' + '/password_forgotten' + '/reset_password': 'no' (default), 'yes'"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--anojwt'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;anojwt&gt; mode (needs an anonymous JWT for login and register routes), affects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--antispam'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"no"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;antispam&gt; mode (add hidden field check for forms) protects '/login' + '/register' + '/password_forgotten' : 'no' (default), 'yes'"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--antispam_val'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">""</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;antispam_val&gt; to check in forms against spams : '' (default), &lt;your-string-to-check&gt;"</span> <span class="p">)</span>
+<span class="nd">@click.option</span><span class="p">(</span><span class="s">'--https'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"false"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">"The &lt;https&gt; mode you want the app to run on : true | false"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="the-variables-in-env-files">the variables in <code class="highlighter-rouge">.env</code> files</h3>
+
+<p>Within the <code class="highlighter-rouge">.env</code>files you can change the following variables :</p>
+
+<ul>
+  <li><code class="highlighter-rouge">example.env.global</code></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">### GLOBAL ENV VARS</span>
+
+<span class="nv">APP_VERSION</span><span class="o">=</span>0.2.2
+
+<span class="nv">RUN_MODE</span><span class="o">=</span>default
+<span class="nv">DOCKER_MODE</span><span class="o">=</span>docker_off
+<span class="nv">AUTH_MODE</span><span class="o">=</span><span class="nb">local
+</span><span class="nv">HTTPS_MODE</span><span class="o">=</span><span class="nb">false</span>
+
+<span class="c">### FLASK RELATED </span>
+<span class="nv">DEBUG</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">TESTING</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">DOMAIN_ROOT</span><span class="o">=</span>localhost
+<span class="nv">DOMAIN_PORT</span><span class="o">=</span>4000
+<span class="nv">SECRET_KEY</span><span class="o">=</span>app_very_secret_key
+<span class="nv">SERVER_NAME_TEST</span><span class="o">=</span>True
+
+<span class="c">### MONGO DB RELATED</span>
+<span class="nv">MONGODB_MODE</span><span class="o">=</span><span class="nb">local</span>
+
+<span class="c">### AUTH SPECS ENV VARS</span>
+<span class="nv">AUTH_MODE</span><span class="o">=</span><span class="nb">local
+</span><span class="nv">DISTANT_AUTH_URL_ROOT_LOCAL</span><span class="o">=</span>http://localhost:4100/
+<span class="nv">DISTANT_AUTH_URL_ROOT</span><span class="o">=</span>https://toktok-auth.com/
+<span class="nv">DISTANT_AUTH_URL_ROOT_PREPOD</span><span class="o">=</span>https://preprod.toktok-auth.com/
+
+<span class="nv">RSA_MODE</span><span class="o">=</span>yes
+<span class="nv">ANOJWT_MODE</span><span class="o">=</span>yes
+<span class="nv">ANTISPAM_MODE</span><span class="o">=</span>no
+<span class="nv">ANTISPAM_VAL</span><span class="o">=</span>my-string-to-check
+
+<span class="nv">SECURITY_PASSWORD_SALT</span><span class="o">=</span>a-secret-security-pwd-salt
+
+<span class="nv">JWT_SECRET_KEY</span><span class="o">=</span>a-secret-jwt-key
+<span class="nv">JWT_ACCESS_TOKEN_EXPIRES</span><span class="o">=</span>720
+<span class="nv">JWT_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>10
+<span class="nv">JWT_ANONYMOUS_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>15
+<span class="nv">JWT_CONFIRM_EMAIL_REFRESH_TOKEN_EXPIRES</span><span class="o">=</span>7
+<span class="nv">JWT_RESET_PWD_ACCESS_TOKEN_EXPIRES</span><span class="o">=</span>1
+
+<span class="nv">JWT_RENEW_REFRESH_TOKEN_AT_LOGIN</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">REDIRECTION_FRONT_PREPROD</span><span class="o">=</span>http://preprod.solidata-api.co-demos.com
+<span class="nv">REDIRECTION_FRONT_PROD</span><span class="o">=</span>http://solidata-api.co-demos.com
+
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">example.env.mongodb</code></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c">### to build mongodb URI</span>
+<span class="nv">MONGO_ROOT_LOCAL</span><span class="o">=</span>localhost
+<span class="nv">MONGO_ROOT_DOCKER</span><span class="o">=</span>host.docker.internal
+<span class="nv">MONGO_PORT_LOCAL</span><span class="o">=</span>27017
+
+<span class="nv">MONGO_DBNAME</span><span class="o">=</span>solidata
+<span class="nv">MONGO_DBNAME_TEST</span><span class="o">=</span>solidata-test
+<span class="nv">MONGO_DBNAME_PREPROD</span><span class="o">=</span>solidata-preprod
+<span class="nv">MONGO_DBNAME_PROD</span><span class="o">=</span>solidata-prod
+
+<span class="nv">MONGO_ROOT_SERVER</span><span class="o">=</span>127.0.0.1
+<span class="nv">MONGO_PORT_SERVER</span><span class="o">=</span>27017
+<span class="nv">MONGO_USER_SERVER</span><span class="o">=</span>MY-MONGODB-SERVER-USERNAME
+<span class="nv">MONGO_PASS_SERVER</span><span class="o">=</span>MY-MONGODB-SERVER-USER-PASSWORD
+<span class="nv">MONGO_OPTIONS_SERVER</span><span class="o">=</span>?MY-MONGODB-SERVER-OPTIONS
+
+<span class="c">### for instance on MongodbAtlas</span>
+<span class="nv">MONGO_DISTANT_URI</span><span class="o">=</span>mongodb://&lt;DISTANT-USERNAME&gt;:&lt;DISTANT-PASSWORD&gt;@&lt;DISTANT-HOST&gt;:&lt;DISTANT-PORT&gt;
+<span class="nv">MONGO_DISTANT_URI_OPTIONS</span><span class="o">=</span>?ssl<span class="o">=</span><span class="nb">true</span>&amp;replicaSet<span class="o">=</span>&lt;REPLICA-SET&gt;&amp;authSource<span class="o">=</span>admin&amp;retryWrites<span class="o">=</span><span class="nb">true</span>
+
+<span class="c">### mongodb collections</span>
+<span class="nv">MONGO_COLL_TAGS</span><span class="o">=</span>tags
+<span class="nv">MONGO_COLL_USERS</span><span class="o">=</span>users
+<span class="nv">MONGO_COLL_PROJECTS</span><span class="o">=</span>projects
+<span class="nv">MONGO_COLL_DATAMODELS_TEMPLATES</span><span class="o">=</span>datamodels_templates
+<span class="nv">MONGO_COLL_DATAMODELS_FIELDS</span><span class="o">=</span>datamodels_fields
+<span class="nv">MONGO_COLL_DATASETS_INPUTS</span><span class="o">=</span>datasets_inputs
+<span class="nv">MONGO_COLL_DATASETS_INPUTS_DOC</span><span class="o">=</span>datasets_inputs_docs
+<span class="nv">MONGO_COLL_DATASETS_RAWS</span><span class="o">=</span>datasets_raws
+<span class="nv">MONGO_COLL_DATASETS_OUTPUTS</span><span class="o">=</span>datasets_outputs
+<span class="nv">MONGO_COLL_DATASETS_OUTPUTS_DOC</span><span class="o">=</span>datasets_outputs_docs
+<span class="nv">MONGO_COLL_RECIPES</span><span class="o">=</span>recipes
+<span class="nv">MONGO_COLL_LICENCES</span><span class="o">=</span>licences
+<span class="nv">MONGO_COLL_JWT_BLACKLIST</span><span class="o">=</span>jwt_blacklist
+</code></pre></div></div>
+
+<ul>
+  <li><code class="highlighter-rouge">example.env.mailing</code></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">### MAILING ENV VARS</span>
+
+<span class="nv">MAIL_SERVER</span><span class="o">=</span>smtp.googlemail.com
+<span class="nv">MAIL_PORT</span><span class="o">=</span>465
+<span class="nv">MAIL_USE_TLS</span><span class="o">=</span>False
+<span class="nv">MAIL_USE_SSL</span><span class="o">=</span>True
+<span class="nv">MAIL_USERNAME</span><span class="o">=</span>XXX.XXX@XXX.com
+<span class="nv">MAIL_PASSWORD</span><span class="o">=</span>XXXXX
+<span class="nv">MAIL_ADMINS</span><span class="o">=</span>XXXX.XXXX@gmail.com,YYYY.YYYY@gmail.com
+<span class="nv">MAIL_DEFAULT_SENDER</span><span class="o">=</span>XXXX.XXXX@gmail.com
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#documentation" class="page__taxonomy-item" rel="tag">documentation</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#installation" class="page__taxonomy-item" rel="tag">installation</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#guide" class="page__taxonomy-item" rel="tag">guide</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2019-05-05T00:00:00+02:00">May 05, 2019</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=INSTALLATION+WALKTHROUGH%20http%3A%2F%2Flocalhost%3A4001%2Fguide%2Finstallation%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4001%2Fguide%2Finstallation%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4001%2Fguide%2Finstallation%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/general/ecosystem/" class="pagination--pager" title="THE SOLIDATA ECOSYSTEM
+">Previous</a>
+    
+    
+      <a href="/guide/backoffice/" class="pagination--pager" title="HOW TO CONFIGURE YOUR APIVIZ INSTANCE
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/users/" rel="permalink">API - users
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/rec/" rel="permalink">API - recipes
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/prj/" rel="permalink">API - projects
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/dso/" rel="permalink">API - dataset outputs
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><input type="search" id="search" aria-placeholder="Enter your search term..." class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+    <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/jparis_py" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/co-demos" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Solidata backend API docs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

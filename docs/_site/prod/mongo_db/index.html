@@ -1,0 +1,1041 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>MONGO DB - Solidata backend API docs</title>
+<meta name="description" content="MONGO DB WALKTHROUGH FOR UBUNTU">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Solidata backend API docs">
+<meta property="og:title" content="MONGO DB">
+<meta property="og:url" content="http://localhost:4001/prod/mongo_db/">
+
+
+  <meta property="og:description" content="MONGO DB WALKTHROUGH FOR UBUNTU">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-04-01T00:00:00+02:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4001/prod/mongo_db/">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Solidata backend API docs Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE ]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/static/logos/logo_solidata.png" alt=""></a>
+        
+        <a class="site-title" href="/">Solidata API docs</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/general/presentation" >Presentation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/guide/installation" >Quickstart guide</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/" >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://github.com/entrepreneur-interet-general/solidata_backend" >Repo</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+  
+    
+      
+      
+      
+      
+    
+    
+      
+
+<nav class="nav__list">
+  
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+  <ul class="nav__items">
+    
+      <li>
+        
+          <span class="nav__sub-title">The Solidata project</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/general/presentation" class="">Presentation</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/general/ecosystem" class="">The Solidata ecosystem</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Installation</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/guide/installation" class="">Installation walkthrough</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/guide/install-docs" class="">Install the docs</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">API</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/concepts" class="">Concepts</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmf" class="">Datamodel fields</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Datamodel templates</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/prj" class="">Projects</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/rec" class="">Recipes</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dsi" class="">Dataset inputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/dmt" class="">Dataset outputs</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/authentication" class="">Authentication</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/api/users" class="">Users</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Developers</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/stack" class="">Stack</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/contributing" class="">Contributing</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/roadmaps" class="">Roadmaps</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/dev/guidelines" class="">Guidelines</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Snippets</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/nginx" class="">Nginx</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/supervisor" class="">Supervisor</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/mongo_db" class="">Mongo db</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/ubuntu" class="">Ubuntu</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/prod/git" class="">Git</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          <span class="nav__sub-title">Meta</span>
+        
+
+        
+        <ul>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/maintain" class="">Maintenance</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/credits" class="">Credits</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/changelog" class="">Change log</a></li>
+          
+            
+            
+
+            
+            
+
+            <li><a href="/meta/license" class="">License</a></li>
+          
+        </ul>
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/posts/"><span class="nav__sub-title">Blog</span></a>
+        
+
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/categories/"><span class="nav__sub-title">Categories</span></a>
+        
+
+        
+      </li>
+    
+      <li>
+        
+          
+          
+
+          <a href="/tags/"><span class="nav__sub-title">Tags</span></a>
+        
+
+        
+      </li>
+    
+  </ul>
+</nav>
+    
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="MONGO DB">
+    <meta itemprop="description" content="MONGO DB WALKTHROUGH FOR UBUNTU">
+    <meta itemprop="datePublished" content="April 01, 2019">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">MONGO DB
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i>  contents</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#mongo-db-walkthrough-for-ubuntu">MONGO DB WALKTHROUGH FOR UBUNTU</a></li>
+  <li><a href="#install-mongo-db">INSTALL MONGO DB</a></li>
+  <li><a href="#uninstall">UNINSTALL</a></li>
+  <li><a href="#secure-connexion">SECURE CONNEXION</a></li>
+  <li><a href="#conclusion">CONCLUSION</a></li>
+</ul>
+            </nav>
+          </aside>
+        
+        <h3 id="mongo-db-walkthrough-for-ubuntu">MONGO DB WALKTHROUGH FOR UBUNTU</h3>
+
+<p>cf : <a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/">tuto Mongo DB / install</a>
+cf : <a href="https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04">tuto Digital Ocean / install</a></p>
+
+<h3 id="install-mongo-db">INSTALL MONGO DB</h3>
+
+<ul>
+  <li>install MongoDB package (-y == —yes == —assume-yes)</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt install <span class="nt">-y</span> mongodb
+</code></pre></div></div>
+
+<ul>
+  <li>check service status</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl status mongodb
+mongo <span class="nt">--eval</span> <span class="s1">'db.runCommand({ connectionStatus: 1 })'</span>
+</code></pre></div></div>
+
+<ul>
+  <li>optionnel : stop/start/restart MongoDB service</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl stop mongodb
+<span class="nb">sudo </span>systemctl start mongodb
+<span class="nb">sudo </span>systemctl restart mongodb
+</code></pre></div></div>
+
+<ul>
+  <li>By default, MongoDB is configured to start automatically with the server. If you wish to disable/enable the automatic startup, type:</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl disable mongodb
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>mongodb
+</code></pre></div></div>
+
+<hr />
+<h3 id="uninstall">UNINSTALL</h3>
+
+<ul>
+  <li>cf : https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl stop mongodb
+<span class="nb">sudo </span>apt-get purge mongodb-<span class="k">*</span>
+<span class="nb">sudo </span>rm <span class="nt">-r</span> /var/log/mongodb
+<span class="nb">sudo </span>rm <span class="nt">-r</span> /var/lib/mongodb
+</code></pre></div></div>
+
+<hr />
+
+<ul>
+  <li>optionnal : allow an external IP to connect to MongoDB’s ports</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>ufw allow from YOUR.LOCAL.IP.ADDRESS/32 to any port 27017  
+</code></pre></div></div>
+
+<ul>
+  <li>add your server’s publicly-routable IP address to the mongod.conf file</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/mongodb.conf
+</code></pre></div></div>
+
+<ul>
+  <li>let this : restrict to local interface</li>
+</ul>
+
+<p>remote connection to db are prohibited except via SSH tunnel</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>…
+
+<span class="nv">logappend</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="c"># bind_ip = 127.0.0.1</span>
+bind_ip <span class="o">=</span> 127.0.0.1,YOUR.SERVER.IP.ADDRESS
+<span class="c"># bind_ip = 0.0.0.0</span>
+<span class="c">#port = 27017</span>
+…
+</code></pre></div></div>
+
+<ul>
+  <li>restart service</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl restart mongodb
+</code></pre></div></div>
+
+<ul>
+  <li>optional : enable automatically starting MongoDB when the system starts</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl <span class="nb">enable </span>mongod
+<span class="nb">sudo </span>systemctl stop mongod
+<span class="nb">sudo </span>systemctl start mongod
+<span class="nb">sudo </span>systemctl restart mongod
+<span class="nb">sudo </span>systemctl status mongod
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="secure-connexion">SECURE CONNEXION</h3>
+
+<p>cf : <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-mongodb-on-ubuntu-16-04#part-two-securing-mongodb">tuto Digital Ocean / secure connexion</a>
+cf : <a href="https://docs.mongodb.com/v3.2/tutorial/enable-authentication/">tuto Mongo DB</a></p>
+
+<ul>
+  <li>run MongoDB</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongo
+</code></pre></div></div>
+
+<ul>
+  <li>in mongo CLI</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use admin
+
+db.createUser<span class="o">({</span>user:<span class="s2">"AdminMongo"</span>,pwd:<span class="s2">"A_MONGO_DB_ADMIN_PWD"</span>,roles:[<span class="o">{</span>role:<span class="s2">"userAdminAnyDatabase"</span>,db:<span class="s2">"admin"</span><span class="o">}]})</span>
+
+db.createUser<span class="o">({</span>user:<span class="s2">"RootJpy"</span>,pwd:<span class="s2">"A_MONGO_DB_ADMIN_PWD"</span>,roles:[<span class="o">{</span>role:<span class="s2">"root"</span>,db:<span class="s2">"admin"</span><span class="o">}]})</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Type ‘exit’ and press ENTER or use CTRL+C to leave the client.</li>
+</ul>
+
+<hr />
+
+<p>cf : <a href="https://www.tecmint.com/install-mongodb-on-ubuntu-18-04/">tuto mongo DB on Ubuntu</a></p>
+
+<ul>
+  <li>add —auth to service</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /lib/systemd/system/mongodb.service 
+</code></pre></div></div>
+
+<ul>
+  <li>correct/add this line</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">ExecStart</span><span class="o">=</span>/usr/bin/mongod <span class="nt">--auth</span> <span class="nt">--unixSocketPrefix</span><span class="o">=</span><span class="k">${</span><span class="nv">SOCKETPATH</span><span class="k">}</span> <span class="nt">--config</span> <span class="k">${</span><span class="nv">CONF</span><span class="k">}</span> <span class="nv">$DAEMON_OPTS</span>
+
+systemctl daemon-reload
+</code></pre></div></div>
+
+<hr />
+
+<ul>
+  <li>OR</li>
+</ul>
+
+<hr />
+
+<p>cf : <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-mongodb-on-ubuntu-16-04#part-two-securing-mongodb">tuto Digital Ocean / secure</a></p>
+
+<ul>
+  <li>enable security</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/mongodb.conf
+</code></pre></div></div>
+
+<p>Turn on/off security.  Off is currently the default</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#noauth = true</span>
+auth <span class="o">=</span> <span class="nb">true</span>
+</code></pre></div></div>
+
+<hr />
+
+<ul>
+  <li>restart service</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl restart mongodb
+<span class="nb">sudo </span>systemctl status mongod
+</code></pre></div></div>
+
+<ul>
+  <li>test access</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongo
+show dbs
+</code></pre></div></div>
+
+<p>—&gt; must show error like :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2019-01-18T22:07:43.656+0000 E QUERY    <span class="o">[</span>thread1] Error: listDatabases failed:<span class="o">{</span>
+	<span class="s2">"ok"</span> : 0,
+	<span class="s2">"errmsg"</span> : <span class="s2">"not authorized on admin to execute command { listDatabases: 1.0, </span><span class="nv">$db</span><span class="s2">: </span><span class="se">\"</span><span class="s2">admin</span><span class="se">\"</span><span class="s2"> }"</span>,
+	<span class="s2">"code"</span> : 13,
+	<span class="s2">"codeName"</span> : <span class="s2">"Unauthorized"</span>
+<span class="o">}</span> :
+</code></pre></div></div>
+
+<ul>
+  <li>run mongo with admin user</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongo <span class="nt">-u</span> AdminMongo <span class="nt">-p</span> <span class="nt">--authenticationDatabase</span> admin
+</code></pre></div></div>
+
+<p>—&gt; enter password : <code class="highlighter-rouge">A_MONGO_DB_ADMIN_PWD</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>show dbs 
+</code></pre></div></div>
+
+<ul>
+  <li>test from local terminal</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mongo <span class="nt">-u</span> AdminMongo <span class="nt">-p</span> <span class="nt">--authenticationDatabase</span> admin <span class="nt">--host</span> XXX.XXX.XXX.XX
+</code></pre></div></div>
+
+<ul>
+  <li>create an user for solidata db —&gt; this guy must be added in config_prod.py (secret) in solidata_backend</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use solidata
+db.createUser<span class="o">({</span>user:<span class="s2">"AdminDB"</span>,pwd:<span class="s2">"A_MONGO_DB_USER_PWD"</span>,roles:[<span class="o">{</span>role:<span class="s2">"readWrite"</span>,db:<span class="s2">"solidata"</span><span class="o">}]})</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="conclusion">CONCLUSION</h3>
+
+<p><strong>THAT WAY DB IS PROTECTED BY :</strong></p>
+<ul>
+  <li><strong>AdminDB</strong> + MANDATORY PWD TO CONNECT AND CREATE USERS</li>
+  <li><strong>AdminDB</strong> USER + MANDATORY PWD TO CONNECT TO CB</li>
+  <li>SSH TUNNEL MANDATORY + PASSPHRASE TO CONNECT TO SERVER OR DB</li>
+  <li>UFW ONLY ALLOWS SERVER IP AND DEV IP TO ACCESS PORT 2017</li>
+  <li>no other way to connect ?…</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#configuration" class="page__taxonomy-item" rel="tag">configuration</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#deployment" class="page__taxonomy-item" rel="tag">deployment</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#documentation" class="page__taxonomy-item" rel="tag">documentation</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#snippets" class="page__taxonomy-item" rel="tag">snippets</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#prod" class="page__taxonomy-item" rel="tag">prod</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2019-04-01T00:00:00+02:00">April 01, 2019</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=MONGO+DB%20http%3A%2F%2Flocalhost%3A4001%2Fprod%2Fmongo_db%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4001%2Fprod%2Fmongo_db%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4001%2Fprod%2Fmongo_db%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/prod/git/" class="pagination--pager" title="GIT
+">Previous</a>
+    
+    
+      <a href="/prod/nginx/" class="pagination--pager" title="NGINX
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/users/" rel="permalink">API - users
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/rec/" rel="permalink">API - recipes
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/prj/" rel="permalink">API - projects
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/api/dso/" rel="permalink">API - dataset outputs
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><input type="search" id="search" aria-placeholder="Enter your search term..." class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+    <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/jparis_py" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/co-demos" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Solidata backend API docs. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

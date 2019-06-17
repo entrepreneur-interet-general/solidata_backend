@@ -1,0 +1,99 @@
+main:
+  - title: "Presentation"
+    url: /general/presentation
+  - title: "Quickstart guide"
+    url: /guide/installation
+  - title: "Blog"
+    url: /posts/
+  # - title: "Categories"
+  #   url: /categories/
+  # - title: "Tags"
+  #   url: /tags/
+  # - title: "Pages"
+  #   url: /page-archive/
+  # - title: "Collections"
+  #   url: /collection-archive/
+  - title: "Repo"
+    url: https://github.com/entrepreneur-interet-general/solidata_backend
+
+
+# documentation links
+docs:
+  - title: The Solidata project
+    children:
+      - title: "Presentation"
+        url: /general/presentation
+      - title: "The Solidata ecosystem"
+        url: /general/ecosystem
+
+  - title: Installation
+    children:
+      - title: "Installation walkthrough"
+        url: /guide/installation
+      - title: "Install the docs"
+        url: /guide/install-docs
+
+  - title: API
+    children:
+      - title: "Concepts"
+        url: /api/concepts
+      - title: "Datamodel fields"
+        url: /api/dmf
+      - title: "Datamodel templates"
+        url: /api/dmt
+      - title: "Projects"
+        url: /api/prj
+      - title: "Recipes"
+        url: /api/rec
+      - title: "Dataset inputs"
+        url: /api/dsi
+      - title: "Dataset outputs"
+        url: /api/dmt
+      - title: "Authentication"
+        url: /api/authentication
+      - title: "Users"
+        url: /api/users
+
+  - title: Developers
+    children:
+      - title: "Stack"
+        url: /dev/stack
+      - title: "Contributing"
+        url: /dev/contributing
+      - title: "Roadmaps"
+        url: /dev/roadmaps
+      - title: "Guidelines"
+        url: /dev/guidelines
+
+  - title: Snippets
+    children:
+      - title: "Nginx"
+        url: /prod/nginx
+      - title: "Supervisor"
+        url: /prod/supervisor
+      - title: "Mongo db"
+        url: /prod/mongo_db
+      - title: "Ubuntu"
+        url: /prod/ubuntu
+      - title: "Git"
+        url: /prod/git
+
+  - title: Meta
+    children:
+      - title: "Maintenance"
+        url: /meta/maintain
+      - title: "Credits"
+        url: /meta/credits
+      - title: "Change log"
+        url: /meta/changelog
+      - title: "License"
+        url: /meta/license
+
+  - title: Blog
+    url: /posts/
+
+  - title: "Categories"
+    url: /categories/
+
+  - title: "Tags"
+    url: /tags/

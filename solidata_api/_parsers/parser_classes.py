@@ -59,7 +59,7 @@ class RequestParserBuilder :
 				'per_page', 
 				type=int, 
 				required=False, 
-				choices=[0, 1, 2, 3, 4, 5, 10, 20, 25, 50, 75, 100],
+				choices=[0, 1, 2, 3, 4, 5, 10, 20, 25, 50, 75, 100, 200, 300, 400, 500],
 				default=10, 
 				help='Results per page ( get all results if 0 )',
 				# location = 'values'

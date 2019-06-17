@@ -7,6 +7,9 @@ _core/queries_db/query_build_dso.py
 from log_config import log, pformat
 log.debug("... _core.queries_db.query_build_dso.py ..." )
 
+import pandas as pd
+import numpy as np
+
 from  	datetime import datetime, timedelta
 from	bson.objectid 	import ObjectId
 from 	flask_restplus 	import  marshal
@@ -291,12 +294,14 @@ def Query_db_build_dso (
                 # print(df_data_concat.head(3))
                 # print(df_data_concat[["tags_list","oid_dso", "adresse du projet"]].head(3))
 
-
+                ### clean from nan
+                df_data_concat = df_data_concat.replace({np.nan:None})  
 
                 ### get df_data_concat as a list
                 ### WARNING ! THAT PART DOESN'T CREATE A NESTED DICT BUT JUST : { "KEY" : "stringified content" }
                 log.debug("... df_data_concat --> to dict ... ")
                 dso_f_data = df_data_concat.to_dict('records')
+                del df_data_concat
                 print (dso_f_data[0])
 
               else : 

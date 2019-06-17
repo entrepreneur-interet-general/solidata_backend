@@ -95,6 +95,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.env*
 .venv
 env/
 venv/
@@ -111,6 +112,9 @@ venv.bak/
 
 # mkdocs documentation
 /site
+
+# Jekyl ldocs
+docs/_site
 
 # mypy
 .mypy_cache/

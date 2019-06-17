@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="http://localhost:4001/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4001/" rel="alternate" type="text/html" /><updated>2019-06-09T17:52:41+02:00</updated><id>http://localhost:4001/feed.xml</id><title type="html">Solidata backend API docs</title><subtitle>&quot;official documentation for Solidata backend API &quot;</subtitle><author><name>Julien Paris</name></author><entry><title type="html">API - dataset inputs</title><link href="http://localhost:4001/api/dsi/" rel="alternate" type="text/html" title="API - dataset inputs" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/dsi</id><content type="html" xml:base="http://localhost:4001/api/dsi/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata DSI management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/dsi/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/dsi/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - datamodel templates</title><link href="http://localhost:4001/api/dmt/" rel="alternate" type="text/html" title="API - datamodel templates" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/dmt</id><content type="html" xml:base="http://localhost:4001/api/dmt/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata DMT management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/dmt/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/dmt/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - datamodel fields</title><link href="http://localhost:4001/api/dmf/" rel="alternate" type="text/html" title="API - datamodel fields" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/dmf</id><content type="html" xml:base="http://localhost:4001/api/dmf/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata DMF management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/dmf/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/dmf/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - concepts</title><link href="http://localhost:4001/api/concepts/" rel="alternate" type="text/html" title="API - concepts" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/concepts</id><content type="html" xml:base="http://localhost:4001/api/concepts/">&lt;hr /&gt;
+
+&lt;p&gt;The API of Solidata backend deals with several distinct concepts :&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;usr&lt;/strong&gt; : users (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;auth&lt;/strong&gt; : authentication and register (endpoints)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;dmf&lt;/strong&gt; : datamodel fields (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;dmt&lt;/strong&gt; : datamodel templates (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;dsi&lt;/strong&gt; : dataset inputs (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;dso&lt;/strong&gt; : dataset outputs (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;prj&lt;/strong&gt; : projects (endpoints and models)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;rec&lt;/strong&gt; : recipes (endpoints and models)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;figure class=&quot; &quot;&gt;
+  
+    
+      &lt;a href=&quot;/documentation/schemes/Solidata-Models-collections-only-backend.png&quot; title=&quot;full graph of concepts&quot;&gt;
+        &lt;img src=&quot;/documentation/schemes/Solidata-Models-collections-only-backend.png&quot; alt=&quot;full graph&quot; /&gt;
+      &lt;/a&gt;
+    
+  
+  
+    &lt;figcaption&gt;click for fullscreen view
+&lt;/figcaption&gt;
+  
+&lt;/figure&gt;
+
+&lt;hr /&gt;
+
+&lt;figure class=&quot; &quot;&gt;
+  
+    
+      &lt;a href=&quot;/documentation/schemes/Solidata_models_datamodels_map.png&quot; title=&quot;full map of concepts&quot;&gt;
+        &lt;img src=&quot;/documentation/schemes/Solidata_models_datamodels_map.png&quot; alt=&quot;full map&quot; /&gt;
+      &lt;/a&gt;
+    
+  
+  
+    &lt;figcaption&gt;click for fullscreen view
+&lt;/figcaption&gt;
+  
+&lt;/figure&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - authentication</title><link href="http://localhost:4001/api/authentication/" rel="alternate" type="text/html" title="API - authentication" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/authentication</id><content type="html" xml:base="http://localhost:4001/api/authentication/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata authentication&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;configuration-collections-and-documents&quot;&gt;CONFIGURATION COLLECTIONS AND DOCUMENTS&lt;/h2&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/auth/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/auth/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - recipes</title><link href="http://localhost:4001/api/rec/" rel="alternate" type="text/html" title="API - recipes" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/rec</id><content type="html" xml:base="http://localhost:4001/api/rec/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata REC management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/rec/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/rec/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - users</title><link href="http://localhost:4001/api/users/" rel="alternate" type="text/html" title="API - users" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/users</id><content type="html" xml:base="http://localhost:4001/api/users/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata users management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/usr/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/usr/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - projects</title><link href="http://localhost:4001/api/prj/" rel="alternate" type="text/html" title="API - projects" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/prj</id><content type="html" xml:base="http://localhost:4001/api/prj/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata PRJ management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/prj/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/prj/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">API - dataset outputs</title><link href="http://localhost:4001/api/dso/" rel="alternate" type="text/html" title="API - dataset outputs" /><published>2019-06-08T00:00:00+02:00</published><updated>2019-06-08T00:00:00+02:00</updated><id>http://localhost:4001/api/dso</id><content type="html" xml:base="http://localhost:4001/api/dso/">&lt;hr /&gt;
+
+&lt;p&gt;The API for Solidata DSO management&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;documented-urls&quot;&gt;DOCUMENTED URLs&lt;/h3&gt;
+
+&lt;p&gt;check the following url :&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://localhost:4000/api/dso/documentation&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;http://localhost:4000/api/dso/documentation&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;</content><author><name>Julien Paris</name></author><category term="documentation" /><category term="configuration" /><category term="api" /><summary type="html"></summary></entry><entry><title type="html">CHANGE LOG</title><link href="http://localhost:4001/meta/changelog/" rel="alternate" type="text/html" title="CHANGE LOG" /><published>2019-05-15T00:00:00+02:00</published><updated>2019-05-15T00:00:00+02:00</updated><id>http://localhost:4001/meta/changelog</id><content type="html" xml:base="http://localhost:4001/meta/changelog/">&lt;hr /&gt;
+
+&lt;h2 id=&quot;v01-alpha-2019-03-06&quot;&gt;v.0.1 alpha (2019-03-06)&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;First published version&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Julien Paris</name></author><category term="log" /><category term="versions" /><summary type="html"></summary></entry></feed>

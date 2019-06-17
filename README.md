@@ -9,7 +9,7 @@ From now please refer to the cloned and enhanced repo : [solidata-backend](https
 
 part 2a/3 of the TADATA! sofware suite ([ApiViz](https://github.com/co-demos/ApiViz) / [Solidata_frontend](https://github.com/entrepreneur-interet-general/solidata_frontend) / [OpenScraper](https://github.com/entrepreneur-interet-general/OpenScraper) )
 
-#### Building a public service for managing, consolidating, and sharing "api-fied" data
+#### Building a public service for managing, consolidating, and sharing "API-fied" data
 
 
 -------
