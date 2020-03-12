@@ -35,7 +35,7 @@ numba==0.42.0
 numpy==1.16.0
 pandas==0.23.4
 partd==0.3.9
-psutil==5.4.8
+psutil==5.6.6
 pycrypto==2.6.1
 PyJWT==1.7.1
 pymongo==3.7.2
