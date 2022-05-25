@@ -37,7 +37,7 @@ pandas==0.23.4
 partd==0.3.9
 psutil==5.4.8
 pycrypto==2.6.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pymongo==3.7.2
 python-dateutil==2.7.5
 python-dotenv==0.10.1
